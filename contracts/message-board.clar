@@ -210,12 +210,22 @@
       (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
       (sender tx-sender)
       (already-reacted (default-to false (get reacted (map-get? reactions { message-id: message-id, user: sender }))))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
     )
     ;; Validate message exists
     ;; Prevent duplicate reactions
     (asserts! (not already-reacted) err-already-reacted)
     
-    ;; TO BE CONTINUED - will add payment and reaction storage
+    ;; Transfer reaction fee to contract
+    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+    
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
+    
+    ;; TO BE CONTINUED - will add reaction storage and count update
     (ok true)
   )
 )
