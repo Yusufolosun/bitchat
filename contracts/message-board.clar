@@ -8,6 +8,7 @@
 (define-constant err-unauthorized (err u102))
 (define-constant err-invalid-input (err u103))
 (define-constant err-message-expired (err u104))
+(define-constant err-already-reacted (err u105))
 
 ;; Configuration
 (define-constant min-message-length u1)
@@ -208,9 +209,13 @@
     (
       (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
       (sender tx-sender)
+      (already-reacted (default-to false (get reacted (map-get? reactions { message-id: message-id, user: sender }))))
     )
     ;; Validate message exists
-    ;; TO BE CONTINUED - will add duplicate check
+    ;; Prevent duplicate reactions
+    (asserts! (not already-reacted) err-already-reacted)
+    
+    ;; TO BE CONTINUED - will add payment and reaction storage
     (ok true)
   )
 )
