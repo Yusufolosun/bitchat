@@ -202,3 +202,15 @@
     (ok true)
   )
 )
+
+(define-public (react-to-message (message-id uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+    )
+    ;; Validate message exists
+    ;; TO BE CONTINUED - will add duplicate check
+    (ok true)
+  )
+)
