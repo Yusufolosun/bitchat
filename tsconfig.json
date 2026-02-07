@@ -11,6 +11,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "allowJs": true,
 
     "strict": true,
     "noImplicitAny": true,
@@ -20,6 +21,10 @@
   },
   "include": [
     "node_modules/@stacks/clarinet-sdk/vitest-helpers/src",
-    "tests"
+    "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "frontend"
   ]
 }
