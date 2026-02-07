@@ -1,0 +1,58 @@
+# Stacks/Clarinet sensitive files
+Mainnet.toml
+Testnet.toml
+Devnet.toml
+settings/Mainnet.toml
+settings/Testnet.toml
+settings/Devnet.toml
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Secrets
+*.seed
+*.key
+wallets/
+private-keys/
+
+# Clarinet cache
+.cache/
+cache/
+history/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+*.js.map
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Logs
+logs/
+*.log
