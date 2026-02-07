@@ -8,6 +8,7 @@
 (define-constant err-unauthorized (err u102))
 (define-constant err-invalid-input (err u103))
 (define-constant err-message-expired (err u104))
+(define-constant err-already-reacted (err u105))
 
 ;; Configuration
 (define-constant min-message-length u1)
@@ -67,6 +68,16 @@
 
 (define-private (calculate-expiry-block (duration uint))
   (+ stacks-block-height duration)
+)
+
+(define-private (get-pin-fee (duration uint))
+  (if (is-eq duration pin-24hr-blocks)
+    fee-pin-24hr
+    (if (is-eq duration pin-72hr-blocks)
+      fee-pin-72hr
+      u0
+    )
+  )
 )
 
 ;; Public functions
@@ -143,4 +154,106 @@
 
 (define-read-only (get-message-nonce)
   (ok (var-get message-nonce))
+)
+
+(define-read-only (has-user-reacted (message-id uint) (user principal))
+  (default-to false (get reacted (map-get? reactions { message-id: message-id, user: user })))
+)
+
+(define-public (pin-message (message-id uint) (duration uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (message-author (get author message))
+      (pin-fee (get-pin-fee duration))
+      (pin-expiry (calculate-expiry-block duration))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
+    )
+    ;; Validate message exists and sender is author
+    (asserts! (is-eq sender message-author) err-unauthorized)
+    
+    ;; Validate duration is supported
+    (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
+    
+    ;; Transfer pin fee to contract
+    (try! (stx-transfer? pin-fee sender (var-get contract-principal)))
+    
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
+    
+    ;; Update message with pin status
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        pinned: true,
+        pin-expires-at: pin-expiry
+      })
+    )
+    
+    ;; Update user stats with pin spending
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (get messages-posted current-stats),
+        total-spent: (+ (get total-spent current-stats) pin-fee),
+        last-post-block: stacks-block-height
+      }
+    )
+    
+    (ok true)
+  )
+)
+
+(define-public (react-to-message (message-id uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (already-reacted (default-to false (get reacted (map-get? reactions { message-id: message-id, user: sender }))))
+      (current-reaction-count (get reaction-count message))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
+    )
+    ;; Validate message exists
+    ;; Prevent duplicate reactions
+    (asserts! (not already-reacted) err-already-reacted)
+    
+    ;; Transfer reaction fee to contract
+    (try! (stx-transfer? fee-reaction sender (var-get contract-principal)))
+    
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
+    
+    ;; Store reaction
+    (map-set reactions
+      { message-id: message-id, user: sender }
+      { reacted: true }
+    )
+    
+    ;; Increment reaction count on message
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        reaction-count: (+ current-reaction-count u1)
+      })
+    )
+    
+    ;; Update user stats with reaction spending
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (get messages-posted current-stats),
+        total-spent: (+ (get total-spent current-stats) fee-reaction),
+        last-post-block: stacks-block-height
+      }
+    )
+    
+    (ok true)
+  )
 )
