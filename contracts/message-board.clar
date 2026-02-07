@@ -55,3 +55,11 @@
   { message-id: uint, user: principal }
   { reacted: bool }
 )
+
+;; Private functions
+(define-private (get-next-message-id)
+  (let ((current-nonce (var-get message-nonce)))
+    (var-set message-nonce (+ current-nonce u1))
+    current-nonce
+  )
+)
