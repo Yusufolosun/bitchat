@@ -139,3 +139,7 @@
 (define-read-only (get-total-fees-collected)
   (ok (var-get total-fees-collected))
 )
+
+(define-read-only (get-message-nonce)
+  (ok (var-get message-nonce))
+)
