@@ -87,7 +87,25 @@
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
     
-    ;; TO BE CONTINUED - will add message storage
+    ;; Store message
+    (map-set messages
+      { message-id: message-id }
+      {
+        author: sender,
+        content: content,
+        timestamp: burn-block-height,
+        block-height: block-height,
+        expires-at: expiry-block,
+        pinned: false,
+        pin-expires-at: u0,
+        reaction-count: u0
+      }
+    )
+    
+    ;; Increment total messages counter
+    (var-set total-messages (+ (var-get total-messages) u1))
+    
+    ;; TO BE CONTINUED - will add user stats update
     (ok message-id)
   )
 )
