@@ -122,3 +122,8 @@
     (ok message-id)
   )
 )
+
+;; Read-only functions
+(define-read-only (get-message (message-id uint))
+  (map-get? messages { message-id: message-id })
+)
