@@ -63,3 +63,7 @@
     current-nonce
   )
 )
+
+(define-private (calculate-expiry-block (duration uint))
+  (+ block-height duration)
+)
