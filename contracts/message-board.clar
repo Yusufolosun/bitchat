@@ -21,3 +21,8 @@
 (define-constant fee-pin-24hr u50000)            ;; 0.00005 STX (~$0.0015)
 (define-constant fee-pin-72hr u100000)           ;; 0.0001 STX (~$0.003)
 (define-constant fee-reaction u5000)             ;; 0.000005 STX (~$0.00015)
+
+;; Data variables
+(define-data-var message-nonce uint u0)
+(define-data-var total-messages uint u0)
+(define-data-var total-fees-collected uint u0)
