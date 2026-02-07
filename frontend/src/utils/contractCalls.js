@@ -72,4 +72,29 @@ export const pinMessage = async (messageId, duration24hr, userSession) => {
   await openContractCall(options)
 }
 
-// TO BE CONTINUED - will add react function
+export const reactToMessage = async (messageId, userSession) => {
+  const network = getNetwork()
+  
+  const functionArgs = [
+    uintCV(messageId),
+  ]
+
+  const options = {
+    network,
+    anchorMode: 1,
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: 'react-to-message',
+    functionArgs,
+    postConditionMode: PostConditionMode.Allow,
+    onFinish: (data) => {
+      console.log('Reaction Transaction ID:', data.txId)
+      return data.txId
+    },
+    onCancel: () => {
+      console.log('Reaction transaction cancelled')
+    },
+  }
+
+  await openContractCall(options)
+}
