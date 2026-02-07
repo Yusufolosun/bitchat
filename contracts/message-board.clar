@@ -162,6 +162,7 @@
       (sender tx-sender)
       (message-author (get author message))
       (pin-fee (get-pin-fee duration))
+      (pin-expiry (calculate-expiry-block duration))
       (current-stats (default-to 
         { messages-posted: u0, total-spent: u0, last-post-block: u0 }
         (map-get? user-stats { user: sender })
@@ -179,7 +180,25 @@
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
     
-    ;; TO BE CONTINUED - will add message update
+    ;; Update message with pin status
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        pinned: true,
+        pin-expires-at: pin-expiry
+      })
+    )
+    
+    ;; Update user stats with pin spending
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (get messages-posted current-stats),
+        total-spent: (+ (get total-spent current-stats) pin-fee),
+        last-post-block: stacks-block-height
+      }
+    )
+    
     (ok true)
   )
 )
