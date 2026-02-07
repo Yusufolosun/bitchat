@@ -75,12 +75,19 @@
       (message-id (get-next-message-id))
       (content-length (len content))
       (sender tx-sender)
+      (expiry-block (calculate-expiry-block default-expiry-blocks))
     )
     ;; Validate message length
     (asserts! (>= content-length min-message-length) err-invalid-input)
     (asserts! (<= content-length max-message-length) err-invalid-input)
     
-    ;; TO BE CONTINUED - will add payment and storage logic
+    ;; Transfer posting fee to contract
+    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+    
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
+    
+    ;; TO BE CONTINUED - will add message storage
     (ok message-id)
   )
 )
