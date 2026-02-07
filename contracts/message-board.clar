@@ -144,3 +144,18 @@
 (define-read-only (get-message-nonce)
   (ok (var-get message-nonce))
 )
+
+(define-public (pin-message (message-id uint) (duration uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (message-author (get author message))
+    )
+    ;; Validate message exists and sender is author
+    (asserts! (is-eq sender message-author) err-unauthorized)
+    
+    ;; TO BE CONTINUED - will add duration validation
+    (ok true)
+  )
+)
