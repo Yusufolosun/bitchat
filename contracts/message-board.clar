@@ -162,6 +162,10 @@
       (sender tx-sender)
       (message-author (get author message))
       (pin-fee (get-pin-fee duration))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
     )
     ;; Validate message exists and sender is author
     (asserts! (is-eq sender message-author) err-unauthorized)
@@ -169,7 +173,13 @@
     ;; Validate duration is supported
     (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
     
-    ;; TO BE CONTINUED - will add payment and pin update
+    ;; Transfer pin fee to contract
+    (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
+    
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
+    
+    ;; TO BE CONTINUED - will add message update
     (ok true)
   )
 )
