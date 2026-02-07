@@ -76,6 +76,10 @@
       (content-length (len content))
       (sender tx-sender)
       (expiry-block (calculate-expiry-block default-expiry-blocks))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
     )
     ;; Validate message length
     (asserts! (>= content-length min-message-length) err-invalid-input)
@@ -105,7 +109,16 @@
     ;; Increment total messages counter
     (var-set total-messages (+ (var-get total-messages) u1))
     
-    ;; TO BE CONTINUED - will add user stats update
+    ;; Update user stats
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (+ (get messages-posted current-stats) u1),
+        total-spent: (+ (get total-spent current-stats) fee-post-message),
+        last-post-block: block-height
+      }
+    )
+    
     (ok message-id)
   )
 )
