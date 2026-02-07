@@ -69,6 +69,16 @@
   (+ stacks-block-height duration)
 )
 
+(define-private (get-pin-fee (duration uint))
+  (if (is-eq duration pin-24hr-blocks)
+    fee-pin-24hr
+    (if (is-eq duration pin-72hr-blocks)
+      fee-pin-72hr
+      u0
+    )
+  )
+)
+
 ;; Public functions
 (define-public (post-message (content (string-utf8 280)))
   (let
@@ -151,11 +161,15 @@
       (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
       (sender tx-sender)
       (message-author (get author message))
+      (pin-fee (get-pin-fee duration))
     )
     ;; Validate message exists and sender is author
     (asserts! (is-eq sender message-author) err-unauthorized)
     
-    ;; TO BE CONTINUED - will add duration validation
+    ;; Validate duration is supported
+    (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
+    
+    ;; TO BE CONTINUED - will add payment and pin update
     (ok true)
   )
 )
