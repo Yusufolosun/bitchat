@@ -127,3 +127,7 @@
 (define-read-only (get-message (message-id uint))
   (map-get? messages { message-id: message-id })
 )
+
+(define-read-only (get-user-stats (user principal))
+  (map-get? user-stats { user: user })
+)
