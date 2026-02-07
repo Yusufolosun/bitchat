@@ -67,3 +67,20 @@
 (define-private (calculate-expiry-block (duration uint))
   (+ block-height duration)
 )
+
+;; Public functions
+(define-public (post-message (content (string-utf8 280)))
+  (let
+    (
+      (message-id (get-next-message-id))
+      (content-length (len content))
+      (sender tx-sender)
+    )
+    ;; Validate message length
+    (asserts! (>= content-length min-message-length) err-invalid-input)
+    (asserts! (<= content-length max-message-length) err-invalid-input)
+    
+    ;; TO BE CONTINUED - will add payment and storage logic
+    (ok message-id)
+  )
+)
