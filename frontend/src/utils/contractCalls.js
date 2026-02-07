@@ -43,4 +43,33 @@ export const postMessage = async (content, userSession) => {
   await openContractCall(options)
 }
 
-// TO BE CONTINUED - will add pin and react functions
+export const pinMessage = async (messageId, duration24hr, userSession) => {
+  const network = getNetwork()
+  const durationBlocks = duration24hr ? PIN_24HR_BLOCKS : PIN_72HR_BLOCKS
+  
+  const functionArgs = [
+    uintCV(messageId),
+    uintCV(durationBlocks),
+  ]
+
+  const options = {
+    network,
+    anchorMode: 1,
+    contractAddress: CONTRACT_ADDRESS,
+    contractName: CONTRACT_NAME,
+    functionName: 'pin-message',
+    functionArgs,
+    postConditionMode: PostConditionMode.Allow,
+    onFinish: (data) => {
+      console.log('Pin Transaction ID:', data.txId)
+      return data.txId
+    },
+    onCancel: () => {
+      console.log('Pin transaction cancelled')
+    },
+  }
+
+  await openContractCall(options)
+}
+
+// TO BE CONTINUED - will add react function
