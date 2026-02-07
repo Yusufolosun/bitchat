@@ -5,6 +5,10 @@ authors = []
 telemetry = true
 cache_dir = "./.cache"
 
+[contracts.message-board]
+path = "contracts/message-board.clar"
+epoch = "latest"
+
 # [contracts.counter]
 # path = "contracts/counter.clar"
 # epoch = "latest"
