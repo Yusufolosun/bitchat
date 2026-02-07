@@ -180,7 +180,7 @@
     (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
     
     ;; Transfer pin fee to contract
-    (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
+    (try! (stx-transfer? pin-fee sender (var-get contract-principal)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
@@ -225,7 +225,7 @@
     (asserts! (not already-reacted) err-already-reacted)
     
     ;; Transfer reaction fee to contract
-    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+    (try! (stx-transfer? fee-reaction sender (var-get contract-principal)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
