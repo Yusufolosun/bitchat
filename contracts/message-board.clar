@@ -131,3 +131,7 @@
 (define-read-only (get-user-stats (user principal))
   (map-get? user-stats { user: user })
 )
+
+(define-read-only (get-total-messages)
+  (ok (var-get total-messages))
+)
