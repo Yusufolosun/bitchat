@@ -1,15 +1,21 @@
 import React from 'react'
+import WalletConnect from './components/WalletConnect'
 import './App.css'
 
 function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Bitchat</h1>
-        <p>On-Chain Message Board</p>
+        <div className="header-content">
+          <div className="header-title">
+            <h1>Bitchat</h1>
+            <p>On-Chain Message Board</p>
+          </div>
+          <WalletConnect />
+        </div>
       </header>
       <main className="app-main">
-        {/* Components will be added here */}
+        {/* Message components will be added here */}
       </main>
     </div>
   )
