@@ -135,3 +135,7 @@
 (define-read-only (get-total-messages)
   (ok (var-get total-messages))
 )
+
+(define-read-only (get-total-fees-collected)
+  (ok (var-get total-fees-collected))
+)
