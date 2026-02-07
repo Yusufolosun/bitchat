@@ -156,6 +156,10 @@
   (ok (var-get message-nonce))
 )
 
+(define-read-only (has-user-reacted (message-id uint) (user principal))
+  (default-to false (get reacted (map-get? reactions { message-id: message-id, user: user })))
+)
+
 (define-public (pin-message (message-id uint) (duration uint))
   (let
     (
