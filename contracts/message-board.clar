@@ -50,3 +50,8 @@
     last-post-block: uint
   }
 )
+
+(define-map reactions
+  { message-id: uint, user: principal }
+  { reacted: bool }
+)
