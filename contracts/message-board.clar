@@ -210,6 +210,7 @@
       (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
       (sender tx-sender)
       (already-reacted (default-to false (get reacted (map-get? reactions { message-id: message-id, user: sender }))))
+      (current-reaction-count (get reaction-count message))
       (current-stats (default-to 
         { messages-posted: u0, total-spent: u0, last-post-block: u0 }
         (map-get? user-stats { user: sender })
@@ -225,7 +226,30 @@
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
     
-    ;; TO BE CONTINUED - will add reaction storage and count update
+    ;; Store reaction
+    (map-set reactions
+      { message-id: message-id, user: sender }
+      { reacted: true }
+    )
+    
+    ;; Increment reaction count on message
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        reaction-count: (+ current-reaction-count u1)
+      })
+    )
+    
+    ;; Update user stats with reaction spending
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (get messages-posted current-stats),
+        total-spent: (+ (get total-spent current-stats) fee-reaction),
+        last-post-block: stacks-block-height
+      }
+    )
+    
     (ok true)
   )
 )
