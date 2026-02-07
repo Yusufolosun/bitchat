@@ -26,3 +26,18 @@
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
 (define-data-var total-fees-collected uint u0)
+
+;; Data maps
+(define-map messages
+  { message-id: uint }
+  {
+    author: principal,
+    content: (string-utf8 280),
+    timestamp: uint,
+    block-height: uint,
+    expires-at: uint,
+    pinned: bool,
+    pin-expires-at: uint,
+    reaction-count: uint
+  }
+)
