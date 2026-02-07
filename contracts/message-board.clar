@@ -26,6 +26,7 @@
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
 (define-data-var total-fees-collected uint u0)
+(define-data-var contract-principal principal tx-sender)
 
 ;; Data maps
 (define-map messages
@@ -65,7 +66,7 @@
 )
 
 (define-private (calculate-expiry-block (duration uint))
-  (+ block-height duration)
+  (+ stacks-block-height duration)
 )
 
 ;; Public functions
@@ -86,7 +87,7 @@
     (asserts! (<= content-length max-message-length) err-invalid-input)
     
     ;; Transfer posting fee to contract
-    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+    (try! (stx-transfer? fee-post-message sender (var-get contract-principal)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
@@ -98,7 +99,7 @@
         author: sender,
         content: content,
         timestamp: burn-block-height,
-        block-height: block-height,
+        block-height: stacks-block-height,
         expires-at: expiry-block,
         pinned: false,
         pin-expires-at: u0,
@@ -115,7 +116,7 @@
       {
         messages-posted: (+ (get messages-posted current-stats) u1),
         total-spent: (+ (get total-spent current-stats) fee-post-message),
-        last-post-block: block-height
+        last-post-block: stacks-block-height
       }
     )
     
