@@ -41,3 +41,12 @@
     reaction-count: uint
   }
 )
+
+(define-map user-stats
+  { user: principal }
+  {
+    messages-posted: uint,
+    total-spent: uint,
+    last-post-block: uint
+  }
+)
