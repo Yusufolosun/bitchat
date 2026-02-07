@@ -21,10 +21,34 @@ export const useWallet = () => {
     }
   }, [])
 
-  // TO BE CONTINUED - will add connect and disconnect functions
+  const connect = () => {
+    showConnect({
+      appDetails: {
+        name: 'Bitchat',
+        icon: window.location.origin + '/logo.svg',
+      },
+      redirectTo: '/',
+      onFinish: () => {
+        const data = userSession.loadUserData()
+        setUserData(data)
+        setIsAuthenticated(true)
+      },
+      userSession,
+    })
+  }
+
+  const disconnect = () => {
+    userSession.signUserOut()
+    setUserData(null)
+    setIsAuthenticated(false)
+  }
+
   return {
     userData,
     isAuthenticated,
-    address: userData?.profile?.stxAddress?.testnet || userData?.profile?.stxAddress?.mainnet
+    address: userData?.profile?.stxAddress?.testnet || userData?.profile?.stxAddress?.mainnet,
+    connect,
+    disconnect,
+    userSession
   }
 }
