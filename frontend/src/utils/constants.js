@@ -1,5 +1,5 @@
 // Contract deployment details
-export const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM' // Replace with actual address after deployment
+export const CONTRACT_ADDRESS = 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0' // Deployed on Testnet
 export const CONTRACT_NAME = 'message-board'
 
 // Network configuration

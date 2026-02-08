@@ -15,6 +15,14 @@ Every interaction generates a transaction fee, making this a fee-generating dApp
 
 ---
 
+## 🚀 Deployed Contract
+
+**Testnet**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board?chain=testnet)
+
+**Contract Functions**: See [Contract API Documentation](docs/CONTRACT_API.md)
+
+---
+
 ## ✨ Features
 
 - 📝 **Post Messages** — Share thoughts on-chain (0.00001 STX)
@@ -141,7 +149,7 @@ npm run build
 - [x] Smart contracts developed and tested
 - [x] Frontend application complete
 - [x] Wallet integration implemented
-- [ ] Testnet deployment
+- [x] Testnet deployment ✅
 - [ ] Mainnet deployment
 - [ ] Production launch
 
@@ -179,13 +187,20 @@ npm run test:watch
 
 ### Contract Deployment
 
+See [Deployment Guide](deployments/deploy-testnet.md) for detailed instructions.
+
 ```bash
-# Deploy to testnet
-clarinet deploy --testnet
+# Generate deployment plan
+clarinet deployments generate --testnet --medium-cost
+
+# Deploy to testnet (✅ DEPLOYED)
+clarinet deployments apply --testnet
 
 # Deploy to mainnet (when ready)
-clarinet deploy --mainnet
+clarinet deployments apply --mainnet
 ```
+
+**Testnet Contract**: `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board`
 
 ---
 
@@ -196,8 +211,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 ---
 
 ## 🙏 Acknowledgments
-
-Built for **[Talent Protocol Stacks Builder Rewards](https://talentprotocol.com)**
 
 Powered by:
 - [Stacks Blockchain](https://www.stacks.co/)
