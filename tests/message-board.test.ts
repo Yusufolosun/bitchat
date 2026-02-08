@@ -126,4 +126,45 @@ describe("message-board contract", () => {
       );
     });
   });
+
+  describe("pin-message function", () => {
+    it("allows author to pin their own message", () => {
+      // First post a message
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("My message")], user1);
+      
+      // Then pin it (24 hours = 144 blocks)
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(144)],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects pin attempt by non-author", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("User1 message")], user1);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(144)],
+        user2 // Different user trying to pin
+      );
+      
+      expect(result).toBeErr(Cl.uint(102)); // err-unauthorized
+    });
+
+    it("rejects pin for non-existent message", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(999), Cl.uint(144)],
+        user1
+      );
+      
+      expect(result).toBeErr(Cl.uint(101)); // err-not-found
+    });
+  });
 });
