@@ -21,14 +21,34 @@ Every interaction generates a transaction fee, making this a sustainable, fee-ge
 
 ## 🚀 Deployed Contracts
 
-**Version 2 (Current Testnet)**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
-- Status: ✅ All functions tested and working
-- Note: Fees disabled for testing purposes
+### Version 3 (Security Enhanced) — **🎉 LIVE ON TESTNET**
 
-**Version 3 (Security Enhanced)**: 🚧 Pending Testnet Deployment
-- Status: ✅ Code complete, documentation ready
-- Mainnet Readiness: **85-90%**
-- See: [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md)
+**Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
+
+- **Deployment Date**: February 8, 2026
+- **Status**: ✅ **Testing Phase (7-14 days)**
+- **Clarity Version**: 2 (Epoch 2.1+)
+- **Security Features**: ✅ All Active
+- **Mainnet Readiness**: **85-90%**
+
+**🧪 Start Testing**: See [TESTNET_LIVE.md](TESTNET_LIVE.md) for quick testing guide
+
+**📚 Full Documentation**:
+- [Security Audit Report](docs/SECURITY_AUDIT.md)
+- [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md)
+- [Testnet Results](docs/TESTNET_RESULTS.md)
+
+### Version 2 (Previous Testnet)
+
+**Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
+- Status: ⚠️ **Deprecated** (fees disabled, replaced by v3)
+- Purpose: Initial testnet validation
+
+### Mainnet Deployment
+
+**Status**: 🚧 **Pending Testnet Validation**
+- Expected: After 7-14 day testnet testing period
+- See: [Mainnet Checklist](docs/MAINNET_CHECKLIST.md)
 
 ---
 
