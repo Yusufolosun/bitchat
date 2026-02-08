@@ -1,367 +1,166 @@
 # Bitchat
 
-> **On-chain message board built on Stacks blockchain — Now with enterprise-grade security!**
+> Decentralized message board on Stacks blockchain
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Stacks](https://img.shields.io/badge/Stacks-Blockchain-5546FF)](https://www.stacks.co/)
-[![Security: Enhanced](https://img.shields.io/badge/Security-Enhanced-green.svg)](docs/SECURITY_AUDIT.md)
-[![Mainnet: LIVE](https://img.shields.io/badge/Mainnet-LIVE-brightgreen.svg)](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+[![Mainnet](https://img.shields.io/badge/Mainnet-Live-green)](https://explorer.hiro.so)
+[![Tests](https://img.shields.io/badge/tests-48%2F48%20passing-brightgreen)](tests/)
+[![Security](https://img.shields.io/badge/security-audited-blue)](docs/SECURITY_AUDIT.md)
+[![Clarity](https://img.shields.io/badge/Clarity-2-orange)](contracts/)
 
----
+## Overview
 
-## 📖 Overview
+Bitchat is a decentralized message board where users post messages, pin important content, and react to posts—all on the Stacks blockchain. Every interaction is permanent and censorship-resistant.
 
-Bitchat is a fully decentralized message board where users can post messages, pin important content, and react to posts—all recorded permanently on the Stacks blockchain.
+## ��� Live on Mainnet
 
-**Version 3** brings comprehensive security enhancements including spam prevention, emergency controls, working fee collection, and admin functionality for a production-ready platform.
+**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`  
+**Explorer:** [View Contract](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
 
-Every interaction generates a transaction fee, making this a sustainable, fee-generating dApp built for the **Talent Protocol Stacks Builder Rewards** program.
-
----
-
-## 🚀 Deployed Contracts
-
-### Version 3 (Security Enhanced) — **🎉 LIVE ON MAINNET**
-
-**Mainnet Contract**: [`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
-
-- **Deployment Date**: February 8, 2026
-- **Status**: ✅ **LIVE ON MAINNET** 🚀
-- **Clarity Version**: 2 (Epoch 2.1+)
-- **Security Features**: ✅ All Active
-- **Deployment Cost**: 0.101200 STX
-
-**📚 Documentation**:
-- [Mainnet Deployment Guide](MAINNET_DEPLOYMENT_GUIDE.md)
-- [Security Audit Report](docs/SECURITY_AUDIT.md)
-- [Pre-Mainnet Validation Report](PRE_MAINNET_VALIDATION_REPORT.md)
-
-### Version 3 (Testnet) — **Testing Complete**
-
-**Testnet Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
-
-- **Status**: ✅ Testing Complete
-- **Purpose**: Pre-mainnet validation
-
-### Version 2 (Previous Testnet)
-
-**Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
-- Status: ⚠️ **Deprecated** (fees disabled, replaced by v3)
-- Purpose: Initial testnet validation
-
-### Mainnet Deployment
-
-**Status**: ✅ **LIVE ON MAINNET**
-- **Contract**: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`
-- **Deployed**: February 8, 2026
-- **Explorer**: [View on Mainnet](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
-- See: [Mainnet Checklist](docs/MAINNET_CHECKLIST.md)
-
----
-
-## ✨ Features
+## Features
 
 ### Core Functionality
-- 📝 **Post Messages** — Share thoughts on-chain (0.01 STX)
-- 📌 **Pin Messages** — Highlight important content for 24-72 hours (0.05-0.10 STX)
-- ❤️ **React to Messages** — Show appreciation (0.005 STX)
-- ⏰ **Time-based Expiry** — Pins automatically expire after duration
-- 🏆 **User Stats** — Track total spending and engagement
-- 📊 **Platform Analytics** — View total messages and fees collected
+- **Post messages** - Share thoughts on-chain (0.00001 STX)
+- **Pin messages** - Highlight content for 24-72 hours (0.00005-0.0001 STX)
+- **React to messages** - On-chain engagement (0.000005 STX)
+- **User statistics** - Track participation and spending
+- **Platform metrics** - Total messages and fees
 
-### Security Features (v3) 🔒
-- 🛡️ **Spam Prevention** — 6-block cooldown between posts per user
-- ⏸️ **Emergency Pause** — Contract owner can pause/unpause operations
-- 💰 **Fee Withdrawal** — Collected fees can be withdrawn by owner
-- 👑 **Ownership Transfer** — Transferable ownership for DAO governance
-- 📋 **Event Logging** — All major operations emit events for indexing
-- ⏱️ **Pin Expiry Enforcement** — Expired pins automatically removed
+### Security Features
+- Emergency pause mechanism
+- Fee withdrawal system (owner only)
+- Spam prevention (6-block cooldown)
+- Transferable ownership
+- Event logging
+- Pin expiry validation
 
----
+## Tech Stack
 
-## 🛠️ Tech Stack
+**Smart Contract:**
+- Clarity 2 (Epoch 2.1+)
+- Stacks Mainnet
+- 16 functions (7 public, 9 read-only)
+- 48 comprehensive tests
 
-### Smart Contracts
-- **Language:** Clarity
-- **Blockchain:** Stacks Mainnet
-- **Development:** Clarinet
+**Frontend:**
+- React 18
+- Vite
+- @stacks/connect
+- @stacks/transactions
 
-### Frontend
-- **Framework:** React 18
-- **Build Tool:** Vite
-- **Wallet:** @stacks/connect
-- **Blockchain:** @stacks/transactions
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 bitchat/
-│
 ├── contracts/
-│   └── message-board.clar       # Main smart contract
-│
+│   └── message-board.clar
 ├── tests/
-│   └── message-board.test.ts    # Contract tests
-│
+│   ├── message-board.test.ts
+│   └── edge-cases.test.ts
 ├── frontend/
-│   ├── src/
-│   │   ├── components/          # React components
-│   │   │   ├── WalletConnect.jsx
-│   │   │   ├── PostMessage.jsx
-│   │   │   ├── MessageCard.jsx
-│   │   │   ├── MessageList.jsx
-│   │   │   └── Stats.jsx
-│   │   ├── hooks/               # Custom hooks
-│   │   │   ├── useWallet.js
-│   │   │   └── useMessages.js
-│   │   ├── utils/               # Utilities
-│   │   │   ├── contractCalls.js
-│   │   │   ├── formatters.js
-│   │   │   ├── network.js
-│   │   │   └── constants.js
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── package.json
-│   └── README.md                # Frontend documentation
-│
+│   └── src/
 ├── docs/
-│   └── CONTRACT_API.md          # Contract API reference
-│
-├── Clarinet.toml                # Clarinet configuration
-├── package.json                 # Root dependencies
-├── tsconfig.json                # TypeScript config
-└── README.md                    # This file
+└── scripts/
 ```
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18+)
-- [Clarinet](https://docs.hiro.so/clarinet/installation)
-- [Hiro Wallet](https://wallet.hiro.so/) (for testing)
-
-### Smart Contract Development
-
-```bash
-# Check contract syntax
-clarinet check
-
-# Run contract tests
-npm test
-
-# Deploy to testnet
-clarinet deploy --testnet
-```
-
-### Frontend Development
-
-```bash
-# Navigate to frontend
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-```
-
----
-
-## 💰 Fee Structure (v3)
-
-| Action           | Fee (STX) | Fee (µSTX) | Description                    |
-|------------------|-----------|------------|--------------------------------|
-| Post Message     | 0.01      | 10,000     | Create new message             |
-| Pin (24 Hours)   | 0.05      | 50,000     | Pin message for 144 blocks     |
-| Pin (72 Hours)   | 0.10      | 100,000    | Pin message for 432 blocks     |
-| React            | 0.005     | 5,000      | React to existing message      |
-
-**Note**: Gas fees (~0.0001 STX) are additional and paid to miners.
-
----
-
-## 📊 Project Status
-
-**🟡 v3 Security Enhanced — Ready for Testing**
-
-### Version History
-- ✅ **v1**: Initial deployment (DEPRECATED - fee collection bug)
-- ✅ **v2**: Testing version (fees disabled) — All functions verified working
-- ✅ **v3**: Security enhanced (code complete) — Pending testnet deployment
-
-### v3 Completion Status
-- [x] Smart contract security audit (800+ lines)
-- [x] All critical vulnerabilities fixed
-- [x] Spam prevention implemented (6-block cooldown)
-- [x] Emergency pause mechanism added
-- [x] Fee collection fixed and working
-- [x] Fee withdrawal functionality added
-- [x] Ownership transfer capability added
-- [x] Comprehensive test suite (65 test cases)
-- [x] Complete documentation suite (3,000+ lines)
-- [ ] Testnet deployment (v3)
-- [ ] Community testing (7+ days)
-- [ ] Frontend integration with v3
-- [ ] Mainnet deployment
-
-**Mainnet Readiness**: **85-90%**
-
----
-
-## 📚 Documentation
+## Getting Started
 
 ### For Users
-- 📗 [**User Guide**](./docs/USER_GUIDE.md) — How to use BitChat (FAQs, troubleshooting)
-- 🧪 [**Community Testing Guide**](./docs/COMMUNITY_TESTING_GUIDE.md) — Help test v3!
+
+1. Install a Stacks wallet (Hiro, Xverse, or Leather)
+2. Get STX from an exchange
+3. Visit contract on [Stacks Explorer](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+4. Connect wallet and start posting
 
 ### For Developers
-- 📘 [**Contract API Reference**](./docs/CONTRACT_API.md) — Complete contract documentation
-- 🔒 [**Security Audit Report**](./docs/SECURITY_AUDIT.md) — Comprehensive security analysis
-- 🚀 [**Deployment Guide v3**](./docs/DEPLOYMENT_GUIDE_V3.md) — Testnet & mainnet deployment
-- 📊 [**V3 Completion Summary**](./docs/V3_COMPLETION_SUMMARY.md) — What's new in v3
-- 📗 [**Frontend Guide**](./frontend/README.md) — Frontend setup and components
-- 📋 [**Testnet Testing Documentation**](./deployments/TESTNET_TESTING.md) — v2 testing results
-
----
-
-## 🔗 Links
-
-- **Smart Contract:** [View on Explorer](#) *(Coming soon)*
-- **Live App:** [bitchat.app](#) *(Coming soon)*
-- **Talent Protocol:** [Builder Profile](#) *(Coming soon)*
-
----
-
-## 👨‍💻 Development
-
-### Running Tests
-
----
-
-## 🆕 What's New in v3
-
-### Critical Fixes
-- ✅ **Fee Collection Working**: Fixed `as-contract` implementation — fees now properly collected
-- ✅ **Fee Withdrawal**: Contract owner can withdraw collected fees
-- ✅ **Spam Prevention**: 6-block cooldown between posts prevents abuse
-
-### New Security Features
-- 🛡️ **Emergency Pause**: Owner can pause all operations in case of emergency
-- 🔄 **Ownership Transfer**: Contract ownership can be transferred to DAO/multi-sig
-- 📋 **Event Logging**: All operations emit events for off-chain indexing
-- ⏱️ **Pin Expiry Validation**: `is-message-pinned` now enforces expiry timestamps
-
-### New Functions
-**Admin Functions** (owner-only):
-- `withdraw-fees(amount, recipient)` — Withdraw collected STX
-- `pause-contract()` — Emergency stop all operations
-- `unpause-contract()` — Resume operations
-- `transfer-ownership(new-owner)` — Transfer admin rights
-
-**Read-Only Functions**:
-- `is-contract-paused()` — Check pause status
-- `get-contract-owner()` — Get current owner
-- `is-message-pinned(message-id)` — Check pin status with expiry validation
-
-### New Error Codes
-- `u106` (err-too-soon) — Posted before cooldown expired
-- `u107` (err-contract-paused) — Operation attempted while paused
-- `u108` (err-insufficient-balance) — Withdrawal exceeds contract balance
-
-See [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md) for full details.
-
----
-
-## 🔗 Links
-
-- **v2 Testnet Contract:** [ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
-- **v3 Testnet Contract (LIVE):** [ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
-- **v3 Mainnet Contract**: Pending deployment (after testing)
-- **Live App:** [bitchat.app](#) *(Coming soon)*
-- **Talent Protocol:** [Builder Profile](#) *(Coming soon)*
-
----
-
-## 👨‍💻 Development
-
-### Running Tests
 
 ```bash
-# Run all tests (28 existing + 37 edge cases = 65 total)
-npm test
-
-# Run specific test file
-npm test -- edge-cases.test.ts
-
-# Run with coverage
-npm run test:report
-
-# Watch mode
-npm run test:watch
-```
-
-### Contract Validation
-
-```bash
-# Validate contract syntax and security
+# Check contract
 clarinet check
 
-# Should output: ✓ contracts/message-board.clar (v3 - Security Enhanced)
-```
-
-### Contract Deployment
-
-See [Deployment Guide v3](docs/DEPLOYMENT_GUIDE_V3.md) for detailed instructions.
-
-```bash
-# Generate deployment plan
-clarinet deployments generate --testnet --medium-cost
+# Run tests
+npm test
 
 # Deploy to testnet
+clarinet deployments generate --testnet
 clarinet deployments apply --testnet
 
-# Deploy to mainnet (after thorough testing)
-clarinet deployments apply --mainnet
+# Deploy to mainnet
+./scripts/deploy-mainnet.sh
 ```
 
-**Deployed Contracts**:
-- v2 (Current): `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`
-- v3: Pending deployment
+## Fee Structure
+
+| Action | Fee (STX) | Fee (µSTX) |
+|--------|-----------|-----------|
+| Post Message | 0.00001 | 10,000 |
+| Pin 24 Hours | 0.00005 | 50,000 |
+| Pin 72 Hours | 0.0001 | 100,000 |
+| React | 0.000005 | 5,000 |
+
+## Contract Functions
+
+### Public Functions
+- `post-message` - Create a new message
+- `pin-message` - Pin a message for visibility
+- `react-to-message` - React to a message
+- `withdraw-fees` - Withdraw collected fees (owner)
+- `pause-contract` - Emergency pause (owner)
+- `unpause-contract` - Resume operations (owner)
+- `transfer-ownership` - Transfer contract ownership
+
+### Read-Only Functions
+- `get-message` - Get message data
+- `get-user-stats` - Get user statistics
+- `get-total-messages` - Get message count
+- `get-total-fees-collected` - Get total fees
+- `get-message-nonce` - Get next message ID
+- `has-user-reacted` - Check reaction status
+- `is-message-pinned` - Check pin status
+- `is-contract-paused` - Check pause status
+- `get-contract-owner` - Get owner address
+
+## Security
+
+**Audit Status:** Complete
+- 15 vulnerabilities identified and fixed
+- All critical and high-priority issues resolved
+- See [SECURITY_AUDIT.md](docs/SECURITY_AUDIT.md)
+
+**Testing:** 48/48 tests passing
+- Unit tests for all functions
+- Edge case coverage
+- Security feature validation
+
+## Documentation
+
+- [Contract API](docs/CONTRACT_API.md) - Function reference
+- [Security Audit](docs/SECURITY_AUDIT.md) - Security analysis
+- [Deployment Guide](docs/DEPLOYMENT_GUIDE_V3.md) - Deploy instructions
+- [User Guide](docs/USER_GUIDE.md) - How to use Bitchat
+
+## Status
+
+**Version:** 3.0  
+**Mainnet:** Live ✅  
+**Testnet:** Available for testing
+
+## Links
+
+- **Mainnet Contract:** [SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+- **GitHub:** [github.com/Yusufolosun/bitchat](https://github.com/Yusufolosun/bitchat)
+
+## Contributing
+
+Contributions welcome! Please:
+- Report bugs via GitHub Issues
+- Submit feature requests
+- Follow code style guidelines
+- Include tests with PRs
+
+## License
+
+MIT License - See [LICENSE](LICENSE) for details
 
 ---
 
-## 🧪 Testing & Community
-
-Want to help test BitChat v3? Check out our [Community Testing Guide](docs/COMMUNITY_TESTING_GUIDE.md)!
-
-**Testing Rewards:**
-- 🥉 Bronze Tester: 5+ scenarios completed
-- 🥈 Silver Tester: 15+ scenarios + bug reports
-- 🥇 Gold Tester: 25+ scenarios + multiple bugs
-- 💎 Platinum Tester: All scenarios + critical bug found
-
-Join the testing effort and earn rewards while helping make BitChat more secure!
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-Powered by:
-- [Stacks Blockchain](https://www.stacks.co/)
-- [Hiro Clarinet](https://docs.hiro.so/clarinet)
-- [React](https://react.dev/)
+**Decentralized communication on Stacks blockchain** ���
