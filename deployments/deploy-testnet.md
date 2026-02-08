@@ -49,8 +49,16 @@ npm test
 ### 3. Generate Deployment Plan
 
 ```bash
-clarinet deployments generate --testnet
+clarinet deployments generate --testnet --medium-cost
 ```
+
+**Cost Strategy Options:**
+- `--low-cost` - Minimize transaction fees (slower confirmation)
+- `--medium-cost` - Balanced fees and speed (recommended)
+- `--high-cost` - Higher fees for faster confirmation
+- `--manual-cost` - Specify custom fee rate
+
+You'll be prompted to enter the decryption password for your encrypted mnemonic.
 
 This creates `deployments/default.testnet-plan.yaml` with deployment configuration.
 
@@ -60,10 +68,14 @@ This creates `deployments/default.testnet-plan.yaml` with deployment configurati
 clarinet deployments apply --testnet
 ```
 
+You'll be prompted to enter the decryption password again.
+
 **Expected Output:**
 - Contract deployment transaction broadcast
 - Transaction ID displayed
 - Contract principal address shown
+
+**Note:** The apply command uses the cost strategy from the generated plan. If you want to regenerate with a different cost strategy, run step 3 again with a different flag.
 
 ### 5. Note Contract Address
 
@@ -103,6 +115,15 @@ export const NETWORK = 'testnet'
    ```
 
 ## Troubleshooting
+
+### Cost Strategy Not Specified
+```
+error: cost strategy not specified (--low-cost, --medium-cost, --high-cost, --manual-cost)
+```
+**Solution:** Add a cost strategy flag to the generate command. Use `--medium-cost` for balanced fees:
+```bash
+clarinet deployments generate --testnet --medium-cost
+```
 
 ### Invalid Mnemonic Error
 ```
