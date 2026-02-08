@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stacks](https://img.shields.io/badge/Stacks-Blockchain-5546FF)](https://www.stacks.co/)
 [![Security: Enhanced](https://img.shields.io/badge/Security-Enhanced-green.svg)](docs/SECURITY_AUDIT.md)
-[![Mainnet Ready: 85%](https://img.shields.io/badge/Mainnet_Ready-85%25-yellow.svg)](docs/V3_COMPLETION_SUMMARY.md)
+[![Mainnet: LIVE](https://img.shields.io/badge/Mainnet-LIVE-brightgreen.svg)](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
 
 ---
 
@@ -21,22 +21,27 @@ Every interaction generates a transaction fee, making this a sustainable, fee-ge
 
 ## 🚀 Deployed Contracts
 
-### Version 3 (Security Enhanced) — **🎉 LIVE ON TESTNET**
+### Version 3 (Security Enhanced) — **🎉 LIVE ON MAINNET**
 
-**Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
+**Mainnet Contract**: [`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
 
 - **Deployment Date**: February 8, 2026
-- **Status**: ✅ **Testing Phase (7-14 days)**
+- **Status**: ✅ **LIVE ON MAINNET** 🚀
 - **Clarity Version**: 2 (Epoch 2.1+)
 - **Security Features**: ✅ All Active
-- **Mainnet Readiness**: **85-90%**
+- **Deployment Cost**: 0.101200 STX
 
-**🧪 Start Testing**: See [TESTNET_LIVE.md](TESTNET_LIVE.md) for quick testing guide
-
-**📚 Full Documentation**:
+**📚 Documentation**:
+- [Mainnet Deployment Guide](MAINNET_DEPLOYMENT_GUIDE.md)
 - [Security Audit Report](docs/SECURITY_AUDIT.md)
-- [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md)
-- [Testnet Results](docs/TESTNET_RESULTS.md)
+- [Pre-Mainnet Validation Report](PRE_MAINNET_VALIDATION_REPORT.md)
+
+### Version 3 (Testnet) — **Testing Complete**
+
+**Testnet Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
+
+- **Status**: ✅ Testing Complete
+- **Purpose**: Pre-mainnet validation
 
 ### Version 2 (Previous Testnet)
 
@@ -46,8 +51,10 @@ Every interaction generates a transaction fee, making this a sustainable, fee-ge
 
 ### Mainnet Deployment
 
-**Status**: 🚧 **Pending Testnet Validation**
-- Expected: After 7-14 day testnet testing period
+**Status**: ✅ **LIVE ON MAINNET**
+- **Contract**: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`
+- **Deployed**: February 8, 2026
+- **Explorer**: [View on Mainnet](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
 - See: [Mainnet Checklist](docs/MAINNET_CHECKLIST.md)
 
 ---
