@@ -56,6 +56,8 @@ describe("message-board contract", () => {
 
     it("increments message nonce correctly", () => {
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
+      // Advance blocks to bypass spam prevention
+      simnet.mineEmptyBlocks(6);
       const { result } = simnet.callPublicFn(
         "message-board-v3",
         "post-message",
@@ -115,6 +117,8 @@ describe("message-board contract", () => {
 
     it("updates user stats on subsequent posts", () => {
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
+      // Advance blocks to bypass spam prevention
+      simnet.mineEmptyBlocks(6);
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Second")], user1);
       
       const { result } = simnet.callReadOnlyFn(
