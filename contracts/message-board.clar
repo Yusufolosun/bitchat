@@ -1,14 +1,17 @@
 ;; message-board.clar
 ;; Core contract for Bitchat on-chain message board
+;; Security Enhanced Version - v3
 
-;; Constants
-(define-constant contract-owner tx-sender)
+;; Constants - Error Codes
 (define-constant err-owner-only (err u100))
 (define-constant err-not-found (err u101))
 (define-constant err-unauthorized (err u102))
 (define-constant err-invalid-input (err u103))
 (define-constant err-message-expired (err u104))
 (define-constant err-already-reacted (err u105))
+(define-constant err-too-soon (err u106))
+(define-constant err-contract-paused (err u107))
+(define-constant err-insufficient-balance (err u108))
 
 ;; Configuration
 (define-constant min-message-length u1)
@@ -16,6 +19,7 @@
 (define-constant default-expiry-blocks u144) ;; ~24 hours
 (define-constant pin-24hr-blocks u144)
 (define-constant pin-72hr-blocks u432)
+(define-constant min-post-gap u6) ;; ~1 hour between posts (spam prevention)
 
 ;; Fee structure (in microSTX)
 (define-constant fee-post-message u10000)        ;; 0.00001 STX (~$0.0003)
@@ -27,6 +31,8 @@
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
 (define-data-var total-fees-collected uint u0)
+(define-data-var contract-owner principal tx-sender)
+(define-data-var contract-paused bool false)
 
 ;; Data maps
 (define-map messages
@@ -66,7 +72,7 @@
 )
 
 (define-private (calculate-expiry-block (duration uint))
-  (+ stacks-block-height duration)
+  (+ block-height duration)
 )
 
 (define-private (get-pin-fee (duration uint))
@@ -91,13 +97,22 @@
         { messages-posted: u0, total-spent: u0, last-post-block: u0 }
         (map-get? user-stats { user: sender })
       ))
+      (last-post (get last-post-block current-stats))
     )
+    ;; Security: Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+    
     ;; Validate message length
     (asserts! (>= content-length min-message-length) err-invalid-input)
     (asserts! (<= content-length max-message-length) err-invalid-input)
     
-    ;; TODO: Re-enable fee collection after testing
-    ;; (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+    ;; Spam prevention: Enforce minimum gap between posts
+    (asserts! (or (is-eq last-post u0) 
+                  (>= (- block-height last-post) min-post-gap)) 
+      err-too-soon)
+    
+    ;; Collect posting fee - SECURITY FIX: Proper fee collection
+    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
@@ -109,7 +124,7 @@
         author: sender,
         content: content,
         timestamp: burn-block-height,
-        block-height: stacks-block-height,
+        block-height: block-height,
         expires-at: expiry-block,
         pinned: false,
         pin-expires-at: u0,
@@ -126,9 +141,17 @@
       {
         messages-posted: (+ (get messages-posted current-stats) u1),
         total-spent: (+ (get total-spent current-stats) fee-post-message),
-        last-post-block: stacks-block-height
+        last-post-block: block-height
       }
     )
+    
+    ;; Event logging
+    (print {
+      event: "message-posted",
+      message-id: message-id,
+      author: sender,
+      block: block-height
+    })
     
     (ok message-id)
   )
@@ -159,6 +182,24 @@
   (default-to false (get reacted (map-get? reactions { message-id: message-id, user: user })))
 )
 
+(define-read-only (is-contract-paused)
+  (ok (var-get contract-paused))
+)
+
+(define-read-only (get-contract-owner)
+  (ok (var-get contract-owner))
+)
+
+(define-read-only (is-message-pinned (message-id uint))
+  (match (map-get? messages { message-id: message-id })
+    message (and 
+      (get pinned message)
+      (> (get pin-expires-at message) block-height)
+    )
+    false
+  )
+)
+
 (define-public (pin-message (message-id uint) (duration uint))
   (let
     (
@@ -172,14 +213,17 @@
         (map-get? user-stats { user: sender })
       ))
     )
+    ;; Security: Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+    
     ;; Validate message exists and sender is author
     (asserts! (is-eq sender message-author) err-unauthorized)
     
     ;; Validate duration is supported
     (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
     
-    ;; TODO: Re-enable fee collection after testing
-    ;; (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
+    ;; Collect pin fee - SECURITY FIX: Proper fee collection
+    (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
@@ -199,9 +243,18 @@
       {
         messages-posted: (get messages-posted current-stats),
         total-spent: (+ (get total-spent current-stats) pin-fee),
-        last-post-block: stacks-block-height
+        last-post-block: block-height
       }
     )
+    
+    ;; Event logging
+    (print {
+      event: "message-pinned",
+      message-id: message-id,
+      author: sender,
+      duration: duration,
+      expires: pin-expiry
+    })
     
     (ok true)
   )
@@ -219,17 +272,20 @@
         (map-get? user-stats { user: sender })
       ))
     )
+    ;; Security: Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+    
     ;; Validate message exists
     ;; Prevent duplicate reactions
     (asserts! (not already-reacted) err-already-reacted)
     
-    ;; TODO: Re-enable fee collection after testing
-    ;; (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+    ;; Collect reaction fee - SECURITY FIX: Proper fee collection
+    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
     
-    ;; Store reaction
+    ;; Store reaction  
     (map-set reactions
       { message-id: message-id, user: sender }
       { reacted: true }
@@ -249,10 +305,54 @@
       {
         messages-posted: (get messages-posted current-stats),
         total-spent: (+ (get total-spent current-stats) fee-reaction),
-        last-post-block: stacks-block-height
+        last-post-block: block-height
       }
     )
     
+    ;; Event logging
+    (print {
+      event: "reaction-added",
+      message-id: message-id,
+      user: sender
+    })
+    
+    (ok true)
+  )
+)
+
+;; Administrative functions
+
+(define-public (withdraw-fees (amount uint) (recipient principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (<= amount (stx-get-balance (as-contract tx-sender))) err-insufficient-balance)
+    (as-contract (stx-transfer? amount tx-sender recipient))
+  )
+)
+
+(define-public (pause-contract)
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (var-set contract-paused true)
+    (print { event: "contract-paused", by: tx-sender })
+    (ok true)
+  )
+)
+
+(define-public (unpause-contract)
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (var-set contract-paused false)
+    (print { event: "contract-unpaused", by: tx-sender })
+    (ok true)
+  )
+)
+
+(define-public (transfer-ownership (new-owner principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (var-set contract-owner new-owner)
+    (print { event: "ownership-transferred", from: tx-sender, to: new-owner })
     (ok true)
   )
 )
