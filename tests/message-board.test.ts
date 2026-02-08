@@ -5,6 +5,8 @@ const deployer = accounts.get("deployer")!;
 const user1 = accounts.get("wallet_1")!;
 const user2 = accounts.get("wallet_2")!;
 
+const FEE_POST_MESSAGE = 10000;
+
 describe("message-board contract", () => {
   it("ensures simnet is well initialized", () => {
     expect(simnet.blockHeight).toBeDefined();
@@ -54,7 +56,35 @@ describe("message-board contract", () => {
         user1
       );
       
-      expect(result).toBeOk(Cl.uint(1)); // Second message gets ID 1
+      expect(result).toBeOk(Cl.uint(1));
+    });
+
+    it("transfers posting fee to contract", () => {
+      const contractId = `${deployer}.message-board`;
+      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      
+      simnet.callPublicFn(
+        "message-board",
+        "post-message",
+        [Cl.stringUtf8("Test message")],
+        user1
+      );
+      
+      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      expect(finalBalance - initialBalance).toBe(FEE_POST_MESSAGE);
+    });
+
+    it("updates total fees collected", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-total-fees-collected",
+        [],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.uint(FEE_POST_MESSAGE));
     });
   });
 });
