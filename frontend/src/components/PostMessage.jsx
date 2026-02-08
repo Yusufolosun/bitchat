@@ -1,15 +1,32 @@
 import React, { useState } from 'react'
 import { useWallet } from '../hooks/useWallet'
+import { postMessage } from '../utils/contractCalls'
 import { MAX_MESSAGE_LENGTH } from '../utils/constants'
 import './PostMessage.css'
 
-function PostMessage() {
+function PostMessage({ onMessagePosted }) {
   const [content, setContent] = useState('')
-  const { isAuthenticated } = useWallet()
+  const [isPosting, setIsPosting] = useState(false)
+  const { isAuthenticated, userSession } = useWallet()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Will add contract call
+    
+    if (!content.trim()) return
+    
+    setIsPosting(true)
+    
+    try {
+      await postMessage(content, userSession)
+      setContent('')
+      if (onMessagePosted) {
+        onMessagePosted()
+      }
+    } catch (error) {
+      console.error('Failed to post message:', error)
+    } finally {
+      setIsPosting(false)
+    }
   }
 
   if (!isAuthenticated) {
@@ -28,13 +45,18 @@ function PostMessage() {
         placeholder="What's on your mind? (max 280 characters)"
         maxLength={MAX_MESSAGE_LENGTH}
         rows={4}
+        disabled={isPosting}
       />
       <div className="post-actions">
         <span className="char-count">
           {content.length}/{MAX_MESSAGE_LENGTH}
         </span>
-        <button type="submit" className="btn btn-post" disabled={!content.trim()}>
-          Post Message
+        <button 
+          type="submit" 
+          className="btn btn-post" 
+          disabled={!content.trim() || isPosting}
+        >
+          {isPosting ? 'Posting...' : 'Post Message'}
         </button>
       </div>
     </form>
