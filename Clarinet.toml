@@ -9,9 +9,14 @@ cache_dir = "./.cache"
 # path = "contracts/message-board.clar"
 # epoch = "latest"
 
-[contracts.message-board-v2]
+# [contracts.message-board-v2]
+# path = "contracts/message-board.clar"
+# epoch = "latest"
+
+[contracts.message-board-v3]
 path = "contracts/message-board.clar"
-epoch = "latest"
+clarity_version = 2
+epoch = 2.1
 
 # [contracts.counter]
 # path = "contracts/counter.clar"

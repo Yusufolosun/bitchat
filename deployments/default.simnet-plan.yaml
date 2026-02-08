@@ -64,8 +64,8 @@ plan:
     - id: 0
       transactions:
         - emulated-contract-publish:
-            contract-name: message-board
+            contract-name: message-board-v3
             emulated-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            path: contracts/message-board.clar
-            clarity-version: 4
-      epoch: "3.3"
+            path: "contracts\\message-board.clar"
+            clarity-version: 2
+      epoch: "2.1"
