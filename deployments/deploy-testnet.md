@@ -2,53 +2,81 @@
 
 ## Prerequisites
 
-1. Install Stacks CLI:
-```bash
-npm install -g @stacks/cli
-```
+1. **Get testnet STX from faucet:**
+   - Visit: https://explorer.hiro.so/sandbox/faucet?chain=testnet
+   - Create or use existing Stacks wallet
+   - Request testnet STX (you'll need this for deployment fees)
 
-2. Create testnet wallet:
-```bash
-stx make_keychain -t
-```
-
-3. Get testnet STX from faucet:
-- Visit: https://explorer.hiro.so/sandbox/faucet?chain=testnet
-- Enter your testnet address
-- Request STX
+2. **Save your mnemonic (seed phrase)**
+   - You'll need your 12/24-word recovery phrase
+   - Keep it secure and never commit it to git
 
 ## Deployment Steps
 
-### 1. Verify Contract
+### 1. Configure Testnet Settings
+
+**Option A: Use Encrypted Mnemonic (Recommended)**
+
+```bash
+# Encrypt your mnemonic with a password
+clarinet deployments encrypt
+
+# Follow prompts:
+# - Enter your 12/24-word seed phrase
+# - Enter a password to encrypt it
+# - Copy the encrypted output
+```
+
+Then update `settings/Testnet.toml` with the encrypted mnemonic - look for the section with instructions for encrypted mnemonics.
+
+**Option B: Use Plain Mnemonic (Not Recommended for Production)**
+
+Update `settings/Testnet.toml`:
+```toml
+[accounts.deployer]
+mnemonic = "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12"
+```
+
+⚠️ **Important:** Never commit your actual mnemonic to git! The file is already in `.gitignore` by default.
+
+### 2. Verify Contract
 
 ```bash
 clarinet check
 npm test
 ```
 
-### 2. Deploy Contract
+### 3. Generate Deployment Plan
 
 ```bash
-clarinet deploy --testnet
+clarinet deployments generate --testnet
 ```
 
-Or manually:
+This creates `deployments/default.testnet-plan.yaml` with deployment configuration.
+
+### 4. Deploy to Testnet
 
 ```bash
-stx deploy_contract contracts/message-board.clar message-board \
-  -t \
-  --private-key <YOUR_PRIVATE_KEY>
+clarinet deployments apply --testnet
 ```
 
-### 3. Note Contract Address
+**Expected Output:**
+- Contract deployment transaction broadcast
+- Transaction ID displayed
+- Contract principal address shown
 
-After deployment, save the contract principal:
+### 5. Note Contract Address
+
+After successful deployment, save the contract principal:
+```
+Format: <deployer-address>.message-board
+Example: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.message-board
 ```
 Format: <deployer-address>.message-board
 Example: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.message-board
 ```
 
-### 4. Update Frontend Constants
+### 6. Update Frontend Constants
 
 Update `frontend/src/utils/constants.js`:
 
@@ -60,22 +88,66 @@ export const NETWORK = 'testnet'
 
 ## Verification
 
-1. Check deployment on explorer:
+1. **Check deployment on explorer:**
    - https://explorer.hiro.so/?chain=testnet
+   - Search for your contract address or transaction ID
 
-2. Test contract functions:
+2. **View deployment plan:**
+   ```bash
+   cat deployments/default.testnet-plan.yaml
+   ```
+
+3. **Check deployment status:**
+   ```bash
+   clarinet deployments check --testnet
+   ```
+
+## Troubleshooting
+
+### Invalid Mnemonic Error
+```
+error: mnemonic is invalid: mnemonic has an invalid word count
+```
+**Solution:** Ensure your mnemonic in `settings/Testnet.toml` is a valid 12 or 24-word phrase.
+
+### Insufficient Balance
+```
+error: insufficient balance for deployment
+```
+**Solution:** Get testnet STX from the faucet (step 1).
+
+### Contract Already Exists
+If contract already exists at this address, you'll need to either:
+- Use a different deployer address
+- Deploy with a different contract name
+
+## Post-Deployment Checklist
+
+- [ ] Contract address recorded
+- [ ] Frontend constants updated
+- [ ] Contract verified on explorer
+- [ ] Initial test transaction successful
+- [ ] Update README.md with contract address
+- [ ] Update docs/CONTRACT_API.md with deployed address
+
+## Alternative: Manual Deployment with Stacks CLI
+
+If you prefer using Stacks CLI directly:
+
 ```bash
-stx call_contract \
-  <CONTRACT_ADDRESS> \
-  message-board \
-  post-message \
+# Install Stacks CLI
+npm install -g @stacks/cli
+
+# Deploy contract
+stx deploy_contract contracts/message-board.clar message-board \
   -t \
-  --private-key <YOUR_KEY>
+  --mnemonic "your twelve word seed phrase here"
 ```
 
-## Post-Deployment
+## Next Steps
 
-1. Update README with contract address
-2. Update docs/CONTRACT_API.md with deployed address
-3. Test frontend integration
-4. Monitor initial transactions
+1. Test contract functions on testnet
+2. Update frontend to use deployed contract
+3. Deploy frontend to hosting service (Vercel/Netlify)
+4. Monitor initial user transactions
+5. Prepare for mainnet deployment
