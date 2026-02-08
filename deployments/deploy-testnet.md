@@ -144,12 +144,34 @@ If contract already exists at this address, you'll need to either:
 
 ## Post-Deployment Checklist
 
-- [ ] Contract address recorded
-- [ ] Frontend constants updated
-- [ ] Contract verified on explorer
+- [x] Contract address recorded
+- [x] Frontend constants updated
+- [x] Contract verified on explorer
 - [ ] Initial test transaction successful
-- [ ] Update README.md with contract address
-- [ ] Update docs/CONTRACT_API.md with deployed address
+- [x] Update README.md with contract address
+- [x] Update docs/CONTRACT_API.md with deployed address
+
+## Testing Your Deployed Contract
+
+Now that your contract is deployed, test all functions to ensure they work correctly:
+
+**Quick Start Testing**:
+- 📋 [Quick Test Examples](quick-test-examples.md) - Copy/paste CLI commands
+- 📖 [Complete Testing Guide](testnet-testing-guide.md) - Detailed examples with expected outputs
+
+**Testing Workflow**:
+1. Get testnet STX from [Stacks Faucet](https://explorer.hiro.so/sandbox/faucet?chain=testnet)
+2. Install Stacks CLI: `npm install -g @stacks/cli`
+3. Run test commands from the quick examples guide
+4. Verify transactions on [Explorer](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board?chain=testnet)
+
+**Test Functions**:
+- ✅ `post-message` - Post a test message
+- ✅ `react-to-message` - Add reactions
+- ✅ `pin-message` - Pin your message
+- ✅ `get-message` - Read message data
+- ✅ `get-user-stats` - Check your stats
+- ✅ `get-total-messages` - Get message count
 
 ## Alternative: Manual Deployment with Stacks CLI
 
