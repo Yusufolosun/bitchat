@@ -86,5 +86,44 @@ describe("message-board contract", () => {
       
       expect(result).toBeOk(Cl.uint(FEE_POST_MESSAGE));
     });
+
+    it("creates user stats on first post", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("First post")], user1);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-user-stats",
+        [Cl.principal(user1)],
+        user1
+      );
+      
+      expect(result).toBeSome(
+        Cl.tuple({
+          "messages-posted": Cl.uint(1),
+          "total-spent": Cl.uint(FEE_POST_MESSAGE),
+          "last-post-block": Cl.uint(simnet.blockHeight)
+        })
+      );
+    });
+
+    it("updates user stats on subsequent posts", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("First")], user1);
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Second")], user1);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-user-stats",
+        [Cl.principal(user1)],
+        user1
+      );
+      
+      expect(result).toBeSome(
+        Cl.tuple({
+          "messages-posted": Cl.uint(2),
+          "total-spent": Cl.uint(FEE_POST_MESSAGE * 2),
+          "last-post-block": Cl.uint(simnet.blockHeight)
+        })
+      );
+    });
   });
 });
