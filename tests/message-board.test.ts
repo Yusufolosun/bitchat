@@ -1,5 +1,7 @@
+/// <reference path="./clarinet.d.ts" />
+
 import { describe, expect, it } from "vitest";
-import { Cl, cvToValue, type SomeCV } from "@stacks/transactions";
+import { Cl } from "@stacks/transactions";
 
 const accounts = simnet.getAccounts();
 const deployer = accounts.get("deployer")!;
