@@ -1,104 +1,205 @@
 # Bitchat
 
-> On-chain message board built on Stacks blockchain
+> **On-chain message board built on Stacks blockchain**
 
-## Overview
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Stacks](https://img.shields.io/badge/Stacks-Blockchain-5546FF)](https://www.stacks.co/)
 
-Bitchat is a decentralized message board where users post messages, pin important content, and react to posts—all on the Stacks blockchain.
+---
 
-## Features
+## 📖 Overview
 
-- Post messages to global board (0.00001 STX)
-- Pin messages for visibility (0.00005-0.0001 STX)
-- React to messages (0.000005 STX)
-- Automatic message expiry (24-72 hours)
-- User leaderboard tracking
-- Platform statistics (messages, fees)
+Bitchat is a fully decentralized message board where users can post messages, pin important content, and react to posts—all recorded permanently on the Stacks blockchain.
 
-## Tech Stack
+Every interaction generates a transaction fee, making this a fee-generating dApp built for the **Talent Protocol Stacks Builder Rewards** program.
 
-**Smart Contracts:**
-- Clarity
-- Stacks Mainnet
+---
 
-**Frontend:**
-- React 18
-- Vite
-- @stacks/connect
-- @stacks/transactions
+## ✨ Features
 
-## Project Structure
+- 📝 **Post Messages** — Share thoughts on-chain (0.00001 STX)
+- 📌 **Pin Messages** — Highlight important content for 24-72 hours (0.00005-0.0001 STX)
+- ❤️ **React to Messages** — Show appreciation (0.000005 STX)
+- ⏰ **Time-based Expiry** — Pins automatically expire after duration
+- 🏆 **User Stats** — Track total spending and engagement
+- 📊 **Platform Analytics** — View total messages and fees collected
 
-\`\`\`
-bitchat/
-├── contracts/          # Clarity smart contracts
-│   └── message-board.clar
-├── tests/             # Contract tests
-├── frontend/          # React frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   └── utils/
-│   └── package.json
-├── docs/              # Documentation
-│   └── CONTRACT_API.md
-├── Clarinet.toml      # Clarinet config
-└── README.md
-\`\`\`
+---
 
-## Getting Started
+## 🛠️ Tech Stack
 
 ### Smart Contracts
+- **Language:** Clarity
+- **Blockchain:** Stacks Mainnet
+- **Development:** Clarinet
 
-\`\`\`bash
+### Frontend
+- **Framework:** React 18
+- **Build Tool:** Vite
+- **Wallet:** @stacks/connect
+- **Blockchain:** @stacks/transactions
+
+---
+
+## 📁 Project Structure
+
+```
+bitchat/
+│
+├── contracts/
+│   └── message-board.clar       # Main smart contract
+│
+├── tests/
+│   └── message-board.test.ts    # Contract tests
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # React components
+│   │   │   ├── WalletConnect.jsx
+│   │   │   ├── PostMessage.jsx
+│   │   │   ├── MessageCard.jsx
+│   │   │   ├── MessageList.jsx
+│   │   │   └── Stats.jsx
+│   │   ├── hooks/               # Custom hooks
+│   │   │   ├── useWallet.js
+│   │   │   └── useMessages.js
+│   │   ├── utils/               # Utilities
+│   │   │   ├── contractCalls.js
+│   │   │   ├── formatters.js
+│   │   │   ├── network.js
+│   │   │   └── constants.js
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── package.json
+│   └── README.md                # Frontend documentation
+│
+├── docs/
+│   └── CONTRACT_API.md          # Contract API reference
+│
+├── Clarinet.toml                # Clarinet configuration
+├── package.json                 # Root dependencies
+├── tsconfig.json                # TypeScript config
+└── README.md                    # This file
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+)
+- [Clarinet](https://docs.hiro.so/clarinet/installation)
+- [Hiro Wallet](https://wallet.hiro.so/) (for testing)
+
+### Smart Contract Development
+
+```bash
 # Check contract syntax
 clarinet check
 
-# Run tests
+# Run contract tests
 npm test
 
 # Deploy to testnet
 clarinet deploy --testnet
-\`\`\`
+```
 
-### Frontend
+### Frontend Development
 
-\`\`\`bash
+```bash
+# Navigate to frontend
 cd frontend
+
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
-\`\`\`
 
-## Fee Structure
+# Build for production
+npm run build
+```
 
-| Action | Fee (STX) | Fee (µSTX) |
-|--------|-----------|-----------|
-| Post Message | 0.00001 | 10,000 |
-| Pin 24 Hours | 0.00005 | 50,000 |
-| Pin 72 Hours | 0.0001 | 100,000 |
-| React | 0.000005 | 5,000 |
+---
 
-## Status
+## 💰 Fee Structure
 
-**Production Ready**
+| Action           | Fee (STX) | Fee (µSTX) | Description                    |
+|------------------|-----------|------------|--------------------------------|
+| Post Message     | 0.00001   | 10,000     | Create new message             |
+| Pin (24 Hours)   | 0.00005   | 50,000     | Pin message for 1 day          |
+| Pin (72 Hours)   | 0.0001    | 100,000    | Pin message for 3 days         |
+| React            | 0.000005  | 5,000      | React to existing message      |
 
-- [x] Smart contracts deployed
-- [x] Frontend deployed  
-- [x] Mainnet live
-- [ ] Testnet testing
+---
+
+## 📊 Project Status
+
+**🟢 Active Development**
+
+- [x] Smart contracts developed and tested
+- [x] Frontend application complete
+- [x] Wallet integration implemented
+- [ ] Testnet deployment
 - [ ] Mainnet deployment
+- [ ] Production launch
 
-## Documentation
+---
 
-- [Contract API Documentation](./docs/CONTRACT_API.md)
-- [Frontend README](./frontend/README.md)
+## 📚 Documentation
 
-## Links
+- 📘 [**Contract API Reference**](./docs/CONTRACT_API.md) — Complete contract documentation
+- 📗 [**Frontend Guide**](./frontend/README.md) — Frontend setup and components
 
-- **Contract**: [View on Explorer](#)
-- **Frontend**: [bitchat.app](#)
-- **Talent Protocol**: [Builder Profile](#)
+---
 
-## License
+## 🔗 Links
 
-MIT
+- **Smart Contract:** [View on Explorer](#) *(Coming soon)*
+- **Live App:** [bitchat.app](#) *(Coming soon)*
+- **Talent Protocol:** [Builder Profile](#) *(Coming soon)*
+
+---
+
+## 👨‍💻 Development
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:report
+
+# Watch mode
+npm run test:watch
+```
+
+### Contract Deployment
+
+```bash
+# Deploy to testnet
+clarinet deploy --testnet
+
+# Deploy to mainnet (when ready)
+clarinet deploy --mainnet
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+Built for **[Talent Protocol Stacks Builder Rewards](https://talentprotocol.com)**
+
+Powered by:
+- [Stacks Blockchain](https://www.stacks.co/)
+- [Hiro Clarinet](https://docs.hiro.so/clarinet)
+- [React](https://react.dev/)
