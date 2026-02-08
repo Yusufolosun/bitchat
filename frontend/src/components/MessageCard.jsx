@@ -2,7 +2,7 @@ import React from 'react'
 import { formatAddress, timeAgo } from '../utils/formatters'
 import './MessageCard.css'
 
-function MessageCard({ message, userAddress }) {
+function MessageCard({ message, messageId, userAddress, onPin, onReact }) {
   const {
     author,
     content,
@@ -32,7 +32,26 @@ function MessageCard({ message, userAddress }) {
           {pinned && <span className="pin-badge">📌 Pinned</span>}
           <span className="reaction-count">❤️ {reactionCount}</span>
         </div>
-        {/* Action buttons will be added */}
+        
+        <div className="message-actions">
+          <button 
+            className="btn-action" 
+            onClick={() => onReact(messageId)}
+            title="React to message"
+          >
+            ❤️ React
+          </button>
+          
+          {isAuthor && !pinned && (
+            <button 
+              className="btn-action btn-pin" 
+              onClick={() => onPin(messageId)}
+              title="Pin this message"
+            >
+              📌 Pin
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
