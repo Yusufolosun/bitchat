@@ -102,7 +102,3 @@ npm run dev
 ## License
 
 MIT
-
----
-
-Built for [Talent Protocol Stacks Builder Rewards](https://talentprotocol.com)
