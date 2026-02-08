@@ -1,0 +1,115 @@
+.message-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s;
+}
+
+.message-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 107, 0, 0.3);
+}
+
+.message-card.pinned {
+  border: 2px solid rgba(255, 107, 0, 0.5);
+  background: rgba(255, 107, 0, 0.05);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.message-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.author-address {
+  font-family: monospace;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.author-badge {
+  background: rgba(255, 107, 0, 0.2);
+  color: #ff8c00;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.message-time {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.message-content {
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.message-stats {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.pin-badge {
+  color: #ff8c00;
+  font-size: 0.9rem;
+}
+
+.reaction-count {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.message-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-action {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 107, 0, 0.5);
+  color: #ff8c00;
+}
+
+.btn-pin {
+  background: rgba(255, 107, 0, 0.1);
+  border-color: rgba(255, 107, 0, 0.3);
+  color: #ff8c00;
+}
+
+.btn-pin:hover {
+  background: rgba(255, 107, 0, 0.2);
+  border-color: rgba(255, 107, 0, 0.5);
+}
