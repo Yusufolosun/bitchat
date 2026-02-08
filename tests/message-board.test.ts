@@ -9,4 +9,28 @@ describe("message-board contract", () => {
   it("ensures simnet is well initialized", () => {
     expect(simnet.blockHeight).toBeDefined();
   });
+
+  describe("post-message function", () => {
+    it("allows user to post a valid message", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "post-message",
+        [Cl.stringUtf8("Hello Bitchat!")],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.uint(0));
+    });
+
+    it("rejects message that is too short", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "post-message",
+        [Cl.stringUtf8("")],
+        user1
+      );
+      
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+  });
 });
