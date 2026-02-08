@@ -264,4 +264,58 @@ describe("message-board contract", () => {
       );
     });
   });
+
+  describe("react-to-message function", () => {
+    it("allows user to react to a message", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test message")], user1);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "react-to-message",
+        [Cl.uint(0)],
+        user2
+      );
+      
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("prevents duplicate reactions from same user", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      simnet.callPublicFn("message-board", "react-to-message", [Cl.uint(0)], user2);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "react-to-message",
+        [Cl.uint(0)],
+        user2 // Same user reacting again
+      );
+      
+      expect(result).toBeErr(Cl.uint(105)); // err-already-reacted
+    });
+
+    it("allows different users to react to same message", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Popular message")], user1);
+      simnet.callPublicFn("message-board", "react-to-message", [Cl.uint(0)], user1);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "react-to-message",
+        [Cl.uint(0)],
+        user2 // Different user
+      );
+      
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects reaction to non-existent message", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "react-to-message",
+        [Cl.uint(999)],
+        user1
+      );
+      
+      expect(result).toBeErr(Cl.uint(101)); // err-not-found
+    });
+  });
 });
