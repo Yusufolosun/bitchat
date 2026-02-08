@@ -6,6 +6,10 @@ const user1 = accounts.get("wallet_1")!;
 const user2 = accounts.get("wallet_2")!;
 
 const FEE_POST_MESSAGE = 10000;
+const FEE_PIN_24HR = 50000;
+const FEE_PIN_72HR = 100000;
+const PIN_24HR_BLOCKS = 144;
+const PIN_72HR_BLOCKS = 432;
 
 describe("message-board contract", () => {
   it("ensures simnet is well initialized", () => {
@@ -165,6 +169,45 @@ describe("message-board contract", () => {
       );
       
       expect(result).toBeErr(Cl.uint(101)); // err-not-found
+    });
+
+    it("accepts 24-hour pin duration", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("accepts 72-hour pin duration", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(PIN_72HR_BLOCKS)],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects invalid pin duration", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const { result } = simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(100)], // Invalid duration
+        user1
+      );
+      
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
     });
   });
 });
