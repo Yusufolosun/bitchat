@@ -6,17 +6,28 @@ settings/Mainnet.toml
 settings/Testnet.toml
 settings/Devnet.toml
 
+# Deployment plans (may contain sensitive data)
+deployments/*.testnet-plan.yaml
+deployments/*.mainnet-plan.yaml
+deployments/*testnet*.yaml
+deployments/*mainnet*.yaml
+
 # Environment variables
 .env
 .env.local
 .env.production
 .env.*.local
+frontend/.env
+frontend/.env.local
+frontend/.env.production
 
 # Secrets
 *.seed
 *.key
+*.mnemonic
 wallets/
 private-keys/
+.stacks-wallet/
 
 # Clarinet cache
 .cache/

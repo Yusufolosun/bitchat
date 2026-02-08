@@ -183,3 +183,33 @@ The contract supports **3 distinct transaction types** for maximizing on-chain a
 3. **react-to-message** - Engagement mechanism
 
 All transactions generate fees tracked in `total-fees-collected`.
+
+---
+
+## Testing
+
+### Running Tests
+
+```bash
+npm test
+```
+
+### Test Coverage
+
+- ✅ Post message validation (length, fees, stats)
+- ✅ Pin message authorization and fees
+- ✅ Reaction duplicate prevention
+- ✅ Read-only function accuracy
+- ✅ Fee collection tracking
+- ✅ User statistics updates
+
+### Testnet Deployment
+
+See [Testnet Deployment Guide](../deployments/deploy-testnet.md)
+
+### Contract Address
+
+**Testnet**: `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`
+**Mainnet**: `[NOT YET DEPLOYED]`
+
+**Testnet Explorer**: https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet
