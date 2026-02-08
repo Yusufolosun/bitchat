@@ -67,3 +67,4 @@ coverage/
 # Logs
 logs/
 *.log
+settings/Mainnet.toml

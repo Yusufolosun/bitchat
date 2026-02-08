@@ -1,13 +1,12 @@
-// MAINNET CONFIGURATION - BitChat v3
-// Deployed: February 8, 2026
-// Explorer: https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet
+// MAINNET CONFIGURATION
+// Copy this to constants.js after mainnet deployment
 
 // Contract deployment details
-export const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193'
-export const CONTRACT_NAME = 'message-board-v3'
+export const CONTRACT_ADDRESS = 'SP000000000000000000002Q6VF78.message-board' // UPDATE AFTER DEPLOYMENT
+export const CONTRACT_NAME = 'message-board'
 
 // Network configuration
-export const NETWORK = 'mainnet'
+export const NETWORK = 'mainnet' // CRITICAL: Set to mainnet
 
 // Fee constants (in microSTX) - MUST match contract
 export const FEE_POST_MESSAGE = 10000        // 0.00001 STX
@@ -23,5 +22,8 @@ export const PIN_72HR_BLOCKS = 432
 export const MIN_MESSAGE_LENGTH = 1
 export const MAX_MESSAGE_LENGTH = 280
 
-// Mainnet Explorer URL
-export const EXPLORER_URL = 'https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet'
+// IMPORTANT: After deployment
+// 1. Replace CONTRACT_ADDRESS with actual mainnet address
+// 2. Rename this file to constants.js (backup old one)
+// 3. Test all functions before public launch
+// 4. Verify fees are correct

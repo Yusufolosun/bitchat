@@ -7,7 +7,6 @@
 (define-constant err-not-found (err u101))
 (define-constant err-unauthorized (err u102))
 (define-constant err-invalid-input (err u103))
-(define-constant err-message-expired (err u104))
 (define-constant err-already-reacted (err u105))
 (define-constant err-too-soon (err u106))
 (define-constant err-contract-paused (err u107))
@@ -183,7 +182,7 @@
 )
 
 (define-read-only (is-contract-paused)
-  (ok (var-get contract-paused))
+  (var-get contract-paused)
 )
 
 (define-read-only (get-contract-owner)

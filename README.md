@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Stacks](https://img.shields.io/badge/Stacks-Blockchain-5546FF)](https://www.stacks.co/)
 [![Security: Enhanced](https://img.shields.io/badge/Security-Enhanced-green.svg)](docs/SECURITY_AUDIT.md)
-[![Mainnet Ready: 85%](https://img.shields.io/badge/Mainnet_Ready-85%25-yellow.svg)](docs/V3_COMPLETION_SUMMARY.md)
+[![Mainnet: LIVE](https://img.shields.io/badge/Mainnet-LIVE-brightgreen.svg)](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
 
 ---
 
@@ -21,14 +21,41 @@ Every interaction generates a transaction fee, making this a sustainable, fee-ge
 
 ## 🚀 Deployed Contracts
 
-**Version 2 (Current Testnet)**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
-- Status: ✅ All functions tested and working
-- Note: Fees disabled for testing purposes
+### Version 3 (Security Enhanced) — **🎉 LIVE ON MAINNET**
 
-**Version 3 (Security Enhanced)**: 🚧 Pending Testnet Deployment
-- Status: ✅ Code complete, documentation ready
-- Mainnet Readiness: **85-90%**
-- See: [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md)
+**Mainnet Contract**: [`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+
+- **Deployment Date**: February 8, 2026
+- **Status**: ✅ **LIVE ON MAINNET** 🚀
+- **Clarity Version**: 2 (Epoch 2.1+)
+- **Security Features**: ✅ All Active
+- **Deployment Cost**: 0.101200 STX
+
+**📚 Documentation**:
+- [Mainnet Deployment Guide](MAINNET_DEPLOYMENT_GUIDE.md)
+- [Security Audit Report](docs/SECURITY_AUDIT.md)
+- [Pre-Mainnet Validation Report](PRE_MAINNET_VALIDATION_REPORT.md)
+
+### Version 3 (Testnet) — **Testing Complete**
+
+**Testnet Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
+
+- **Status**: ✅ Testing Complete
+- **Purpose**: Pre-mainnet validation
+
+### Version 2 (Previous Testnet)
+
+**Contract**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
+- Status: ⚠️ **Deprecated** (fees disabled, replaced by v3)
+- Purpose: Initial testnet validation
+
+### Mainnet Deployment
+
+**Status**: ✅ **LIVE ON MAINNET**
+- **Contract**: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`
+- **Deployed**: February 8, 2026
+- **Explorer**: [View on Mainnet](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+- See: [Mainnet Checklist](docs/MAINNET_CHECKLIST.md)
 
 ---
 
@@ -257,7 +284,8 @@ See [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md) for full details.
 ## 🔗 Links
 
 - **v2 Testnet Contract:** [ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
-- **v3 Contract**: Pending testnet deployment
+- **v3 Testnet Contract (LIVE):** [ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
+- **v3 Mainnet Contract**: Pending deployment (after testing)
 - **Live App:** [bitchat.app](#) *(Coming soon)*
 - **Talent Protocol:** [Builder Profile](#) *(Coming soon)*
 

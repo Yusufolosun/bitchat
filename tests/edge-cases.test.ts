@@ -417,6 +417,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
         user1
       );
       const messageId = postResult.value;
+      const postBlockHeight = simnet.blockHeight;
       
       // Three different users react
       const { result: react1 } = simnet.callPublicFn(
@@ -454,9 +455,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
         Cl.tuple({
           author: Cl.principal(user1),
           content: Cl.stringUtf8("React test"),
-          timestamp: Cl.uint(simnet.blockHeight),
+          timestamp: Cl.uint(postBlockHeight - 1),
+          "block-height": Cl.uint(postBlockHeight),
+          "expires-at": Cl.uint(postBlockHeight + 144),
           pinned: Cl.bool(false),
-          "pin-expiry": Cl.uint(0),
+          "pin-expires-at": Cl.uint(0),
           "reaction-count": Cl.uint(3)
         })
       );
@@ -723,7 +726,8 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeSome(
         Cl.tuple({
           "messages-posted": Cl.uint(1),
-          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_REACTION)
+          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_REACTION),
+          "last-post-block": Cl.uint(simnet.blockHeight)
         })
       );
     });
