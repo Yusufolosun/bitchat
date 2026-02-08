@@ -209,7 +209,55 @@ See [Testnet Deployment Guide](../deployments/deploy-testnet.md)
 
 ### Contract Address
 
-**Testnet**: `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`
-**Mainnet**: `[NOT YET DEPLOYED]`
+**Testnet (v3 - LIVE)**: `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`
+- **Deployment Date**: February 8, 2026
+- **Status**: Testing Phase (7-14 days)
+- **Clarity Version**: 2 (Epoch 2.1+)
+- **Features**: Security-enhanced, fee collection enabled, spam prevention, pause mechanism
 
-**Testnet Explorer**: https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet
+**Mainnet**: `[PENDING TESTNET VALIDATION]`
+
+**Testnet Explorer**: https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet
+
+---
+
+## CLI Testing on Testnet
+
+### Quick Test - Post Message
+
+```bash
+stx call-contract ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 post-message \
+  -p message="\"Hello BitChat v3!\"" \
+  --testnet
+```
+
+### Read Message
+
+```bash
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 get-message \
+  -p message-id=u1 \
+  --testnet
+```
+
+### Get Total Messages
+
+```bash
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 get-total-messages \
+  --testnet
+```
+
+### Check Contract Status
+
+```bash
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 is-contract-paused \
+  --testnet
+```
+
+### Get Fees Collected
+
+```bash
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 get-total-fees-collected \
+  --testnet
+```
+
+For comprehensive testing guide, see [TESTNET_LIVE.md](../TESTNET_LIVE.md)
