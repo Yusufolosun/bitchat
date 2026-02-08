@@ -81,14 +81,6 @@ BitChat is a decentralized message board where every message, pin, and reaction 
 - [ ] Token launch
 - [ ] Cross-chain bridges
 
-### 🤝 Built For Talent Protocol
-
-BitChat is participating in **Talent Protocol Stacks Builder Rewards**!
-
-Track our progress:
-- **GitHub:** [github.com/Yusufolosun/bitchat](#)
-- **Talent Profile:** [INSERT_LINK]
-
 ### 📞 Contact & Support
 
 - **Twitter:** [@BitchatStacks](#)
@@ -100,7 +92,6 @@ Track our progress:
 
 - Stacks Foundation
 - Hiro Systems
-- Talent Protocol
 - Our amazing testnet community
 
 ---

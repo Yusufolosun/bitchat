@@ -586,13 +586,6 @@ Rewards available for critical security findings!
 - Special NFT
 - Lifetime premium features
 
-### Leaderboard
-
-Track your testing progress:
-- https://bitchat.xyz/testing-leaderboard
-
-Top 10 testers receive bonus rewards!
-
 ## Testing Schedule
 
 ### Phase 1: Alpha Testing (Week 1)

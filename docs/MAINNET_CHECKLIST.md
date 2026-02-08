@@ -121,7 +121,6 @@ clarinet deployments apply -p <plan-file> --mainnet
 - [ ] Analyze usage patterns
 - [ ] Gather user feedback
 - [ ] Plan v4 improvements
-- [ ] Update Talent Protocol profile
 - [ ] Share metrics publicly
 
 ## Emergency Contacts
