@@ -96,8 +96,8 @@
     (asserts! (>= content-length min-message-length) err-invalid-input)
     (asserts! (<= content-length max-message-length) err-invalid-input)
     
-    ;; Transfer posting fee to contract
-    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+    ;; TODO: Re-enable fee collection after testing
+    ;; (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
@@ -178,8 +178,8 @@
     ;; Validate duration is supported
     (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
     
-    ;; Transfer pin fee to contract
-    (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
+    ;; TODO: Re-enable fee collection after testing
+    ;; (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
@@ -223,8 +223,8 @@
     ;; Prevent duplicate reactions
     (asserts! (not already-reacted) err-already-reacted)
     
-    ;; Transfer reaction fee to contract
-    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+    ;; TODO: Re-enable fee collection after testing
+    ;; (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
