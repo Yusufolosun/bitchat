@@ -20,6 +20,7 @@ declare global {
       sender: string
     ): { result: any };
     getAssetsMap(): Map<string, Map<string, number>>;
+    mineEmptyBlocks(count: number): void;
   };
 }
 
