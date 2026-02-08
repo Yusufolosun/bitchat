@@ -1,6 +1,6 @@
 // Contract deployment details
 export const CONTRACT_ADDRESS = 'ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0' // Deployed on Testnet
-export const CONTRACT_NAME = 'message-board'
+export const CONTRACT_NAME = 'message-board-v2' // Updated contract with bug fixes
 
 // Network configuration
 export const NETWORK = 'testnet' // Change to 'mainnet' for production

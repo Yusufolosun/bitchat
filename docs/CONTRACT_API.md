@@ -209,7 +209,7 @@ See [Testnet Deployment Guide](../deployments/deploy-testnet.md)
 
 ### Contract Address
 
-**Testnet**: `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board`
+**Testnet**: `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`
 **Mainnet**: `[NOT YET DEPLOYED]`
 
-**Testnet Explorer**: https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board?chain=testnet
+**Testnet Explorer**: https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet

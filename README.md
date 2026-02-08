@@ -17,7 +17,7 @@ Every interaction generates a transaction fee, making this a fee-generating dApp
 
 ## 🚀 Deployed Contract
 
-**Testnet**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board?chain=testnet)
+**Testnet**: [`ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2`](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
 
 **Contract Functions**: See [Contract API Documentation](docs/CONTRACT_API.md)
 
