@@ -27,7 +27,6 @@
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
 (define-data-var total-fees-collected uint u0)
-(define-data-var contract-principal principal tx-sender)
 
 ;; Data maps
 (define-map messages
@@ -98,7 +97,7 @@
     (asserts! (<= content-length max-message-length) err-invalid-input)
     
     ;; Transfer posting fee to contract
-    (try! (stx-transfer? fee-post-message sender (var-get contract-principal)))
+    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
@@ -180,7 +179,7 @@
     (asserts! (or (is-eq duration pin-24hr-blocks) (is-eq duration pin-72hr-blocks)) err-invalid-input)
     
     ;; Transfer pin fee to contract
-    (try! (stx-transfer? pin-fee sender (var-get contract-principal)))
+    (try! (stx-transfer? pin-fee sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) pin-fee))
@@ -225,7 +224,7 @@
     (asserts! (not already-reacted) err-already-reacted)
     
     ;; Transfer reaction fee to contract
-    (try! (stx-transfer? fee-reaction sender (var-get contract-principal)))
+    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
     
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
