@@ -257,7 +257,8 @@ See [V3 Completion Summary](docs/V3_COMPLETION_SUMMARY.md) for full details.
 ## 🔗 Links
 
 - **v2 Testnet Contract:** [ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2](https://explorer.hiro.so/txid/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v2?chain=testnet)
-- **v3 Contract**: Pending testnet deployment
+- **v3 Testnet Contract (LIVE):** [ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3](https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet)
+- **v3 Mainnet Contract**: Pending deployment (after testing)
 - **Live App:** [bitchat.app](#) *(Coming soon)*
 - **Talent Protocol:** [Builder Profile](#) *(Coming soon)*
 
