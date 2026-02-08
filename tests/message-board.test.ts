@@ -209,5 +209,59 @@ describe("message-board contract", () => {
       
       expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
     });
+
+    it("charges correct fee for 24-hour pin", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const contractId = `${deployer}.message-board`;
+      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      
+      simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
+        user1
+      );
+      
+      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      expect(finalBalance - initialBalance).toBe(FEE_PIN_24HR);
+    });
+
+    it("charges correct fee for 72-hour pin", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const contractId = `${deployer}.message-board`;
+      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      
+      simnet.callPublicFn(
+        "message-board",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(PIN_72HR_BLOCKS)],
+        user1
+      );
+      
+      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      expect(finalBalance - initialBalance).toBe(FEE_PIN_72HR);
+    });
+
+    it("updates user stats with pin spending", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      simnet.callPublicFn("message-board", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user1);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-user-stats",
+        [Cl.principal(user1)],
+        user1
+      );
+      
+      expect(result).toBeSome(
+        Cl.tuple({
+          "messages-posted": Cl.uint(1),
+          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_PIN_24HR),
+          "last-post-block": Cl.uint(simnet.blockHeight)
+        })
+      );
+    });
   });
 });
