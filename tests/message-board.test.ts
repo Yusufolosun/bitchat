@@ -317,5 +317,57 @@ describe("message-board contract", () => {
       
       expect(result).toBeErr(Cl.uint(101)); // err-not-found
     });
+
+    it("charges reaction fee", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      const contractId = `${deployer}.message-board`;
+      const FEE_REACTION = 5000;
+      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      
+      simnet.callPublicFn("message-board", "react-to-message", [Cl.uint(0)], user2);
+      
+      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      expect(finalBalance - initialBalance).toBe(FEE_REACTION);
+    });
+
+    it("increments reaction count on message", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      simnet.callPublicFn("message-board", "react-to-message", [Cl.uint(0)], user2);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-message",
+        [Cl.uint(0)],
+        user1
+      );
+      
+      const message = result as SomeCV;
+      expect(cvToValue(message.value)["reaction-count"]).toBe(1n);
+    });
+
+    it("correctly tracks has-user-reacted", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      // Before reaction
+      let { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "has-user-reacted",
+        [Cl.uint(0), Cl.principal(user2)],
+        user1
+      );
+      expect(result).toBeBool(false);
+      
+      // After reaction
+      simnet.callPublicFn("message-board", "react-to-message", [Cl.uint(0)], user2);
+      
+      result = simnet.callReadOnlyFn(
+        "message-board",
+        "has-user-reacted",
+        [Cl.uint(0), Cl.principal(user2)],
+        user1
+      );
+      expect(result).toBeBool(true);
+    });
   });
 });
