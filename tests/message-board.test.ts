@@ -370,4 +370,53 @@ describe("message-board contract", () => {
       expect(result).toBeBool(true);
     });
   });
+
+  describe("read-only functions", () => {
+    it("get-message returns correct message data", () => {
+      const content = "Test message content";
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8(content)], user1);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-message",
+        [Cl.uint(0)],
+        user1
+      );
+      
+      const message = result as SomeCV;
+      const messageData = cvToValue(message.value);
+      
+      expect(messageData.content).toBe(content);
+      expect(messageData.author).toBe(user1);
+      expect(messageData.pinned).toBe(false);
+      expect(messageData["reaction-count"]).toBe(0n);
+    });
+
+    it("get-total-messages returns correct count", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("First")], user1);
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("Second")], user2);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-total-messages",
+        [],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.uint(2));
+    });
+
+    it("get-message-nonce returns next ID", () => {
+      simnet.callPublicFn("message-board", "post-message", [Cl.stringUtf8("First")], user1);
+      
+      const { result } = simnet.callReadOnlyFn(
+        "message-board",
+        "get-message-nonce",
+        [],
+        user1
+      );
+      
+      expect(result).toBeOk(Cl.uint(1)); // Next ID will be 1
+    });
+  });
 });
