@@ -1,0 +1,70 @@
+.post-message {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 107, 0, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.auth-required {
+  color: #999;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1rem;
+}
+
+.post-message textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s;
+}
+
+.post-message textarea:focus {
+  outline: none;
+  border-color: #ff6b00;
+}
+
+.post-message textarea::placeholder {
+  color: #666;
+}
+
+.post-message textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.char-count {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.btn-post {
+  background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+  color: white;
+}
+
+.btn-post:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4);
+}
+
+.btn-post:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
