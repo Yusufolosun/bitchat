@@ -4,7 +4,9 @@ import {
   AnchorMode,
   stringUtf8CV,
   uintCV,
-  PostConditionMode
+  PostConditionMode,
+  getAddressFromPrivateKey,
+  TransactionVersion
 } from '@stacks/transactions';
 import { generateWallet } from '@stacks/wallet-sdk';
 import * as bip39 from 'bip39';
@@ -52,7 +54,7 @@ async function getPrivateKey() {
       password: ''
     });
     
-    // Get the first account's private key
+    // Get the first account's private key (Stacks wallet uses account index 0)
     const account = wallet.accounts[0];
     return account.stxPrivateKey;
   }
@@ -105,8 +107,8 @@ async function sendTransaction(privateKey, senderAddress, nonce, index) {
     network: config.network,
     anchorMode: AnchorMode.Any,
     postConditionMode: PostConditionMode.Allow,
-    nonce: nonce,
-    fee: config.maxFeePerTx // Set max fee per transaction
+    nonce: BigInt(nonce),
+    fee: BigInt(Math.floor(config.maxFeePerTx)) // Convert to BigInt
   };
   
   // Create transaction
@@ -120,7 +122,7 @@ async function sendTransaction(privateKey, senderAddress, nonce, index) {
       
       // Ensure fee doesn't exceed max budget
       if (adjustedFee <= config.maxFeePerTx) {
-        txOptions.fee = adjustedFee;
+        txOptions.fee = BigInt(adjustedFee);
         // Recreate transaction with adjusted fee
         const newTransaction = await makeContractCall(txOptions);
         return newTransaction;
@@ -188,12 +190,8 @@ async function main() {
     const privateKey = await getPrivateKey();
     
     // Derive sender address from private key
-    const { generateWallet: genWallet } = await import('@stacks/wallet-sdk');
-    const wallet = await genWallet({
-      secretKey: config.mnemonic || privateKey,
-      password: ''
-    });
-    const senderAddress = wallet.accounts[0].address;
+    const txVersion = config.network.isMainnet() ? TransactionVersion.Mainnet : TransactionVersion.Testnet;
+    const senderAddress = getAddressFromPrivateKey(privateKey, txVersion);
     
     console.log(`${colors.green}✅ Wallet address: ${senderAddress}${colors.reset}\n`);
     

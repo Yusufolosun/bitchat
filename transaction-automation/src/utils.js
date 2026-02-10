@@ -95,7 +95,9 @@ export async function saveTransactionLog(transactions) {
  * Format STX amount
  */
 export function formatSTX(microSTX) {
-  return (microSTX / 1000000).toFixed(6);
+  // Convert BigInt to Number if necessary
+  const amount = typeof microSTX === 'bigint' ? Number(microSTX) : microSTX;
+  return (amount / 1000000).toFixed(6);
 }
 
 /**
