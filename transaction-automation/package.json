@@ -6,7 +6,7 @@
   "main": "src/transaction-generator.js",
   "scripts": {
     "start": "node src/transaction-generator.js",
-    "dry-run": "DRY_RUN=true node src/transaction-generator.js",
+    "dry-run": "cross-env DRY_RUN=true node src/transaction-generator.js",
     "test-config": "node -e \"import('./src/config.js').then(c => console.log('Config loaded:', c))\""
   },
   "keywords": [
@@ -21,8 +21,10 @@
   "dependencies": {
     "@stacks/transactions": "^6.13.0",
     "@stacks/network": "^6.13.0",
+    "@stacks/wallet-sdk": "^6.13.0",
     "dotenv": "^16.4.5",
-    "bip39": "^3.1.0"
+    "bip39": "^3.1.0",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {},
   "engines": {
