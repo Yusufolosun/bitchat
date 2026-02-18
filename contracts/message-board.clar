@@ -173,6 +173,10 @@
   (ok (var-get total-messages))
 )
 
+(define-read-only (get-total-deleted)
+  (ok (var-get total-deleted))
+)
+
 (define-read-only (get-total-fees-collected)
   (ok (var-get total-fees-collected))
 )
@@ -199,6 +203,13 @@
       (get pinned message)
       (> (get pin-expires-at message) block-height)
     )
+    false
+  )
+)
+
+(define-read-only (is-message-deleted (message-id uint))
+  (match (map-get? messages { message-id: message-id })
+    message (get deleted message)
     false
   )
 )
