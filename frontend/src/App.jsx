@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import WalletConnect from './components/WalletConnect'
 import PostMessage from './components/PostMessage'
 import MessageList from './components/MessageList'
 import Stats from './components/Stats'
 import { useWallet } from './hooks/useWallet'
 import { useMessages } from './hooks/useMessages'
+import { useStats } from './hooks/useStats'
 import { pinMessage, reactToMessage } from './utils/contractCalls'
 import './App.css'
 
 function App() {
   const { isAuthenticated, address, userSession } = useWallet()
   const { messages, isLoading, error, refreshMessages } = useMessages()
-  const [totalMessages, setTotalMessages] = useState(0)
-  const [totalFees, setTotalFees] = useState(0)
+  const { totalMessages, totalFees, refreshStats } = useStats()
 
-  useEffect(() => {
-    // Mock stats for now - will integrate with contract
-    setTotalMessages(messages.length)
-    setTotalFees(150000) // Mock 0.15 STX in fees
-  }, [messages])
+  const handleRefresh = () => {
+    refreshMessages()
+    refreshStats()
+  }
 
   const handlePin = async (messageId) => {
     if (!isAuthenticated) {
@@ -29,7 +28,7 @@ function App() {
     try {
       const duration24hr = confirm('Pin for 24 hours? (Cancel for 72 hours)')
       await pinMessage(messageId, duration24hr, userSession)
-      setTimeout(refreshMessages, 2000)
+      setTimeout(handleRefresh, 2000)
     } catch (error) {
       console.error('Failed to pin message:', error)
     }
@@ -43,7 +42,7 @@ function App() {
     
     try {
       await reactToMessage(messageId, userSession)
-      setTimeout(refreshMessages, 2000)
+      setTimeout(handleRefresh, 2000)
     } catch (error) {
       console.error('Failed to react to message:', error)
     }
@@ -62,7 +61,7 @@ function App() {
       </header>
       <main className="app-main">
         <Stats totalMessages={totalMessages} totalFees={totalFees} />
-        <PostMessage onMessagePosted={refreshMessages} />
+        <PostMessage onMessagePosted={handleRefresh} />
         <MessageList
           messages={messages}
           userAddress={address}
