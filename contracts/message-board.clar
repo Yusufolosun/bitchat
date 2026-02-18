@@ -40,6 +40,7 @@
 (define-data-var total-messages uint u0)
 (define-data-var total-deleted uint u0)
 (define-data-var total-edits uint u0)
+(define-data-var total-replies uint u0)
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
@@ -58,7 +59,9 @@
     reaction-count: uint,
     deleted: bool,
     edited: bool,
-    edit-count: uint
+    edit-count: uint,
+    reply-to: uint,
+    reply-count: uint
   }
 )
 
@@ -157,7 +160,9 @@
         reaction-count: u0,
         deleted: false,
         edited: false,
-        edit-count: u0
+        edit-count: u0,
+        reply-to: u0,
+        reply-count: u0
       }
     )
     
@@ -205,6 +210,32 @@
 
 (define-read-only (get-total-edits)
   (ok (var-get total-edits))
+)
+
+(define-read-only (get-total-replies)
+  (ok (var-get total-replies))
+)
+
+(define-read-only (get-reply-parent (message-id uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (reply-to-val (get reply-to message))
+    )
+    (if (> reply-to-val u0)
+      (ok (- reply-to-val u1))
+      (ok u0)
+    )
+  )
+)
+
+(define-read-only (is-reply (message-id uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+    )
+    (ok (> (get reply-to message) u0))
+  )
 )
 
 (define-read-only (get-edit-history (message-id uint) (edit-index uint))
@@ -565,6 +596,98 @@
     })
 
     (ok true)
+  )
+)
+
+;; Reply to an existing message (creates a new message linked to the parent)
+(define-public (reply-to-message (parent-id uint) (content (string-utf8 280)))
+  (let
+    (
+      (parent-message (unwrap! (map-get? messages { message-id: parent-id }) err-not-found))
+      (message-id (get-next-message-id))
+      (content-length (len content))
+      (sender tx-sender)
+      (expiry-block (calculate-expiry-block default-expiry-blocks))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
+      (last-post (get last-post-block current-stats))
+      (parent-reply-count (get reply-count parent-message))
+    )
+    ;; Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+
+    ;; Cannot reply to a deleted message
+    (asserts! (not (get deleted parent-message)) err-already-deleted)
+
+    ;; Validate content length
+    (asserts! (>= content-length min-message-length) err-invalid-input)
+    (asserts! (<= content-length max-message-length) err-invalid-input)
+
+    ;; Spam prevention
+    (asserts! (or (is-eq last-post u0) 
+                  (>= (- block-height last-post) min-post-gap)) 
+      err-too-soon)
+
+    ;; Collect posting fee (same as regular post)
+    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
+
+    ;; Store the reply as a new message with reply-to set
+    (map-set messages
+      { message-id: message-id }
+      {
+        author: sender,
+        content: content,
+        timestamp: burn-block-height,
+        block-height: block-height,
+        expires-at: expiry-block,
+        pinned: false,
+        pin-expires-at: u0,
+        reaction-count: u0,
+        deleted: false,
+        edited: false,
+        edit-count: u0,
+        reply-to: (+ parent-id u1),
+        reply-count: u0
+      }
+    )
+
+    ;; Increment parent's reply count
+    (map-set messages
+      { message-id: parent-id }
+      (merge parent-message {
+        reply-count: (+ parent-reply-count u1)
+      })
+    )
+
+    ;; Increment counters
+    (var-set total-messages (+ (var-get total-messages) u1))
+    (var-set total-replies (+ (var-get total-replies) u1))
+
+    ;; Update user stats
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (+ (get messages-posted current-stats) u1),
+        total-spent: (+ (get total-spent current-stats) fee-post-message),
+        last-post-block: block-height
+      }
+    )
+
+    ;; Event logging
+    (print {
+      event: "message-replied",
+      message-id: message-id,
+      parent-id: parent-id,
+      author: sender,
+      block: block-height
+    })
+
+    (ok message-id)
   )
 )
 
