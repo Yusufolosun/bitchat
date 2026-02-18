@@ -142,7 +142,9 @@
         pinned: false,
         pin-expires-at: u0,
         reaction-count: u0,
-        deleted: false
+        deleted: false,
+        edited: false,
+        edit-count: u0
       }
     )
     
