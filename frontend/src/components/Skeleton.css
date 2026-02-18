@@ -1,0 +1,120 @@
+/* Skeleton loading placeholders */
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton-line {
+  height: 1rem;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-surface-hover) 40%,
+    var(--color-surface) 80%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Skeleton message card */
+.skeleton-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.skeleton-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.skeleton-avatar {
+  width: 140px;
+  height: 0.85rem;
+}
+
+.skeleton-time {
+  width: 70px;
+  height: 0.75rem;
+}
+
+.skeleton-body .skeleton-line {
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-body .skeleton-line:nth-child(1) {
+  width: 100%;
+}
+
+.skeleton-body .skeleton-line:nth-child(2) {
+  width: 85%;
+}
+
+.skeleton-body .skeleton-line:nth-child(3) {
+  width: 60%;
+}
+
+.skeleton-card-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.skeleton-reaction {
+  width: 60px;
+  height: 0.8rem;
+}
+
+.skeleton-btn {
+  width: 80px;
+  height: 2rem;
+  border-radius: 6px;
+}
+
+/* Skeleton stat cards */
+.skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.skeleton-stat-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.skeleton-stat-label {
+  width: 100px;
+  height: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-stat-value {
+  width: 60px;
+  height: 1.8rem;
+}
+
+@media (max-width: 480px) {
+  .skeleton-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .skeleton-card {
+    padding: 1rem;
+  }
+}
