@@ -325,6 +325,49 @@
   )
 )
 
+;; Message deletion - author only
+(define-public (delete-message (message-id uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (message-author (get author message))
+      (is-deleted (get deleted message))
+    )
+    ;; Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+
+    ;; Only the original author can delete their message
+    (asserts! (is-eq sender message-author) err-unauthorized)
+
+    ;; Cannot delete an already-deleted message
+    (asserts! (not is-deleted) err-already-deleted)
+
+    ;; Soft delete: mark the message as deleted but keep the record
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        deleted: true,
+        pinned: false,
+        pin-expires-at: u0
+      })
+    )
+
+    ;; Increment deletion counter
+    (var-set total-deleted (+ (var-get total-deleted) u1))
+
+    ;; Event logging
+    (print {
+      event: "message-deleted",
+      message-id: message-id,
+      author: sender,
+      block: block-height
+    })
+
+    (ok true)
+  )
+)
+
 ;; Administrative functions
 
 (define-public (withdraw-fees (amount uint) (recipient principal))
