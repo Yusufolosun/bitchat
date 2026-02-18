@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatAddress, timeAgo } from '../utils/formatters'
+import { formatAddress, timeAgo, sanitizeMessage } from '../utils/formatters'
 import './MessageCard.css'
 
 function MessageCard({ message, messageId, userAddress, onPin, onReact }) {
@@ -24,7 +24,7 @@ function MessageCard({ message, messageId, userAddress, onPin, onReact }) {
       </div>
       
       <div className="message-content">
-        {content}
+        {sanitizeMessage(content)}
       </div>
       
       <div className="message-footer">
