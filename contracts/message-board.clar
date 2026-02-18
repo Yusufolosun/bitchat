@@ -398,6 +398,65 @@
   )
 )
 
+;; Message editing - author only, with history tracking
+(define-public (edit-message (message-id uint) (new-content (string-utf8 280)))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (message-author (get author message))
+      (current-content (get content message))
+      (current-edit-count (get edit-count message))
+      (content-length (len new-content))
+    )
+    ;; Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+
+    ;; Only the original author can edit their message
+    (asserts! (is-eq sender message-author) err-unauthorized)
+
+    ;; Cannot edit a deleted message
+    (asserts! (not (get deleted message)) err-already-deleted)
+
+    ;; Validate new content length
+    (asserts! (>= content-length min-message-length) err-invalid-input)
+    (asserts! (<= content-length max-message-length) err-invalid-input)
+
+    ;; Store the previous content in edit history
+    (map-set edit-history
+      { message-id: message-id, edit-index: current-edit-count }
+      {
+        previous-content: current-content,
+        edited-at-block: block-height
+      }
+    )
+
+    ;; Update the message with new content
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        content: new-content,
+        edited: true,
+        edit-count: (+ current-edit-count u1)
+      })
+    )
+
+    ;; Increment global edit counter
+    (var-set total-edits (+ (var-get total-edits) u1))
+
+    ;; Event logging
+    (print {
+      event: "message-edited",
+      message-id: message-id,
+      author: sender,
+      edit-number: (+ current-edit-count u1),
+      block: block-height
+    })
+
+    (ok true)
+  )
+)
+
 ;; Administrative functions
 
 (define-public (withdraw-fees (amount uint) (recipient principal))
