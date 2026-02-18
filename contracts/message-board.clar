@@ -130,7 +130,8 @@
         expires-at: expiry-block,
         pinned: false,
         pin-expires-at: u0,
-        reaction-count: u0
+        reaction-count: u0,
+        deleted: false
       }
     )
     
