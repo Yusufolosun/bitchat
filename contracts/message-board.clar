@@ -31,6 +31,7 @@
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
 (define-data-var total-deleted uint u0)
+(define-data-var total-edits uint u0)
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
@@ -47,7 +48,9 @@
     pinned: bool,
     pin-expires-at: uint,
     reaction-count: uint,
-    deleted: bool
+    deleted: bool,
+    edited: bool,
+    edit-count: uint
   }
 )
 
@@ -63,6 +66,14 @@
 (define-map reactions
   { message-id: uint, user: principal }
   { reacted: bool }
+)
+
+(define-map edit-history
+  { message-id: uint, edit-index: uint }
+  {
+    previous-content: (string-utf8 280),
+    edited-at-block: uint
+  }
 )
 
 ;; Private functions
