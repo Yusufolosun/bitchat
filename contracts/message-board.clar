@@ -223,6 +223,13 @@
   (default-to false (get reacted (map-get? reactions { message-id: message-id, user: user })))
 )
 
+(define-read-only (get-user-reaction-type (message-id uint) (user principal))
+  (get reaction-type (map-get? reactions { message-id: message-id, user: user }))
+)
+
+(define-read-only (get-reaction-count-by-type (message-id uint) (reaction-type uint))
+  (default-to u0 (get count (map-get? typed-reaction-counts { message-id: message-id, reaction-type: reaction-type })))
+)
 (define-read-only (is-contract-paused)
   (var-get contract-paused)
 )
