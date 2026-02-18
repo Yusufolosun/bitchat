@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useWallet } from '../hooks/useWallet'
+import { useCooldown } from '../hooks/useCooldown'
 import { postMessage } from '../utils/contractCalls'
 import { parseClarityError } from '../utils/errors'
 import { MAX_MESSAGE_LENGTH } from '../utils/constants'
@@ -9,11 +10,17 @@ function PostMessage({ onMessagePosted, showToast, onTxSubmitted }) {
   const [content, setContent] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const { isAuthenticated, address } = useWallet()
+  const { canPost, blocksRemaining, minutesRemaining, refresh: refreshCooldown } = useCooldown(address)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (!content.trim()) return
+
+    if (!canPost) {
+      if (showToast) showToast(`Cooldown active — ~${minutesRemaining} min (${blocksRemaining} blocks) remaining.`, 'error')
+      return
+    }
     
     setIsPosting(true)
     
@@ -25,6 +32,8 @@ function PostMessage({ onMessagePosted, showToast, onTxSubmitted }) {
       if (onMessagePosted) {
         onMessagePosted()
       }
+      // Refresh cooldown after successful post
+      refreshCooldown()
     } catch (error) {
       const msg = parseClarityError(error)
       if (msg && showToast) showToast(msg, 'error')
@@ -51,20 +60,22 @@ function PostMessage({ onMessagePosted, showToast, onTxSubmitted }) {
         placeholder="What's on your mind? (max 280 characters)"
         maxLength={MAX_MESSAGE_LENGTH}
         rows={4}
-        disabled={isPosting}
+        disabled={isPosting || !canPost}
         aria-describedby="char-count"
       />
       <div className="post-actions">
         <span className="char-count" id="char-count" aria-live="polite">
-          {content.length}/{MAX_MESSAGE_LENGTH}
+          {!canPost
+            ? `Cooldown: ~${minutesRemaining} min (${blocksRemaining} blocks)`
+            : `${content.length}/${MAX_MESSAGE_LENGTH}`}
         </span>
         <button 
           type="submit" 
           className="btn btn-post" 
-          disabled={!content.trim() || isPosting}
+          disabled={!content.trim() || isPosting || !canPost}
           aria-label={isPosting ? 'Posting message' : 'Post message'}
         >
-          {isPosting ? 'Posting...' : 'Post Message'}
+          {isPosting ? 'Posting...' : !canPost ? 'Cooldown Active' : 'Post Message'}
         </button>
       </div>
     </form>
