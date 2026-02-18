@@ -8,6 +8,7 @@ import { useWallet } from './hooks/useWallet'
 import { useMessages } from './hooks/useMessages'
 import { useStats } from './hooks/useStats'
 import { useToast } from './hooks/useToast'
+import { useTransactionTracker } from './hooks/useTransactionTracker'
 import { pinMessage, reactToMessage } from './utils/contractCalls'
 import { parseClarityError } from './utils/errors'
 import './App.css'
@@ -23,6 +24,11 @@ function App() {
     refreshStats()
   }
 
+  const { pendingTxs, track } = useTransactionTracker({
+    onConfirmed: () => handleRefresh(),
+    showToast,
+  })
+
   const handlePin = async (messageId) => {
     if (!isAuthenticated) {
       showToast('Please connect your wallet first.', 'error')
@@ -31,9 +37,9 @@ function App() {
     
     try {
       const duration24hr = confirm('Pin for 24 hours? (Cancel for 72 hours)')
-      await pinMessage(messageId, duration24hr, address)
-      showToast('Pin transaction submitted — waiting for confirmation.', 'success')
-      setTimeout(handleRefresh, 2000)
+      const txId = await pinMessage(messageId, duration24hr, address)
+      showToast('Pin transaction submitted — tracking confirmation.', 'info')
+      track(txId, 'Pin')
     } catch (err) {
       const msg = parseClarityError(err)
       if (msg) showToast(msg, 'error')
@@ -47,9 +53,9 @@ function App() {
     }
     
     try {
-      await reactToMessage(messageId, address)
-      showToast('Reaction submitted!', 'success')
-      setTimeout(handleRefresh, 2000)
+      const txId = await reactToMessage(messageId, address)
+      showToast('Reaction submitted — tracking confirmation.', 'info')
+      track(txId, 'Reaction')
     } catch (err) {
       const msg = parseClarityError(err)
       if (msg) showToast(msg, 'error')
@@ -69,7 +75,7 @@ function App() {
       </header>
       <main className="app-main">
         <Stats totalMessages={totalMessages} totalFees={totalFees} isLoading={statsLoading} />
-        <PostMessage onMessagePosted={handleRefresh} showToast={showToast} />
+        <PostMessage onMessagePosted={handleRefresh} showToast={showToast} onTxSubmitted={track} />
         <MessageList
           messages={messages}
           userAddress={address}

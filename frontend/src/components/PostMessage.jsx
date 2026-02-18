@@ -5,7 +5,7 @@ import { parseClarityError } from '../utils/errors'
 import { MAX_MESSAGE_LENGTH } from '../utils/constants'
 import './PostMessage.css'
 
-function PostMessage({ onMessagePosted, showToast }) {
+function PostMessage({ onMessagePosted, showToast, onTxSubmitted }) {
   const [content, setContent] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const { isAuthenticated, address } = useWallet()
@@ -18,9 +18,10 @@ function PostMessage({ onMessagePosted, showToast }) {
     setIsPosting(true)
     
     try {
-      await postMessage(content, address)
+      const txId = await postMessage(content, address)
       setContent('')
-      if (showToast) showToast('Message submitted — waiting for confirmation.', 'success')
+      if (showToast) showToast('Message submitted — tracking confirmation.', 'info')
+      if (onTxSubmitted) onTxSubmitted(txId, 'Post')
       if (onMessagePosted) {
         onMessagePosted()
       }
