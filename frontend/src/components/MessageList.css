@@ -5,7 +5,7 @@
 .loading-message,
 .empty-message {
   text-align: center;
-  color: #999;
+  color: var(--color-text-secondary);
   padding: 3rem 1rem;
   font-size: 1.1rem;
 }
