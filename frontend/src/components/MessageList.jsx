@@ -1,12 +1,13 @@
 import React from 'react'
 import MessageCard from './MessageCard'
+import { SkeletonMessageList } from './Skeleton'
 import './MessageList.css'
 
 function MessageList({ messages, userAddress, onPin, onReact, isLoading, isLoadingMore, hasMore, onLoadMore }) {
   if (isLoading) {
     return (
       <div className="message-list">
-        <p className="loading-message">Loading messages...</p>
+        <SkeletonMessageList count={4} />
       </div>
     )
   }
