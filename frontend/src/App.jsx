@@ -5,10 +5,12 @@ import MessageList from './components/MessageList'
 import Stats from './components/Stats'
 import Footer from './components/Footer'
 import Toast from './components/Toast'
+import ThemeToggle from './components/ThemeToggle'
 import { useWallet } from './hooks/useWallet'
 import { useMessages } from './hooks/useMessages'
 import { useStats } from './hooks/useStats'
 import { useToast } from './hooks/useToast'
+import { useTheme } from './hooks/useTheme'
 import { useTransactionTracker } from './hooks/useTransactionTracker'
 import { pinMessage, reactToMessage } from './utils/contractCalls'
 import { parseClarityError } from './utils/errors'
@@ -19,6 +21,7 @@ function App() {
   const { messages, isLoading, isLoadingMore, error, hasMore, loadMore, refreshMessages } = useMessages()
   const { totalMessages, totalFees, isLoading: statsLoading, refreshStats } = useStats()
   const { toast, showToast, hideToast } = useToast()
+  const { theme, toggleTheme } = useTheme()
 
   const handleRefresh = () => {
     refreshMessages()
@@ -72,6 +75,7 @@ function App() {
             <p>On-Chain Message Board</p>
           </div>
           <WalletConnect />
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
         </div>
       </header>
       <main className="app-main">
