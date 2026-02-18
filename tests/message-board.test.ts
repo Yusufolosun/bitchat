@@ -405,6 +405,37 @@ describe("message-board contract", () => {
       ).result;
       expect(result).toEqual(Cl.bool(true));
     });
+
+    it("does not reset post cooldown when reacting to a message", () => {
+      // User1 posts a message
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
+      
+      // User2 posts a message and record their post block
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Reply")], user2);
+      const user2PostBlock = simnet.blockHeight;
+
+      // Advance a few blocks (but less than min-post-gap)
+      simnet.mineEmptyBlocks(3);
+
+      // User2 reacts to user1's message - should NOT reset cooldown
+      simnet.callPublicFn("message-board-v3", "react-to-message", [Cl.uint(0)], user2);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-stats",
+        [Cl.principal(user2)],
+        user2
+      );
+
+      // last-post-block should still reflect user2's post, not the reaction
+      expect(result).toBeSome(
+        Cl.tuple({
+          "messages-posted": Cl.uint(1),
+          "total-spent": Cl.uint(FEE_POST_MESSAGE + 5000),
+          "last-post-block": Cl.uint(user2PostBlock)
+        })
+      );
+    });
   });
 
   describe("read-only functions", () => {
