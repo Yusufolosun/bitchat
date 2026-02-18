@@ -14,6 +14,33 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.btn-load-more {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-light);
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-load-more:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.btn-load-more:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @keyframes pulse {
   0%, 100% {
     opacity: 0.5;

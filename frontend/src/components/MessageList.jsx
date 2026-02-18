@@ -2,7 +2,7 @@ import React from 'react'
 import MessageCard from './MessageCard'
 import './MessageList.css'
 
-function MessageList({ messages, userAddress, onPin, onReact, isLoading }) {
+function MessageList({ messages, userAddress, onPin, onReact, isLoading, isLoadingMore, hasMore, onLoadMore }) {
   if (isLoading) {
     return (
       <div className="message-list">
@@ -23,14 +23,26 @@ function MessageList({ messages, userAddress, onPin, onReact, isLoading }) {
     <div className="message-list">
       {messages.map((message, index) => (
         <MessageCard
-          key={index}
+          key={message.id != null ? message.id : index}
           message={message}
-          messageId={index}
+          messageId={message.id != null ? message.id : index}
           userAddress={userAddress}
           onPin={onPin}
           onReact={onReact}
         />
       ))}
+
+      {hasMore && (
+        <div className="load-more-container">
+          <button
+            className="btn btn-load-more"
+            onClick={onLoadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? 'Loading...' : 'Load older messages'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
