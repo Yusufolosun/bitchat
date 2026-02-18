@@ -696,8 +696,17 @@
 (define-public (withdraw-fees (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (> amount u0) err-invalid-input)
     (asserts! (<= amount (stx-get-balance (as-contract tx-sender))) err-insufficient-balance)
-    (as-contract (stx-transfer? amount tx-sender recipient))
+    (try! (as-contract (stx-transfer? amount tx-sender recipient)))
+    (print {
+      event: "fees-withdrawn",
+      amount: amount,
+      recipient: recipient,
+      by: tx-sender,
+      block: block-height
+    })
+    (ok true)
   )
 )
 
