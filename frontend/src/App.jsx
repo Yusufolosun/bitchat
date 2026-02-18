@@ -12,7 +12,7 @@ import './App.css'
 function App() {
   const { isAuthenticated, address, userSession } = useWallet()
   const { messages, isLoading, error, refreshMessages } = useMessages()
-  const { totalMessages, totalFees, refreshStats } = useStats()
+  const { totalMessages, totalFees, isLoading: statsLoading, refreshStats } = useStats()
 
   const handleRefresh = () => {
     refreshMessages()
@@ -60,7 +60,7 @@ function App() {
         </div>
       </header>
       <main className="app-main">
-        <Stats totalMessages={totalMessages} totalFees={totalFees} />
+        <Stats totalMessages={totalMessages} totalFees={totalFees} isLoading={statsLoading} />
         <PostMessage onMessagePosted={handleRefresh} />
         <MessageList
           messages={messages}
