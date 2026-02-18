@@ -1,47 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { fetchAllMessages } from '../utils/contractReads'
 
 export const useMessages = () => {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  useEffect(() => {
-    // Mock data for now - will integrate with contract later
-    const mockMessages = [
-      {
-        author: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-        content: 'Welcome to Bitchat! This is the first message on the blockchain.',
-        timestamp: Math.floor(Date.now() / 1000) - 3600,
-        pinned: true,
-        pinExpiresAt: Math.floor(Date.now() / 1000) + 86400,
-        reactionCount: 5,
-      },
-      {
-        author: 'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG',
-        content: 'Loving this decentralized message board!',
-        timestamp: Math.floor(Date.now() / 1000) - 1800,
-        pinned: false,
-        pinExpiresAt: 0,
-        reactionCount: 2,
-      },
-    ]
-
-    setTimeout(() => {
-      setMessages(mockMessages)
+  const loadMessages = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const onChainMessages = await fetchAllMessages()
+      setMessages(onChainMessages)
+    } catch (err) {
+      console.error('Failed to load messages:', err)
+      setError(err.message || 'Failed to load messages')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }, [])
 
-  const refreshMessages = () => {
-    setIsLoading(true)
-    // Will implement actual refresh
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-  }
+  useEffect(() => {
+    loadMessages()
+  }, [loadMessages])
+
+  const refreshMessages = useCallback(() => {
+    loadMessages()
+  }, [loadMessages])
 
   return {
     messages,
     isLoading,
+    error,
     refreshMessages,
   }
 }

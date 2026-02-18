@@ -10,7 +10,7 @@ import './App.css'
 
 function App() {
   const { isAuthenticated, address, userSession } = useWallet()
-  const { messages, isLoading, refreshMessages } = useMessages()
+  const { messages, isLoading, error, refreshMessages } = useMessages()
   const [totalMessages, setTotalMessages] = useState(0)
   const [totalFees, setTotalFees] = useState(0)
 
