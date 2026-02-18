@@ -11,7 +11,7 @@ function WalletConnect() {
       <div className="wallet-connect connected">
         <span className={`network-badge ${network}`}>{network}</span>
         <span className="wallet-address">{formatAddress(address)}</span>
-        <button onClick={disconnect} className="btn btn-disconnect">
+        <button onClick={disconnect} className="btn btn-disconnect" aria-label="Disconnect wallet">
           Disconnect
         </button>
       </div>
@@ -20,7 +20,7 @@ function WalletConnect() {
 
   return (
     <div className="wallet-connect">
-      <button onClick={connect} className="btn btn-connect">
+      <button onClick={connect} className="btn btn-connect" aria-label="Connect Stacks wallet">
         Connect Wallet
       </button>
     </div>
