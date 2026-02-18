@@ -617,4 +617,137 @@ describe("message-board contract", () => {
       expect(result).toBeErr(Cl.uint(109)); // err-already-deleted
     });
   });
+
+  describe("edit-message function", () => {
+    it("allows author to edit their own message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Original content")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "edit-message",
+        [Cl.uint(0), Cl.stringUtf8("Updated content")],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects edit by non-author", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("User1 msg")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "edit-message",
+        [Cl.uint(0), Cl.stringUtf8("Tampered")],
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(102)); // err-unauthorized
+    });
+
+    it("rejects edit of non-existent message", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "edit-message",
+        [Cl.uint(999), Cl.stringUtf8("No target")],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(101)); // err-not-found
+    });
+
+    it("rejects edit of deleted message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("To delete")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "edit-message",
+        [Cl.uint(0), Cl.stringUtf8("Too late")],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(109)); // err-already-deleted
+    });
+
+    it("rejects empty content on edit", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Has content")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "edit-message",
+        [Cl.uint(0), Cl.stringUtf8("")],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("updates message content after edit", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Before edit")], user1);
+      simnet.callPublicFn("message-board-v3", "edit-message", [Cl.uint(0), Cl.stringUtf8("After edit")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-message",
+        [Cl.uint(0)],
+        user1
+      );
+
+      expect(result).toBeDefined();
+    });
+
+    it("stores edit history for first edit", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Original")], user1);
+      simnet.callPublicFn("message-board-v3", "edit-message", [Cl.uint(0), Cl.stringUtf8("Edited")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-edit-history",
+        [Cl.uint(0), Cl.uint(0)],
+        user1
+      );
+
+      expect(result).toBeDefined();
+    });
+
+    it("tracks multiple edits in history", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Version 1")], user1);
+      simnet.callPublicFn("message-board-v3", "edit-message", [Cl.uint(0), Cl.stringUtf8("Version 2")], user1);
+      simnet.callPublicFn("message-board-v3", "edit-message", [Cl.uint(0), Cl.stringUtf8("Version 3")], user1);
+
+      // Edit index 0 should have "Version 1"
+      const { result: edit0 } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-edit-history",
+        [Cl.uint(0), Cl.uint(0)],
+        user1
+      );
+      expect(edit0).toBeDefined();
+
+      // Edit index 1 should have "Version 2"
+      const { result: edit1 } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-edit-history",
+        [Cl.uint(0), Cl.uint(1)],
+        user1
+      );
+      expect(edit1).toBeDefined();
+    });
+
+    it("increments total-edits counter", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg")], user1);
+      simnet.callPublicFn("message-board-v3", "edit-message", [Cl.uint(0), Cl.stringUtf8("Edit 1")], user1);
+      simnet.callPublicFn("message-board-v3", "edit-message", [Cl.uint(0), Cl.stringUtf8("Edit 2")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-total-edits",
+        [],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.uint(2));
+    });
+  });
 });
