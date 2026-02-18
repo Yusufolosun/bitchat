@@ -230,6 +230,9 @@
     ;; Security: Check if contract is paused
     (asserts! (not (var-get contract-paused)) err-contract-paused)
     
+    ;; Cannot pin a deleted message
+    (asserts! (not (get deleted message)) err-already-deleted)
+    
     ;; Validate message exists and sender is author
     (asserts! (is-eq sender message-author) err-unauthorized)
     
@@ -289,6 +292,9 @@
     )
     ;; Security: Check if contract is paused
     (asserts! (not (var-get contract-paused)) err-contract-paused)
+    
+    ;; Cannot react to a deleted message
+    (asserts! (not (get deleted message)) err-already-deleted)
     
     ;; Validate message exists
     ;; Prevent duplicate reactions
