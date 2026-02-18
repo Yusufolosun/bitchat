@@ -1002,4 +1002,67 @@ describe("message-board contract", () => {
       expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
     });
   });
+
+  describe("withdraw-fees function", () => {
+    it("rejects zero-amount withdrawal", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "withdraw-fees",
+        [Cl.uint(0), Cl.principal(deployer)],
+        deployer
+      );
+
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("rejects non-owner withdrawal", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "withdraw-fees",
+        [Cl.uint(1000), Cl.principal(user1)],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(100)); // err-owner-only
+    });
+
+    it("rejects withdrawal exceeding balance", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "withdraw-fees",
+        [Cl.uint(999999999999), Cl.principal(deployer)],
+        deployer
+      );
+
+      expect(result).toBeErr(Cl.uint(108)); // err-insufficient-balance
+    });
+
+    it("allows owner to withdraw collected fees", () => {
+      // First generate some fees
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Generate fees")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "withdraw-fees",
+        [Cl.uint(5000), Cl.principal(deployer)],
+        deployer
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("emits fees-withdrawn event on successful withdrawal", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Fee gen")], user1);
+
+      const { events } = simnet.callPublicFn(
+        "message-board-v3",
+        "withdraw-fees",
+        [Cl.uint(5000), Cl.principal(deployer)],
+        deployer
+      );
+
+      const printEvents = events.filter((e: any) => e.event === "print_event");
+      expect(printEvents.length).toBeGreaterThan(0);
+    });
+  });
 });
