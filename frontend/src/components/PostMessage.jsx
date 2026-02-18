@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { useWallet } from '../hooks/useWallet'
 import { postMessage } from '../utils/contractCalls'
+import { parseClarityError } from '../utils/errors'
 import { MAX_MESSAGE_LENGTH } from '../utils/constants'
 import './PostMessage.css'
 
-function PostMessage({ onMessagePosted }) {
+function PostMessage({ onMessagePosted, showToast }) {
   const [content, setContent] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const { isAuthenticated, address } = useWallet()
@@ -19,11 +20,13 @@ function PostMessage({ onMessagePosted }) {
     try {
       await postMessage(content, address)
       setContent('')
+      if (showToast) showToast('Message submitted — waiting for confirmation.', 'success')
       if (onMessagePosted) {
         onMessagePosted()
       }
     } catch (error) {
-      console.error('Failed to post message:', error)
+      const msg = parseClarityError(error)
+      if (msg && showToast) showToast(msg, 'error')
     } finally {
       setIsPosting(false)
     }
