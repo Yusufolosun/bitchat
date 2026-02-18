@@ -41,3 +41,22 @@
 .btn-disconnect:hover {
   background: rgba(255, 255, 255, 0.15);
 }
+
+.network-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.network-badge.mainnet {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.network-badge.testnet {
+  background: rgba(255, 152, 0, 0.15);
+  color: #ff9800;
+}
