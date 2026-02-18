@@ -12,6 +12,8 @@
 (define-constant err-contract-paused (err u107))
 (define-constant err-insufficient-balance (err u108))
 (define-constant err-already-deleted (err u109))
+(define-constant err-no-pending-transfer (err u110))
+(define-constant err-not-proposed-owner (err u111))
 
 ;; Configuration
 (define-constant min-message-length u1)
@@ -44,6 +46,7 @@
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
+(define-data-var proposed-owner (optional principal) none)
 
 ;; Data maps
 (define-map messages
@@ -732,7 +735,65 @@
   (begin
     (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
     (var-set contract-owner new-owner)
+    (var-set proposed-owner none)
     (print { event: "ownership-transferred", from: tx-sender, to: new-owner })
     (ok true)
   )
+)
+
+;; Two-step ownership transfer pattern
+
+(define-public (propose-ownership-transfer (new-owner principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (var-set proposed-owner (some new-owner))
+    (print {
+      event: "ownership-transfer-proposed",
+      from: tx-sender,
+      proposed-owner: new-owner,
+      block: block-height
+    })
+    (ok true)
+  )
+)
+
+(define-public (accept-ownership)
+  (let
+    (
+      (pending (unwrap! (var-get proposed-owner) err-no-pending-transfer))
+    )
+    (asserts! (is-eq tx-sender pending) err-not-proposed-owner)
+    (let
+      (
+        (previous-owner (var-get contract-owner))
+      )
+      (var-set contract-owner tx-sender)
+      (var-set proposed-owner none)
+      (print {
+        event: "ownership-accepted",
+        from: previous-owner,
+        new-owner: tx-sender,
+        block: block-height
+      })
+      (ok true)
+    )
+  )
+)
+
+(define-public (cancel-ownership-transfer)
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (is-some (var-get proposed-owner)) err-no-pending-transfer)
+    (var-set proposed-owner none)
+    (print {
+      event: "ownership-transfer-cancelled",
+      by: tx-sender,
+      block: block-height
+    })
+    (ok true)
+  )
+)
+
+(define-read-only (get-proposed-owner)
+  (ok (var-get proposed-owner))
 )

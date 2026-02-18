@@ -1065,4 +1065,138 @@ describe("message-board contract", () => {
       expect(printEvents.length).toBeGreaterThan(0);
     });
   });
+
+  describe("two-step ownership transfer", () => {
+    it("owner can propose a new owner", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "propose-ownership-transfer",
+        [Cl.principal(user1)],
+        deployer
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("proposed owner is stored correctly", () => {
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-proposed-owner",
+        [],
+        deployer
+      );
+
+      expect(result).toBeOk(Cl.some(Cl.principal(user1)));
+    });
+
+    it("non-owner cannot propose ownership transfer", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "propose-ownership-transfer",
+        [Cl.principal(user2)],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(100)); // err-owner-only
+    });
+
+    it("proposed owner can accept ownership", () => {
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "accept-ownership",
+        [],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("non-proposed principal cannot accept ownership", () => {
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "accept-ownership",
+        [],
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(111)); // err-not-proposed-owner
+    });
+
+    it("cannot accept when no transfer is pending", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "accept-ownership",
+        [],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(110)); // err-no-pending-transfer
+    });
+
+    it("owner can cancel pending transfer", () => {
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "cancel-ownership-transfer",
+        [],
+        deployer
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+
+      // Verify proposed-owner is cleared
+      const { result: proposed } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-proposed-owner",
+        [],
+        deployer
+      );
+
+      expect(proposed).toBeOk(Cl.none());
+    });
+
+    it("cannot cancel when no transfer is pending", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "cancel-ownership-transfer",
+        [],
+        deployer
+      );
+
+      expect(result).toBeErr(Cl.uint(110)); // err-no-pending-transfer
+    });
+
+    it("full two-step transfer flow works end-to-end", () => {
+      // Step 1: Propose
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+
+      // Step 2: Accept
+      simnet.callPublicFn("message-board-v3", "accept-ownership", [], user1);
+
+      // Verify: new owner can pause contract (owner-only action)
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "pause-contract",
+        [],
+        user1
+      );
+      expect(result).toBeOk(Cl.bool(true));
+
+      // Verify: old owner cannot pause
+      const { result: result2 } = simnet.callPublicFn(
+        "message-board-v3",
+        "unpause-contract",
+        [],
+        deployer
+      );
+      expect(result2).toBeErr(Cl.uint(100)); // err-owner-only
+    });
+  });
 });
