@@ -3,6 +3,8 @@ import {
   uintCV,
   stringUtf8CV,
   PostConditionMode,
+  makeStandardSTXPostCondition,
+  FungibleConditionCode,
 } from '@stacks/transactions'
 import { getNetwork } from './network'
 import {
@@ -16,9 +18,22 @@ import {
   PIN_72HR_BLOCKS,
 } from './constants'
 
-export const postMessage = async (content, userSession) => {
+/**
+ * Build an STX post condition that limits the exact amount transferred.
+ * Ensures the wallet warns the user if the contract tries to move more
+ * STX than expected.
+ */
+const buildSTXPostCondition = (senderAddress, amount) => {
+  return makeStandardSTXPostCondition(
+    senderAddress,
+    FungibleConditionCode.Equal,
+    amount
+  )
+}
+
+export const postMessage = async (content, senderAddress) => {
   const network = getNetwork()
-  
+
   const functionArgs = [
     stringUtf8CV(content),
   ]
@@ -30,7 +45,10 @@ export const postMessage = async (content, userSession) => {
     contractName: CONTRACT_NAME,
     functionName: 'post-message',
     functionArgs,
-    postConditionMode: PostConditionMode.Allow,
+    postConditions: [
+      buildSTXPostCondition(senderAddress, FEE_POST_MESSAGE),
+    ],
+    postConditionMode: PostConditionMode.Deny,
     onFinish: (data) => {
       console.log('Transaction ID:', data.txId)
       return data.txId
@@ -43,10 +61,11 @@ export const postMessage = async (content, userSession) => {
   await openContractCall(options)
 }
 
-export const pinMessage = async (messageId, duration24hr, userSession) => {
+export const pinMessage = async (messageId, duration24hr, senderAddress) => {
   const network = getNetwork()
   const durationBlocks = duration24hr ? PIN_24HR_BLOCKS : PIN_72HR_BLOCKS
-  
+  const fee = duration24hr ? FEE_PIN_24HR : FEE_PIN_72HR
+
   const functionArgs = [
     uintCV(messageId),
     uintCV(durationBlocks),
@@ -59,7 +78,10 @@ export const pinMessage = async (messageId, duration24hr, userSession) => {
     contractName: CONTRACT_NAME,
     functionName: 'pin-message',
     functionArgs,
-    postConditionMode: PostConditionMode.Allow,
+    postConditions: [
+      buildSTXPostCondition(senderAddress, fee),
+    ],
+    postConditionMode: PostConditionMode.Deny,
     onFinish: (data) => {
       console.log('Pin Transaction ID:', data.txId)
       return data.txId
@@ -72,9 +94,9 @@ export const pinMessage = async (messageId, duration24hr, userSession) => {
   await openContractCall(options)
 }
 
-export const reactToMessage = async (messageId, userSession) => {
+export const reactToMessage = async (messageId, senderAddress) => {
   const network = getNetwork()
-  
+
   const functionArgs = [
     uintCV(messageId),
   ]
@@ -86,7 +108,10 @@ export const reactToMessage = async (messageId, userSession) => {
     contractName: CONTRACT_NAME,
     functionName: 'react-to-message',
     functionArgs,
-    postConditionMode: PostConditionMode.Allow,
+    postConditions: [
+      buildSTXPostCondition(senderAddress, FEE_REACTION),
+    ],
+    postConditionMode: PostConditionMode.Deny,
     onFinish: (data) => {
       console.log('Reaction Transaction ID:', data.txId)
       return data.txId
