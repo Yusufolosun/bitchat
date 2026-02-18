@@ -5,8 +5,8 @@
 }
 
 .wallet-address {
-  background: rgba(255, 107, 0, 0.1);
-  color: #ff8c00;
+  background: var(--color-primary-dim);
+  color: var(--color-primary-light);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-family: monospace;
@@ -24,18 +24,18 @@
 }
 
 .btn-connect {
-  background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   color: white;
 }
 
 .btn-connect:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(85, 70, 255, 0.3);
 }
 
 .btn-disconnect {
   background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
+  color: var(--color-text-secondary);
 }
 
 .btn-disconnect:hover {
