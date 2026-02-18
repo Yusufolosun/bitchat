@@ -237,12 +237,13 @@
     )
     
     ;; Update user stats with pin spending
+    ;; Note: preserve last-post-block to avoid resetting the post cooldown timer
     (map-set user-stats
       { user: sender }
       {
         messages-posted: (get messages-posted current-stats),
         total-spent: (+ (get total-spent current-stats) pin-fee),
-        last-post-block: block-height
+        last-post-block: (get last-post-block current-stats)
       }
     )
     
@@ -299,12 +300,13 @@
     )
     
     ;; Update user stats with reaction spending
+    ;; Note: preserve last-post-block to avoid resetting the post cooldown timer
     (map-set user-stats
       { user: sender }
       {
         messages-posted: (get messages-posted current-stats),
         total-spent: (+ (get total-spent current-stats) fee-reaction),
-        last-post-block: block-height
+        last-post-block: (get last-post-block current-stats)
       }
     )
     
