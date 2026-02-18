@@ -38,27 +38,26 @@ export const postMessage = async (content, senderAddress) => {
     stringUtf8CV(content),
   ]
 
-  const options = {
-    network,
-    anchorMode: 1,
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
-    functionName: 'post-message',
-    functionArgs,
-    postConditions: [
-      buildSTXPostCondition(senderAddress, FEE_POST_MESSAGE),
-    ],
-    postConditionMode: PostConditionMode.Deny,
-    onFinish: (data) => {
-      console.log('Transaction ID:', data.txId)
-      return data.txId
-    },
-    onCancel: () => {
-      console.log('Transaction cancelled')
-    },
-  }
-
-  await openContractCall(options)
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'post-message',
+      functionArgs,
+      postConditions: [
+        buildSTXPostCondition(senderAddress, FEE_POST_MESSAGE),
+      ],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => {
+        resolve(data.txId)
+      },
+      onCancel: () => {
+        reject(new Error('UserRejected'))
+      },
+    }).catch(reject)
+  })
 }
 
 export const pinMessage = async (messageId, duration24hr, senderAddress) => {
@@ -71,27 +70,26 @@ export const pinMessage = async (messageId, duration24hr, senderAddress) => {
     uintCV(durationBlocks),
   ]
 
-  const options = {
-    network,
-    anchorMode: 1,
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
-    functionName: 'pin-message',
-    functionArgs,
-    postConditions: [
-      buildSTXPostCondition(senderAddress, fee),
-    ],
-    postConditionMode: PostConditionMode.Deny,
-    onFinish: (data) => {
-      console.log('Pin Transaction ID:', data.txId)
-      return data.txId
-    },
-    onCancel: () => {
-      console.log('Pin transaction cancelled')
-    },
-  }
-
-  await openContractCall(options)
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'pin-message',
+      functionArgs,
+      postConditions: [
+        buildSTXPostCondition(senderAddress, fee),
+      ],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => {
+        resolve(data.txId)
+      },
+      onCancel: () => {
+        reject(new Error('UserRejected'))
+      },
+    }).catch(reject)
+  })
 }
 
 export const reactToMessage = async (messageId, senderAddress) => {
@@ -101,25 +99,24 @@ export const reactToMessage = async (messageId, senderAddress) => {
     uintCV(messageId),
   ]
 
-  const options = {
-    network,
-    anchorMode: 1,
-    contractAddress: CONTRACT_ADDRESS,
-    contractName: CONTRACT_NAME,
-    functionName: 'react-to-message',
-    functionArgs,
-    postConditions: [
-      buildSTXPostCondition(senderAddress, FEE_REACTION),
-    ],
-    postConditionMode: PostConditionMode.Deny,
-    onFinish: (data) => {
-      console.log('Reaction Transaction ID:', data.txId)
-      return data.txId
-    },
-    onCancel: () => {
-      console.log('Reaction transaction cancelled')
-    },
-  }
-
-  await openContractCall(options)
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'react-to-message',
+      functionArgs,
+      postConditions: [
+        buildSTXPostCondition(senderAddress, FEE_REACTION),
+      ],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => {
+        resolve(data.txId)
+      },
+      onCancel: () => {
+        reject(new Error('UserRejected'))
+      },
+    }).catch(reject)
+  })
 }
