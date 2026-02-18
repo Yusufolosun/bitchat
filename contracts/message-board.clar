@@ -190,6 +190,14 @@
   (ok (var-get total-deleted))
 )
 
+(define-read-only (get-total-edits)
+  (ok (var-get total-edits))
+)
+
+(define-read-only (get-edit-history (message-id uint) (edit-index uint))
+  (map-get? edit-history { message-id: message-id, edit-index: edit-index })
+)
+
 (define-read-only (get-total-fees-collected)
   (ok (var-get total-fees-collected))
 )
