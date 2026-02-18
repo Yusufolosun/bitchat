@@ -5,7 +5,7 @@
 }
 
 :root {
-  /* Stacks ecosystem palette */
+  /* Stacks ecosystem palette — dark mode (default) */
   --color-primary: #5546FF;
   --color-primary-light: #7C71FF;
   --color-primary-dim: rgba(85, 70, 255, 0.2);
@@ -20,6 +20,17 @@
   --color-error: #FF5C5C;
   --color-border: rgba(85, 70, 255, 0.2);
   --color-border-hover: rgba(85, 70, 255, 0.45);
+}
+
+[data-theme='light'] {
+  --color-bg: #F5F5FA;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #EEEEF5;
+  --color-text: #1C1E2A;
+  --color-text-secondary: #5A5C72;
+  --color-text-muted: #8E90A6;
+  --color-border: rgba(85, 70, 255, 0.15);
+  --color-border-hover: rgba(85, 70, 255, 0.35);
 }
 
 body {
