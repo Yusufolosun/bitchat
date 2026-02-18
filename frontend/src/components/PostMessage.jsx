@@ -43,22 +43,26 @@ function PostMessage({ onMessagePosted, showToast, onTxSubmitted }) {
 
   return (
     <form className="post-message" onSubmit={handleSubmit}>
+      <label htmlFor="message-input" className="sr-only">Message content</label>
       <textarea
+        id="message-input"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="What's on your mind? (max 280 characters)"
         maxLength={MAX_MESSAGE_LENGTH}
         rows={4}
         disabled={isPosting}
+        aria-describedby="char-count"
       />
       <div className="post-actions">
-        <span className="char-count">
+        <span className="char-count" id="char-count" aria-live="polite">
           {content.length}/{MAX_MESSAGE_LENGTH}
         </span>
         <button 
           type="submit" 
           className="btn btn-post" 
           disabled={!content.trim() || isPosting}
+          aria-label={isPosting ? 'Posting message' : 'Post message'}
         >
           {isPosting ? 'Posting...' : 'Post Message'}
         </button>
