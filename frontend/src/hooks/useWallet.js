@@ -1,8 +1,20 @@
 import { useState, useEffect } from 'react'
 import { AppConfig, UserSession, showConnect } from '@stacks/connect'
+import { NETWORK } from '../utils/constants'
 
 const appConfig = new AppConfig(['store_write', 'publish_data'])
 const userSession = new UserSession({ appConfig })
+
+/**
+ * Resolve the correct STX address based on network configuration
+ */
+const getAddress = (userData) => {
+  if (!userData?.profile?.stxAddress) return null
+  const addresses = userData.profile.stxAddress
+  return NETWORK === 'mainnet'
+    ? addresses.mainnet || addresses.testnet
+    : addresses.testnet || addresses.mainnet
+}
 
 export const useWallet = () => {
   const [userData, setUserData] = useState(null)
@@ -46,7 +58,7 @@ export const useWallet = () => {
   return {
     userData,
     isAuthenticated,
-    address: userData?.profile?.stxAddress?.testnet || userData?.profile?.stxAddress?.mainnet,
+    address: getAddress(userData),
     connect,
     disconnect,
     userSession
