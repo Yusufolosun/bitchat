@@ -750,4 +750,102 @@ describe("message-board contract", () => {
       expect(result).toBeOk(Cl.uint(2));
     });
   });
+
+  describe("react-to-message-typed function", () => {
+    it("allows user to react with a specific type", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Typed react test")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "react-to-message-typed",
+        [Cl.uint(0), Cl.uint(2)], // fire reaction
+        user2
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects invalid reaction type 0", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "react-to-message-typed",
+        [Cl.uint(0), Cl.uint(0)], // invalid: below range
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("rejects invalid reaction type above max", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "react-to-message-typed",
+        [Cl.uint(0), Cl.uint(6)], // invalid: above max
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("prevents duplicate typed reaction from same user", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
+      simnet.callPublicFn("message-board-v3", "react-to-message-typed", [Cl.uint(0), Cl.uint(3)], user2);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "react-to-message-typed",
+        [Cl.uint(0), Cl.uint(1)], // different type but same user
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(105)); // err-already-reacted
+    });
+
+    it("returns reaction type via get-user-reaction-type", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
+      simnet.callPublicFn("message-board-v3", "react-to-message-typed", [Cl.uint(0), Cl.uint(4)], user2); // sad
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-reaction-type",
+        [Cl.uint(0), Cl.principal(user2)],
+        user1
+      );
+
+      expect(result).toBeSome(Cl.uint(4));
+    });
+
+    it("tracks reaction count by type", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Popular")], user1);
+      simnet.callPublicFn("message-board-v3", "react-to-message-typed", [Cl.uint(0), Cl.uint(2)], user1); // fire
+      simnet.callPublicFn("message-board-v3", "react-to-message-typed", [Cl.uint(0), Cl.uint(2)], user2); // fire
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-reaction-count-by-type",
+        [Cl.uint(0), Cl.uint(2)], // fire type
+        user1
+      );
+
+      expect(result).toEqual(Cl.uint(2));
+    });
+
+    it("backward compatible react-to-message defaults to like type", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Old style")], user1);
+      simnet.callPublicFn("message-board-v3", "react-to-message", [Cl.uint(0)], user2);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-reaction-type",
+        [Cl.uint(0), Cl.principal(user2)],
+        user1
+      );
+
+      expect(result).toBeSome(Cl.uint(1)); // like = u1
+    });
+  });
 });
