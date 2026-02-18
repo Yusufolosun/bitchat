@@ -59,6 +59,7 @@ export const useWallet = () => {
     userData,
     isAuthenticated,
     address: getAddress(userData),
+    network: NETWORK,
     connect,
     disconnect,
     userSession
