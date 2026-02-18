@@ -84,6 +84,63 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       );
       expect(result).toBeOk(Cl.uint(1));
     });
+
+    it("pinning a message does not affect post cooldown", () => {
+      // Post a message
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Pinnable")], user3);
+      const postBlock = simnet.blockHeight;
+
+      // Advance 3 blocks (less than min-post-gap of 6)
+      simnet.mineEmptyBlocks(3);
+
+      // Pin the message
+      simnet.callPublicFn("message-board-v3", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user3);
+
+      // Verify last-post-block is still the original post block
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-stats",
+        [Cl.principal(user3)],
+        user3
+      );
+
+      expect(result).toBeSome(
+        Cl.tuple({
+          "messages-posted": Cl.uint(1),
+          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_PIN_24HR),
+          "last-post-block": Cl.uint(postBlock)
+        })
+      );
+    });
+
+    it("reacting to a message does not affect post cooldown", () => {
+      // User1 posts a message
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Reactable")], user1);
+
+      // User2 posts, then reacts without enough gap
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("My post")], user2);
+      const user2PostBlock = simnet.blockHeight;
+
+      simnet.mineEmptyBlocks(2);
+
+      // React to user1's message
+      simnet.callPublicFn("message-board-v3", "react-to-message", [Cl.uint(0)], user2);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-stats",
+        [Cl.principal(user2)],
+        user2
+      );
+
+      expect(result).toBeSome(
+        Cl.tuple({
+          "messages-posted": Cl.uint(1),
+          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_REACTION),
+          "last-post-block": Cl.uint(user2PostBlock)
+        })
+      );
+    });
   });
 
   describe("Contract Pause Functionality", () => {
