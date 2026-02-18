@@ -21,6 +21,14 @@
 (define-constant pin-72hr-blocks u432)
 (define-constant min-post-gap u6) ;; ~1 hour between posts (spam prevention)
 
+;; Reaction types (1-5)
+(define-constant reaction-type-like u1)
+(define-constant reaction-type-fire u2)
+(define-constant reaction-type-laugh u3)
+(define-constant reaction-type-sad u4)
+(define-constant reaction-type-dislike u5)
+(define-constant max-reaction-type u5)
+
 ;; Fee structure (in microSTX)
 (define-constant fee-post-message u10000)        ;; 0.00001 STX (~$0.0003)
 (define-constant fee-pin-24hr u50000)            ;; 0.00005 STX (~$0.0015)
@@ -65,7 +73,12 @@
 
 (define-map reactions
   { message-id: uint, user: principal }
-  { reacted: bool }
+  { reacted: bool, reaction-type: uint }
+)
+
+(define-map typed-reaction-counts
+  { message-id: uint, reaction-type: uint }
+  { count: uint }
 )
 
 (define-map edit-history
