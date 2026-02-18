@@ -11,6 +11,7 @@
 (define-constant err-too-soon (err u106))
 (define-constant err-contract-paused (err u107))
 (define-constant err-insufficient-balance (err u108))
+(define-constant err-already-deleted (err u109))
 
 ;; Configuration
 (define-constant min-message-length u1)
@@ -29,6 +30,7 @@
 ;; Data variables
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
+(define-data-var total-deleted uint u0)
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
@@ -44,7 +46,8 @@
     expires-at: uint,
     pinned: bool,
     pin-expires-at: uint,
-    reaction-count: uint
+    reaction-count: uint,
+    deleted: bool
   }
 )
 
