@@ -5,9 +5,9 @@
 }
 
 .app-header {
-  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f0f17 100%);
   padding: 2rem;
-  border-bottom: 2px solid #ff6b00;
+  border-bottom: 2px solid var(--color-primary);
 }
 
 .header-content {
@@ -26,7 +26,7 @@
 .header-title h1 {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -34,7 +34,7 @@
 }
 
 .header-title p {
-  color: #999;
+  color: var(--color-text-secondary);
   font-size: 1.1rem;
 }
 
