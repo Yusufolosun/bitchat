@@ -47,9 +47,14 @@
 }
 
 @media (max-width: 768px) {
+  .app-header {
+    padding: 1.25rem 1rem;
+  }
+
   .header-content {
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
   }
   
   .header-title {
@@ -58,5 +63,13 @@
   
   .header-title h1 {
     font-size: 2rem;
+  }
+
+  .header-title p {
+    font-size: 0.95rem;
+  }
+
+  .app-main {
+    padding: 1rem 0.75rem;
   }
 }
