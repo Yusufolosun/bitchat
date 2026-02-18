@@ -44,6 +44,7 @@
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
+(define-data-var proposed-owner (optional principal) none)
 
 ;; Data maps
 (define-map messages
