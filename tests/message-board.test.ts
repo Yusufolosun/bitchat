@@ -848,4 +848,158 @@ describe("message-board contract", () => {
       expect(result).toBeSome(Cl.uint(1)); // like = u1
     });
   });
+
+  describe("reply-to-message function", () => {
+    it("can reply to an existing message", () => {
+      // Post parent message
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Parent message")], user1);
+      simnet.mineEmptyBlocks(5);
+
+      // Reply to it
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "reply-to-message",
+        [Cl.uint(0), Cl.stringUtf8("This is a reply")],
+        user2
+      );
+
+      expect(result).toBeOk(Cl.uint(1)); // reply gets message-id 1
+    });
+
+    it("increments parent reply-count", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Parent post")], user1);
+      simnet.mineEmptyBlocks(5);
+
+      simnet.callPublicFn("message-board-v3", "reply-to-message", [Cl.uint(0), Cl.stringUtf8("Reply one")], user2);
+      simnet.mineEmptyBlocks(5);
+
+      simnet.callPublicFn("message-board-v3", "reply-to-message", [Cl.uint(0), Cl.stringUtf8("Reply two")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-message",
+        [Cl.uint(0)],
+        user1
+      );
+
+      // Verify parent has reply-count of 2 by checking the serialized output
+      const resultStr = Cl.prettyPrint(result);
+      expect(resultStr).toContain("reply-count: u2");
+    });
+
+    it("reply is marked as a reply via is-reply", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Original")], user1);
+      simnet.mineEmptyBlocks(5);
+
+      simnet.callPublicFn("message-board-v3", "reply-to-message", [Cl.uint(0), Cl.stringUtf8("Reply here")], user2);
+
+      // Check parent is NOT a reply
+      const parentResult = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-reply",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(parentResult.result).toBeOk(Cl.bool(false));
+
+      // Check reply IS a reply
+      const replyResult = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-reply",
+        [Cl.uint(1)],
+        user1
+      );
+      expect(replyResult.result).toBeOk(Cl.bool(true));
+    });
+
+    it("get-reply-parent returns correct parent ID", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("The parent")], user1);
+      simnet.mineEmptyBlocks(5);
+
+      simnet.callPublicFn("message-board-v3", "reply-to-message", [Cl.uint(0), Cl.stringUtf8("The reply")], user2);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-reply-parent",
+        [Cl.uint(1)],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.uint(0)); // parent is message 0
+    });
+
+    it("cannot reply to a non-existent message", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "reply-to-message",
+        [Cl.uint(999), Cl.stringUtf8("Reply to nothing")],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(101)); // err-not-found
+    });
+
+    it("cannot reply to a deleted message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Will be deleted")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+      simnet.mineEmptyBlocks(5);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "reply-to-message",
+        [Cl.uint(0), Cl.stringUtf8("Reply to deleted")],
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(109)); // err-already-deleted
+    });
+
+    it("increments total-replies counter", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Root post")], user1);
+      simnet.mineEmptyBlocks(5);
+
+      simnet.callPublicFn("message-board-v3", "reply-to-message", [Cl.uint(0), Cl.stringUtf8("First reply")], user2);
+      simnet.mineEmptyBlocks(5);
+
+      simnet.callPublicFn("message-board-v3", "reply-to-message", [Cl.uint(0), Cl.stringUtf8("Second reply")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-total-replies",
+        [],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.uint(2));
+    });
+
+    it("enforces spam prevention on replies", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Parent msg")], user1);
+
+      // Try to reply immediately (same block, no gap)
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "reply-to-message",
+        [Cl.uint(0), Cl.stringUtf8("Too fast reply")],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(106)); // err-too-soon
+    });
+
+    it("validates reply content length", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Parent")], user1);
+      simnet.mineEmptyBlocks(5);
+
+      // Empty content should fail
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "reply-to-message",
+        [Cl.uint(0), Cl.stringUtf8("")],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+  });
 });
