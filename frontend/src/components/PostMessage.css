@@ -68,3 +68,32 @@
   cursor: not-allowed;
   transform: none;
 }
+
+@media (max-width: 768px) {
+  .post-message {
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .post-message textarea {
+    padding: 0.75rem;
+    min-height: 80px;
+    font-size: 0.95rem;
+  }
+
+  .post-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .btn-post {
+    width: 100%;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .char-count {
+    text-align: center;
+  }
+}
