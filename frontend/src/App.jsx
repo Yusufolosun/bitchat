@@ -27,7 +27,7 @@ function App() {
     
     try {
       const duration24hr = confirm('Pin for 24 hours? (Cancel for 72 hours)')
-      await pinMessage(messageId, duration24hr, userSession)
+      await pinMessage(messageId, duration24hr, address)
       setTimeout(handleRefresh, 2000)
     } catch (error) {
       console.error('Failed to pin message:', error)
@@ -41,7 +41,7 @@ function App() {
     }
     
     try {
-      await reactToMessage(messageId, userSession)
+      await reactToMessage(messageId, address)
       setTimeout(handleRefresh, 2000)
     } catch (error) {
       console.error('Failed to react to message:', error)
