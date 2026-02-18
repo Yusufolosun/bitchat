@@ -21,6 +21,14 @@
 (define-constant pin-72hr-blocks u432)
 (define-constant min-post-gap u6) ;; ~1 hour between posts (spam prevention)
 
+;; Reaction types (1-5)
+(define-constant reaction-type-like u1)
+(define-constant reaction-type-fire u2)
+(define-constant reaction-type-laugh u3)
+(define-constant reaction-type-sad u4)
+(define-constant reaction-type-dislike u5)
+(define-constant max-reaction-type u5)
+
 ;; Fee structure (in microSTX)
 (define-constant fee-post-message u10000)        ;; 0.00001 STX (~$0.0003)
 (define-constant fee-pin-24hr u50000)            ;; 0.00005 STX (~$0.0015)
@@ -65,7 +73,12 @@
 
 (define-map reactions
   { message-id: uint, user: principal }
-  { reacted: bool }
+  { reacted: bool, reaction-type: uint }
+)
+
+(define-map typed-reaction-counts
+  { message-id: uint, reaction-type: uint }
+  { count: uint }
 )
 
 (define-map edit-history
@@ -210,6 +223,13 @@
   (default-to false (get reacted (map-get? reactions { message-id: message-id, user: user })))
 )
 
+(define-read-only (get-user-reaction-type (message-id uint) (user principal))
+  (get reaction-type (map-get? reactions { message-id: message-id, user: user }))
+)
+
+(define-read-only (get-reaction-count-by-type (message-id uint) (reaction-type uint))
+  (default-to u0 (get count (map-get? typed-reaction-counts { message-id: message-id, reaction-type: reaction-type })))
+)
 (define-read-only (is-contract-paused)
   (var-get contract-paused)
 )
@@ -310,6 +330,7 @@
         { messages-posted: u0, total-spent: u0, last-post-block: u0 }
         (map-get? user-stats { user: sender })
       ))
+      (current-type-count (default-to { count: u0 } (map-get? typed-reaction-counts { message-id: message-id, reaction-type: reaction-type-like })))
     )
     ;; Security: Check if contract is paused
     (asserts! (not (var-get contract-paused)) err-contract-paused)
@@ -327,10 +348,16 @@
     ;; Update fee counter
     (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
     
-    ;; Store reaction  
+    ;; Store reaction (defaults to 'like' type for backward compatibility)
     (map-set reactions
       { message-id: message-id, user: sender }
-      { reacted: true }
+      { reacted: true, reaction-type: reaction-type-like }
+    )
+
+    ;; Update typed reaction count
+    (map-set typed-reaction-counts
+      { message-id: message-id, reaction-type: reaction-type-like }
+      { count: (+ (get count current-type-count) u1) }
     )
     
     ;; Increment reaction count on message
@@ -356,9 +383,85 @@
     (print {
       event: "reaction-added",
       message-id: message-id,
-      user: sender
+      user: sender,
+      reaction-type: reaction-type-like
     })
     
+    (ok true)
+  )
+)
+
+;; Typed reaction - allows specifying reaction type (1-5)
+(define-public (react-to-message-typed (message-id uint) (rtype uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (already-reacted (default-to false (get reacted (map-get? reactions { message-id: message-id, user: sender }))))
+      (current-reaction-count (get reaction-count message))
+      (current-stats (default-to 
+        { messages-posted: u0, total-spent: u0, last-post-block: u0 }
+        (map-get? user-stats { user: sender })
+      ))
+      (current-type-count (default-to { count: u0 } (map-get? typed-reaction-counts { message-id: message-id, reaction-type: rtype })))
+    )
+    ;; Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+
+    ;; Cannot react to a deleted message
+    (asserts! (not (get deleted message)) err-already-deleted)
+
+    ;; Validate reaction type is in range [1, max-reaction-type]
+    (asserts! (>= rtype u1) err-invalid-input)
+    (asserts! (<= rtype max-reaction-type) err-invalid-input)
+
+    ;; Prevent duplicate reactions
+    (asserts! (not already-reacted) err-already-reacted)
+
+    ;; Collect reaction fee
+    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+
+    ;; Update fee counter
+    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
+
+    ;; Store reaction with type
+    (map-set reactions
+      { message-id: message-id, user: sender }
+      { reacted: true, reaction-type: rtype }
+    )
+
+    ;; Update typed reaction count
+    (map-set typed-reaction-counts
+      { message-id: message-id, reaction-type: rtype }
+      { count: (+ (get count current-type-count) u1) }
+    )
+
+    ;; Increment total reaction count on message
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        reaction-count: (+ current-reaction-count u1)
+      })
+    )
+
+    ;; Update user stats
+    (map-set user-stats
+      { user: sender }
+      {
+        messages-posted: (get messages-posted current-stats),
+        total-spent: (+ (get total-spent current-stats) fee-reaction),
+        last-post-block: (get last-post-block current-stats)
+      }
+    )
+
+    ;; Event logging
+    (print {
+      event: "reaction-added",
+      message-id: message-id,
+      user: sender,
+      reaction-type: rtype
+    })
+
     (ok true)
   )
 )
