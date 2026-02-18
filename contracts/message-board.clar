@@ -40,6 +40,7 @@
 (define-data-var total-messages uint u0)
 (define-data-var total-deleted uint u0)
 (define-data-var total-edits uint u0)
+(define-data-var total-replies uint u0)
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
@@ -58,7 +59,9 @@
     reaction-count: uint,
     deleted: bool,
     edited: bool,
-    edit-count: uint
+    edit-count: uint,
+    reply-to: uint,
+    reply-count: uint
   }
 )
 
