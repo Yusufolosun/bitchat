@@ -60,3 +60,22 @@
   background: rgba(255, 152, 0, 0.15);
   color: #ff9800;
 }
+
+@media (max-width: 768px) {
+  .wallet-connect {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .wallet-address {
+    font-size: 0.8rem;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .btn {
+    min-height: 44px;
+    padding: 0.65rem 1.25rem;
+  }
+}
