@@ -160,7 +160,9 @@
         reaction-count: u0,
         deleted: false,
         edited: false,
-        edit-count: u0
+        edit-count: u0,
+        reply-to: u0,
+        reply-count: u0
       }
     )
     
