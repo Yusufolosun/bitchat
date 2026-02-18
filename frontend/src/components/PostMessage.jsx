@@ -7,7 +7,7 @@ import './PostMessage.css'
 function PostMessage({ onMessagePosted }) {
   const [content, setContent] = useState('')
   const [isPosting, setIsPosting] = useState(false)
-  const { isAuthenticated, userSession } = useWallet()
+  const { isAuthenticated, address } = useWallet()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -17,7 +17,7 @@ function PostMessage({ onMessagePosted }) {
     setIsPosting(true)
     
     try {
-      await postMessage(content, userSession)
+      await postMessage(content, address)
       setContent('')
       if (onMessagePosted) {
         onMessagePosted()
