@@ -14,7 +14,7 @@ import './App.css'
 
 function App() {
   const { isAuthenticated, address, userSession } = useWallet()
-  const { messages, isLoading, error, refreshMessages } = useMessages()
+  const { messages, isLoading, isLoadingMore, error, hasMore, loadMore, refreshMessages } = useMessages()
   const { totalMessages, totalFees, isLoading: statsLoading, refreshStats } = useStats()
   const { toast, showToast, hideToast } = useToast()
 
@@ -76,6 +76,9 @@ function App() {
           onPin={handlePin}
           onReact={handleReact}
           isLoading={isLoading}
+          isLoadingMore={isLoadingMore}
+          hasMore={hasMore}
+          onLoadMore={loadMore}
         />
       </main>
       <Toast message={toast.message} type={toast.type} onClose={hideToast} />
