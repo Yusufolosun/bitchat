@@ -3,6 +3,7 @@ import WalletConnect from './components/WalletConnect'
 import PostMessage from './components/PostMessage'
 import MessageList from './components/MessageList'
 import Stats from './components/Stats'
+import Footer from './components/Footer'
 import Toast from './components/Toast'
 import { useWallet } from './hooks/useWallet'
 import { useMessages } from './hooks/useMessages'
@@ -87,6 +88,7 @@ function App() {
           onLoadMore={loadMore}
         />
       </main>
+      <Footer />
       <Toast message={toast.message} type={toast.type} onClose={hideToast} />
     </div>
   )
