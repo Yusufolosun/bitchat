@@ -30,3 +30,29 @@ export const timeAgo = (timestamp) => {
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
   return `${Math.floor(seconds / 86400)}d ago`
 }
+
+/**
+ * Sanitize user-generated message text before rendering.
+ *
+ * React's JSX already escapes interpolated strings, so this is a
+ * defence-in-depth measure for when we add rich formatting (links,
+ * markdown) in the future.
+ *
+ * - Strips HTML tags
+ * - Removes javascript: URIs
+ * - Trims excessive whitespace
+ */
+export const sanitizeMessage = (text) => {
+  if (!text) return ''
+
+  return text
+    // Strip HTML tags
+    .replace(/<[^>]*>/g, '')
+    // Remove javascript: URIs (case-insensitive, accounts for whitespace tricks)
+    .replace(/javascript\s*:/gi, '')
+    // Remove data: URIs that could be abused
+    .replace(/data\s*:[^,]*,/gi, '')
+    // Collapse excessive newlines (max 2 consecutive)
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
