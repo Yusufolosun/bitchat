@@ -4,11 +4,12 @@ import { formatAddress } from '../utils/formatters'
 import './WalletConnect.css'
 
 function WalletConnect() {
-  const { isAuthenticated, address, connect, disconnect } = useWallet()
+  const { isAuthenticated, address, network, connect, disconnect } = useWallet()
 
   if (isAuthenticated) {
     return (
       <div className="wallet-connect connected">
+        <span className={`network-badge ${network}`}>{network}</span>
         <span className="wallet-address">{formatAddress(address)}</span>
         <button onClick={disconnect} className="btn btn-disconnect">
           Disconnect
