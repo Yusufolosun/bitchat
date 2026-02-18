@@ -113,3 +113,41 @@
   background: rgba(85, 70, 255, 0.15);
   border-color: var(--color-border-hover);
 }
+
+@media (max-width: 768px) {
+  .message-card {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .message-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .author-address {
+    font-size: 0.8rem;
+  }
+
+  .message-content {
+    font-size: 0.95rem;
+  }
+
+  .message-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .message-actions {
+    width: 100%;
+  }
+
+  .btn-action {
+    flex: 1;
+    min-height: 44px;
+    text-align: center;
+    justify-content: center;
+  }
+}
