@@ -824,4 +824,64 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(total).toBeUint(2);
     });
   });
+
+  describe("Message Deletion Edge Cases", () => {
+    it("deleted message data is still retrievable via get-message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Soft delete test")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      // get-message should still return the record (soft delete)
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-message",
+        [Cl.uint(0)],
+        user1
+      );
+
+      expect(result).toBeDefined();
+    });
+
+    it("cannot pin a deleted message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Pin then delete")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "pin-message",
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(109)); // err-already-deleted
+    });
+
+    it("deletion does not affect total-messages count", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 1")], user1);
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 2")], user2);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-total-messages",
+        [],
+        user1
+      );
+
+      // total-messages counts all posts (including deleted)
+      expect(result).toBeOk(Cl.uint(2));
+    });
+
+    it("contract owner cannot delete other users messages", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("User msg")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "delete-message",
+        [Cl.uint(0)],
+        deployer // deployer is owner but not author
+      );
+
+      expect(result).toBeErr(Cl.uint(ERR_UNAUTHORIZED));
+    });
+  });
 });

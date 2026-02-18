@@ -11,6 +11,7 @@
 (define-constant err-too-soon (err u106))
 (define-constant err-contract-paused (err u107))
 (define-constant err-insufficient-balance (err u108))
+(define-constant err-already-deleted (err u109))
 
 ;; Configuration
 (define-constant min-message-length u1)
@@ -29,6 +30,7 @@
 ;; Data variables
 (define-data-var message-nonce uint u0)
 (define-data-var total-messages uint u0)
+(define-data-var total-deleted uint u0)
 (define-data-var total-fees-collected uint u0)
 (define-data-var contract-owner principal tx-sender)
 (define-data-var contract-paused bool false)
@@ -44,7 +46,8 @@
     expires-at: uint,
     pinned: bool,
     pin-expires-at: uint,
-    reaction-count: uint
+    reaction-count: uint,
+    deleted: bool
   }
 )
 
@@ -127,7 +130,8 @@
         expires-at: expiry-block,
         pinned: false,
         pin-expires-at: u0,
-        reaction-count: u0
+        reaction-count: u0,
+        deleted: false
       }
     )
     
@@ -169,6 +173,10 @@
   (ok (var-get total-messages))
 )
 
+(define-read-only (get-total-deleted)
+  (ok (var-get total-deleted))
+)
+
 (define-read-only (get-total-fees-collected)
   (ok (var-get total-fees-collected))
 )
@@ -199,6 +207,13 @@
   )
 )
 
+(define-read-only (is-message-deleted (message-id uint))
+  (match (map-get? messages { message-id: message-id })
+    message (get deleted message)
+    false
+  )
+)
+
 (define-public (pin-message (message-id uint) (duration uint))
   (let
     (
@@ -214,6 +229,9 @@
     )
     ;; Security: Check if contract is paused
     (asserts! (not (var-get contract-paused)) err-contract-paused)
+    
+    ;; Cannot pin a deleted message
+    (asserts! (not (get deleted message)) err-already-deleted)
     
     ;; Validate message exists and sender is author
     (asserts! (is-eq sender message-author) err-unauthorized)
@@ -275,6 +293,9 @@
     ;; Security: Check if contract is paused
     (asserts! (not (var-get contract-paused)) err-contract-paused)
     
+    ;; Cannot react to a deleted message
+    (asserts! (not (get deleted message)) err-already-deleted)
+    
     ;; Validate message exists
     ;; Prevent duplicate reactions
     (asserts! (not already-reacted) err-already-reacted)
@@ -317,6 +338,49 @@
       user: sender
     })
     
+    (ok true)
+  )
+)
+
+;; Message deletion - author only
+(define-public (delete-message (message-id uint))
+  (let
+    (
+      (message (unwrap! (map-get? messages { message-id: message-id }) err-not-found))
+      (sender tx-sender)
+      (message-author (get author message))
+      (is-deleted (get deleted message))
+    )
+    ;; Check if contract is paused
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+
+    ;; Only the original author can delete their message
+    (asserts! (is-eq sender message-author) err-unauthorized)
+
+    ;; Cannot delete an already-deleted message
+    (asserts! (not is-deleted) err-already-deleted)
+
+    ;; Soft delete: mark the message as deleted but keep the record
+    (map-set messages
+      { message-id: message-id }
+      (merge message {
+        deleted: true,
+        pinned: false,
+        pin-expires-at: u0
+      })
+    )
+
+    ;; Increment deletion counter
+    (var-set total-deleted (+ (var-get total-deleted) u1))
+
+    ;; Event logging
+    (print {
+      event: "message-deleted",
+      message-id: message-id,
+      author: sender,
+      block: block-height
+    })
+
     (ok true)
   )
 )

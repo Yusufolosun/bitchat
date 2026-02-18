@@ -481,4 +481,140 @@ describe("message-board contract", () => {
       expect(result).toBeOk(Cl.uint(1)); // Next ID will be 1
     });
   });
+
+  describe("delete-message function", () => {
+    it("allows author to delete their own message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("To be deleted")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "delete-message",
+        [Cl.uint(0)],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects deletion by non-author", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("User1 message")], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "delete-message",
+        [Cl.uint(0)],
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(102)); // err-unauthorized
+    });
+
+    it("rejects deletion of non-existent message", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "delete-message",
+        [Cl.uint(999)],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(101)); // err-not-found
+    });
+
+    it("rejects double deletion", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Delete me")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "delete-message",
+        [Cl.uint(0)],
+        user1
+      );
+
+      expect(result).toBeErr(Cl.uint(109)); // err-already-deleted
+    });
+
+    it("marks message as deleted via is-message-deleted", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Check deletion")], user1);
+
+      // Before deletion
+      let { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-deleted",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(result).toEqual(Cl.bool(false));
+
+      // Delete
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      // After deletion
+      result = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-deleted",
+        [Cl.uint(0)],
+        user1
+      ).result;
+      expect(result).toEqual(Cl.bool(true));
+    });
+
+    it("increments total-deleted counter", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
+      simnet.mineEmptyBlocks(6);
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Second")], user1);
+
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(1)], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-total-deleted",
+        [],
+        user1
+      );
+
+      expect(result).toBeOk(Cl.uint(2));
+    });
+
+    it("removes pin status on deletion", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Pinned msg")], user1);
+      simnet.callPublicFn("message-board-v3", "pin-message", [Cl.uint(0), Cl.uint(144)], user1);
+
+      // Verify pinned
+      let { result: pinned } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-pinned",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(pinned).toEqual(Cl.bool(true));
+
+      // Delete the message
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      // Pin should be cleared
+      let { result: pinnedAfter } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-pinned",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(pinnedAfter).toEqual(Cl.bool(false));
+    });
+
+    it("prevents reacting to a deleted message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Will delete")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "react-to-message",
+        [Cl.uint(0)],
+        user2
+      );
+
+      expect(result).toBeErr(Cl.uint(109)); // err-already-deleted
+    });
+  });
 });
