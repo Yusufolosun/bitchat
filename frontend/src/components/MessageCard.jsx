@@ -14,7 +14,7 @@ function MessageCard({ message, messageId, userAddress, onPin, onReact }) {
   const isAuthor = userAddress === author
 
   return (
-    <div className={`message-card ${pinned ? 'pinned' : ''}`}>
+    <div className={`message-card ${pinned ? 'pinned' : ''}`} role="article" aria-label={`Message from ${formatAddress(author)}`}>
       <div className="message-header">
         <div className="message-author">
           <span className="author-address">{formatAddress(author)}</span>
@@ -38,6 +38,7 @@ function MessageCard({ message, messageId, userAddress, onPin, onReact }) {
             className="btn-action" 
             onClick={() => onReact(messageId)}
             title="React to message"
+            aria-label={`React to message by ${formatAddress(author)}, current reactions: ${reactionCount}`}
           >
             ❤️ React
           </button>
@@ -47,6 +48,7 @@ function MessageCard({ message, messageId, userAddress, onPin, onReact }) {
               className="btn-action btn-pin" 
               onClick={() => onPin(messageId)}
               title="Pin this message"
+              aria-label="Pin this message"
             >
               📌 Pin
             </button>
