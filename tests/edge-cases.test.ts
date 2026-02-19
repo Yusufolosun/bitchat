@@ -1091,4 +1091,57 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       }
     });
   });
+
+  describe("Batch Read Helpers", () => {
+    it("get-contract-stats returns all counters", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Stats check")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-contract-stats",
+        [],
+        user1
+      );
+
+      const printed = Cl.prettyPrint(result);
+      expect(printed).toContain("total-messages");
+      expect(printed).toContain("total-fees-collected");
+      expect(printed).toContain("message-nonce");
+      expect(printed).toContain("paused");
+    });
+
+    it("get-page-range returns correct range for first page", () => {
+      // Post 5 messages
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 1")], user1);
+      simnet.mineEmptyBlocks(6);
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 2")], user1);
+      simnet.mineEmptyBlocks(6);
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 3")], user1);
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 4")], user2);
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 5")], user3);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-page-range",
+        [Cl.uint(0), Cl.uint(3)], // page 0, 3 per page
+        user1
+      );
+
+      const printed = Cl.prettyPrint(result);
+      // Total of 5 messages, page 0 with size 3: end-id=5, start-id=2
+      expect(printed).toContain("total: u5");
+    });
+
+    it("get-page-range handles empty board", () => {
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-page-range",
+        [Cl.uint(0), Cl.uint(20)],
+        user1
+      );
+
+      const printed = Cl.prettyPrint(result);
+      expect(printed).toContain("total: u0");
+    });
+  });
 });
