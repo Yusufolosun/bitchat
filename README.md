@@ -11,7 +11,7 @@
 
 Bitchat is a decentralized message board where users post messages, pin important content, and react to postsâ€”all on the Stacks blockchain. Every interaction is permanent and censorship-resistant.
 
-## íº€ Live on Mainnet
+## Live on Mainnet
 
 **Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`  
 **Explorer:** [View Contract](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
@@ -163,4 +163,4 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ---
 
-**Decentralized communication on Stacks blockchain** íº€
+**Decentralized communication on Stacks blockchain** 
