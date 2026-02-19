@@ -1199,4 +1199,89 @@ describe("message-board contract", () => {
       expect(result2).toBeErr(Cl.uint(100)); // err-owner-only
     });
   });
+
+  describe("user profile functions", () => {
+    it("allows a user to set a display name", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-display-name",
+        [Cl.stringUtf8("Alice")],
+        user1
+      );
+      expect(result).toBeOk(Cl.bool(true));
+    });
+
+    it("rejects empty display name", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-display-name",
+        [Cl.stringUtf8("")],
+        user1
+      );
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("returns profile after setting display name", () => {
+      simnet.callPublicFn("message-board-v3", "set-display-name", [Cl.stringUtf8("Bob")], user2);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-profile",
+        [Cl.principal(user2)],
+        user2
+      );
+      const printed = Cl.prettyPrint(result);
+      expect(printed).toContain("Bob");
+    });
+
+    it("returns none for user with no profile", () => {
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-user-profile",
+        [Cl.principal(user1)],
+        user1
+      );
+      expect(result).toBeNone();
+    });
+
+    it("get-display-name returns just the name string", () => {
+      simnet.callPublicFn("message-board-v3", "set-display-name", [Cl.stringUtf8("Charlie")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-display-name",
+        [Cl.principal(user1)],
+        user1
+      );
+      expect(result).toBeSome(Cl.stringUtf8("Charlie"));
+    });
+
+    it("allows updating display name", () => {
+      simnet.callPublicFn("message-board-v3", "set-display-name", [Cl.stringUtf8("Old Name")], user1);
+      simnet.callPublicFn("message-board-v3", "set-display-name", [Cl.stringUtf8("New Name")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-display-name",
+        [Cl.principal(user1)],
+        user1
+      );
+      expect(result).toBeSome(Cl.stringUtf8("New Name"));
+    });
+
+    it("rejects set-display-name when contract is paused", () => {
+      simnet.callPublicFn("message-board-v3", "pause-contract", [], deployer);
+
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-display-name",
+        [Cl.stringUtf8("Paused")],
+        user1
+      );
+      expect(result).toBeErr(Cl.uint(107)); // err-contract-paused
+
+      // Cleanup
+      simnet.callPublicFn("message-board-v3", "unpause-contract", [], deployer);
+    });
+  });
 });
