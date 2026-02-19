@@ -291,6 +291,25 @@
   )
 )
 
+;; Check whether a message has passed its expiry block
+(define-read-only (is-message-expired (message-id uint))
+  (match (map-get? messages { message-id: message-id })
+    message (> block-height (get expires-at message))
+    false
+  )
+)
+
+;; Return a message only if it has not been deleted and has not expired
+(define-read-only (get-active-message (message-id uint))
+  (match (map-get? messages { message-id: message-id })
+    message (if (or (get deleted message) (> block-height (get expires-at message)))
+      none
+      (some message)
+    )
+    none
+  )
+)
+
 (define-public (pin-message (message-id uint) (duration uint))
   (let
     (
