@@ -1004,4 +1004,91 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(printed).toContain("Old getter");
     });
   });
+
+  describe("Configurable Fee Structure", () => {
+    it("returns default fee values", () => {
+      const { result: postFee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-post-message", [], deployer);
+      expect(postFee).toBeOk(Cl.uint(10000));
+
+      const { result: pin24Fee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-pin-24hr", [], deployer);
+      expect(pin24Fee).toBeOk(Cl.uint(50000));
+
+      const { result: pin72Fee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-pin-72hr", [], deployer);
+      expect(pin72Fee).toBeOk(Cl.uint(100000));
+
+      const { result: reactFee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-reaction", [], deployer);
+      expect(reactFee).toBeOk(Cl.uint(5000));
+    });
+
+    it("allows owner to update post fee", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-fee-post-message",
+        [Cl.uint(20000)],
+        deployer
+      );
+      expect(result).toBeOk(Cl.bool(true));
+
+      const { result: updated } = simnet.callReadOnlyFn("message-board-v3", "get-fee-post-message", [], deployer);
+      expect(updated).toBeOk(Cl.uint(20000));
+    });
+
+    it("rejects fee update from non-owner", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-fee-post-message",
+        [Cl.uint(20000)],
+        user1
+      );
+      expect(result).toBeErr(Cl.uint(100)); // err-owner-only
+    });
+
+    it("rejects fee below minimum bound", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-fee-post-message",
+        [Cl.uint(500)], // below min-fee of 1000
+        deployer
+      );
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("rejects fee above maximum bound", () => {
+      const { result } = simnet.callPublicFn(
+        "message-board-v3",
+        "set-fee-reaction",
+        [Cl.uint(99999999)], // above max-fee of 10000000
+        deployer
+      );
+      expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
+    });
+
+    it("uses updated fee for subsequent posts", () => {
+      // Set new post fee
+      simnet.callPublicFn("message-board-v3", "set-fee-post-message", [Cl.uint(25000)], deployer);
+
+      const contractId = `${deployer}.message-board-v3`;
+      const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
+
+      // Post a message — should charge the new fee
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("New fee test")], user1);
+
+      const finalBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
+      expect(finalBalance - initialBalance).toBe(25000);
+    });
+
+    it("allows updating all four fee types", () => {
+      const updates = [
+        { fn: "set-fee-post-message", val: 15000 },
+        { fn: "set-fee-pin-24hr", val: 60000 },
+        { fn: "set-fee-pin-72hr", val: 120000 },
+        { fn: "set-fee-reaction", val: 8000 },
+      ];
+
+      for (const u of updates) {
+        const { result } = simnet.callPublicFn("message-board-v3", u.fn, [Cl.uint(u.val)], deployer);
+        expect(result).toBeOk(Cl.bool(true));
+      }
+    });
+  });
 });

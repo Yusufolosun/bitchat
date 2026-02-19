@@ -33,11 +33,15 @@
 (define-constant reaction-type-dislike u5)
 (define-constant max-reaction-type u5)
 
-;; Fee structure (in microSTX)
-(define-constant fee-post-message u10000)        ;; 0.00001 STX (~$0.0003)
-(define-constant fee-pin-24hr u50000)            ;; 0.00005 STX (~$0.0015)
-(define-constant fee-pin-72hr u100000)           ;; 0.0001 STX (~$0.003)
-(define-constant fee-reaction u5000)             ;; 0.000005 STX (~$0.00015)
+;; Fee bounds (prevent misconfiguration)
+(define-constant min-fee u1000)                  ;; floor: 0.001 mSTX
+(define-constant max-fee u10000000)              ;; ceiling: 10 STX
+
+;; Data variables — configurable fee structure
+(define-data-var fee-post-message uint u10000)   ;; 0.00001 STX
+(define-data-var fee-pin-24hr uint u50000)        ;; 0.00005 STX
+(define-data-var fee-pin-72hr uint u100000)       ;; 0.0001 STX
+(define-data-var fee-reaction uint u5000)         ;; 0.000005 STX
 
 ;; Data variables
 (define-data-var message-nonce uint u0)
@@ -111,9 +115,9 @@
 
 (define-private (get-pin-fee (duration uint))
   (if (is-eq duration pin-24hr-blocks)
-    fee-pin-24hr
+    (var-get fee-pin-24hr)
     (if (is-eq duration pin-72hr-blocks)
-      fee-pin-72hr
+      (var-get fee-pin-72hr)
       u0
     )
   )
@@ -146,10 +150,10 @@
       err-too-soon)
     
     ;; Collect posting fee - SECURITY FIX: Proper fee collection
-    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+    (try! (stx-transfer? (var-get fee-post-message) sender (as-contract tx-sender)))
     
     ;; Update fee counter
-    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
+    (var-set total-fees-collected (+ (var-get total-fees-collected) (var-get fee-post-message)))
     
     ;; Store message
     (map-set messages
@@ -179,7 +183,7 @@
       { user: sender }
       {
         messages-posted: (+ (get messages-posted current-stats) u1),
-        total-spent: (+ (get total-spent current-stats) fee-post-message),
+        total-spent: (+ (get total-spent current-stats) (var-get fee-post-message)),
         last-post-block: block-height
       }
     )
@@ -397,10 +401,10 @@
     (asserts! (not already-reacted) err-already-reacted)
     
     ;; Collect reaction fee - SECURITY FIX: Proper fee collection
-    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+    (try! (stx-transfer? (var-get fee-reaction) sender (as-contract tx-sender)))
     
     ;; Update fee counter
-    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
+    (var-set total-fees-collected (+ (var-get total-fees-collected) (var-get fee-reaction)))
     
     ;; Store reaction (defaults to 'like' type for backward compatibility)
     (map-set reactions
@@ -428,7 +432,7 @@
       { user: sender }
       {
         messages-posted: (get messages-posted current-stats),
-        total-spent: (+ (get total-spent current-stats) fee-reaction),
+        total-spent: (+ (get total-spent current-stats) (var-get fee-reaction)),
         last-post-block: (get last-post-block current-stats)
       }
     )
@@ -473,10 +477,10 @@
     (asserts! (not already-reacted) err-already-reacted)
 
     ;; Collect reaction fee
-    (try! (stx-transfer? fee-reaction sender (as-contract tx-sender)))
+    (try! (stx-transfer? (var-get fee-reaction) sender (as-contract tx-sender)))
 
     ;; Update fee counter
-    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-reaction))
+    (var-set total-fees-collected (+ (var-get total-fees-collected) (var-get fee-reaction)))
 
     ;; Store reaction with type
     (map-set reactions
@@ -503,7 +507,7 @@
       { user: sender }
       {
         messages-posted: (get messages-posted current-stats),
-        total-spent: (+ (get total-spent current-stats) fee-reaction),
+        total-spent: (+ (get total-spent current-stats) (var-get fee-reaction)),
         last-post-block: (get last-post-block current-stats)
       }
     )
@@ -657,10 +661,10 @@
       err-too-soon)
 
     ;; Collect posting fee (same as regular post)
-    (try! (stx-transfer? fee-post-message sender (as-contract tx-sender)))
+    (try! (stx-transfer? (var-get fee-post-message) sender (as-contract tx-sender)))
 
     ;; Update fee counter
-    (var-set total-fees-collected (+ (var-get total-fees-collected) fee-post-message))
+    (var-set total-fees-collected (+ (var-get total-fees-collected) (var-get fee-post-message)))
 
     ;; Store the reply as a new message with reply-to set
     (map-set messages
@@ -699,7 +703,7 @@
       { user: sender }
       {
         messages-posted: (+ (get messages-posted current-stats) u1),
-        total-spent: (+ (get total-spent current-stats) fee-post-message),
+        total-spent: (+ (get total-spent current-stats) (var-get fee-post-message)),
         last-post-block: block-height
       }
     )
@@ -715,6 +719,71 @@
 
     (ok message-id)
   )
+)
+
+;; Administrative functions
+
+;; Fee management — owner-only setters with bounds checking
+
+(define-public (set-fee-post-message (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-post-message new-fee)
+    (print { event: "fee-updated", function: "post-message", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+(define-public (set-fee-pin-24hr (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-pin-24hr new-fee)
+    (print { event: "fee-updated", function: "pin-24hr", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+(define-public (set-fee-pin-72hr (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-pin-72hr new-fee)
+    (print { event: "fee-updated", function: "pin-72hr", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+(define-public (set-fee-reaction (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-reaction new-fee)
+    (print { event: "fee-updated", function: "reaction", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+;; Read current fee values
+(define-read-only (get-fee-post-message)
+  (ok (var-get fee-post-message))
+)
+
+(define-read-only (get-fee-pin-24hr)
+  (ok (var-get fee-pin-24hr))
+)
+
+(define-read-only (get-fee-pin-72hr)
+  (ok (var-get fee-pin-72hr))
+)
+
+(define-read-only (get-fee-reaction)
+  (ok (var-get fee-reaction))
 )
 
 ;; Administrative functions
