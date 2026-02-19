@@ -1,4 +1,4 @@
-;; message-board.clar
+;; message-board-v2.clar
 ;; Core contract for Bitchat on-chain message board
 ;; Security Enhanced Version - v3
 
