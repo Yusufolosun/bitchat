@@ -723,6 +723,71 @@
 
 ;; Administrative functions
 
+;; Fee management — owner-only setters with bounds checking
+
+(define-public (set-fee-post-message (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-post-message new-fee)
+    (print { event: "fee-updated", function: "post-message", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+(define-public (set-fee-pin-24hr (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-pin-24hr new-fee)
+    (print { event: "fee-updated", function: "pin-24hr", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+(define-public (set-fee-pin-72hr (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-pin-72hr new-fee)
+    (print { event: "fee-updated", function: "pin-72hr", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+(define-public (set-fee-reaction (new-fee uint))
+  (begin
+    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
+    (asserts! (>= new-fee min-fee) err-invalid-input)
+    (asserts! (<= new-fee max-fee) err-invalid-input)
+    (var-set fee-reaction new-fee)
+    (print { event: "fee-updated", function: "reaction", new-fee: new-fee })
+    (ok true)
+  )
+)
+
+;; Read current fee values
+(define-read-only (get-fee-post-message)
+  (ok (var-get fee-post-message))
+)
+
+(define-read-only (get-fee-pin-24hr)
+  (ok (var-get fee-pin-24hr))
+)
+
+(define-read-only (get-fee-pin-72hr)
+  (ok (var-get fee-pin-72hr))
+)
+
+(define-read-only (get-fee-reaction)
+  (ok (var-get fee-reaction))
+)
+
+;; Administrative functions
+
 (define-public (withdraw-fees (amount uint) (recipient principal))
   (begin
     (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
