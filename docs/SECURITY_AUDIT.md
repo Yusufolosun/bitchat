@@ -1,6 +1,6 @@
 # Security Audit Report - BitChat Message Board Contract
 
-**Contract**: message-board.clar  
+**Contract**: message-board-v2.clar  
 **Version**: v2  
 **Audit Date**: February 8, 2026  
 **Auditor**: Automated Security Review

@@ -939,6 +939,6 @@ const checkTx = async (txId) => {
 ## Contract Links
 
 - **Explorer:** [View on Stacks Explorer](https://explorer.stacks.co/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
-- **Source Code:** [contracts/message-board.clar](../contracts/message-board.clar)
+- **Source Code:** [contracts/message-board-v2.clar](../contracts/message-board-v2.clar)
 - **Tests:** [tests/](../tests/)
 - **Frontend:** [frontend/](../frontend/)

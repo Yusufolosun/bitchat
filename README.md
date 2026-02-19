@@ -52,7 +52,7 @@ Bitchat is a decentralized message board where users post messages, pin importan
 ```
 bitchat/
 ├── contracts/
-│   └── message-board.clar
+│   └── message-board-v2.clar
 ├── tests/
 │   ├── message-board.test.ts
 │   └── edge-cases.test.ts

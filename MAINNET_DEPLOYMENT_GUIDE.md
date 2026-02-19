@@ -174,7 +174,7 @@ clarinet deployments encrypt
 clarinet check
 
 # Expected output:
-# ✓ message-board.clar
+# ✓ message-board-v2.clar
 
 # 2. Run full test suite
 npm test
@@ -218,7 +218,7 @@ plan:
             contract-name: message-board-v3  # Verify name
             expected-sender: SP[YOUR_ADDRESS]  # Verify address
             cost: [ESTIMATED_COST]  # Note the cost
-            path: "contracts/message-board.clar"
+            path: "contracts/message-board-v2.clar"
             clarity-version: 2
       epoch: "2.1"
 ```

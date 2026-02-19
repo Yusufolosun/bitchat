@@ -34,7 +34,7 @@ This document summarizes the comprehensive security audit and implementation wor
 
 ### 2. Contract Security Enhancements ✅
 
-**File**: `contracts/message-board.clar`
+**File**: `contracts/message-board-v2.clar`
 - **Version**: Updated to v3 (Security Enhanced)
 - **Line Count**: 259 → 347 lines (+88 lines, +33%)
 - **Functions**: 9 → 16 total (+7 new functions)

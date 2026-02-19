@@ -537,7 +537,7 @@ Each transaction shows:
 
 ## 📚 Additional Resources
 
-- **Contract Source Code**: [contracts/message-board.clar](../contracts/message-board.clar)
+- **Contract Source Code**: [contracts/message-board-v2.clar](../contracts/message-board-v2.clar)
 - **API Documentation**: [docs/CONTRACT_API.md](../docs/CONTRACT_API.md)
 - **CLI Testing**: [testnet-testing-guide.md](testnet-testing-guide.md)
 - **Quick Examples**: [quick-test-examples.md](quick-test-examples.md)

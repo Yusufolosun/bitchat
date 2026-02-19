@@ -26,7 +26,7 @@ The BitChat v3 contract has successfully passed all pre-deployment validation ch
 
 ### Details
 - **Contract Name**: message-board-v3
-- **Path**: contracts/message-board.clar
+- **Path**: contracts/message-board-v2.clar
 - **Clarity Version**: 2
 - **Epoch**: 2.1
 - **Line Count**: 357 lines
@@ -416,7 +416,7 @@ The contract is ready for mainnet deployment with the following recommendations:
 ## 14. Final Validation
 
 ### Contract Hash Verification
-- **Contract File**: contracts/message-board.clar
+- **Contract File**: contracts/message-board-v2.clar
 - **Line Count**: 357 lines
 - **Modified**: Yes (recent security fixes)
 - **Test Status**: All passing
@@ -429,7 +429,7 @@ The contract is ready for mainnet deployment with the following recommendations:
 
 ### Git Status
 Modified files ready for commit:
-- contracts/message-board.clar (line ending fixes, unused constant removed)
+- contracts/message-board-v2.clar (line ending fixes, unused constant removed)
 - tests/clarinet.d.ts (mineEmptyBlocks type added)
 - tests/edge-cases.test.ts (test fixes)
 - tests/message-board.test.ts (spam prevention test fixes)

@@ -54,7 +54,7 @@ Based on comprehensive security audit, the contract has addressed:
 clarinet check
 
 # Expected output:
-# ✓ contracts/message-board.clar (v3 - Security Enhanced)
+# ✓ contracts/message-board-v2.clar (v3 - Security Enhanced)
 ```
 
 ### 2. Run Test Suite
