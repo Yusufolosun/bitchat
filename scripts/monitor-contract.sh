@@ -20,15 +20,15 @@ check_status() {
     echo "-----------------------------------"
     
     # Get total messages (example - adjust based on your contract)
-    stx call-read-only "$CONTRACT_ADDRESS" message-board get-total-messages \
+    stx call-read-only "$CONTRACT_ADDRESS" message-board-v3 get-total-messages \
         --mainnet 2>/dev/null || echo "  Total Messages: Unable to fetch"
     
     # Get total fees
-    stx call-read-only "$CONTRACT_ADDRESS" message-board get-total-fees-collected \
+    stx call-read-only "$CONTRACT_ADDRESS" message-board-v3 get-total-fees-collected \
         --mainnet 2>/dev/null || echo "  Total Fees: Unable to fetch"
     
     # Get pause status
-    stx call-read-only "$CONTRACT_ADDRESS" message-board is-contract-paused \
+    stx call-read-only "$CONTRACT_ADDRESS" message-board-v3 is-contract-paused \
         --mainnet 2>/dev/null || echo "  Pause Status: Unable to fetch"
     
     echo ""
