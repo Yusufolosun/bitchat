@@ -13,6 +13,7 @@ import { useToast } from './hooks/useToast'
 import { useTheme } from './hooks/useTheme'
 import { useTransactionTracker } from './hooks/useTransactionTracker'
 import { pinMessage, reactToMessage } from './utils/contractCalls'
+import { invalidateReadCache } from './utils/contractReads'
 import { parseClarityError } from './utils/errors'
 import './App.css'
 
@@ -24,6 +25,7 @@ function App() {
   const { theme, toggleTheme } = useTheme()
 
   const handleRefresh = () => {
+    invalidateReadCache()
     refreshMessages()
     refreshStats()
   }
