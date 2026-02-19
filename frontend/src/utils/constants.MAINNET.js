@@ -1,12 +1,13 @@
-// MAINNET CONFIGURATION
-// Copy this to constants.js after mainnet deployment
+// MAINNET CONFIGURATION TEMPLATE
+// This is a reference copy of the mainnet constants.
+// The active configuration lives in constants.js.
 
 // Contract deployment details
-export const CONTRACT_ADDRESS = 'SP000000000000000000002Q6VF78.message-board' // UPDATE AFTER DEPLOYMENT
-export const CONTRACT_NAME = 'message-board'
+export const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193'
+export const CONTRACT_NAME = 'message-board-v3'
 
 // Network configuration
-export const NETWORK = 'mainnet' // CRITICAL: Set to mainnet
+export const NETWORK = 'mainnet'
 
 // Fee constants (in microSTX) - MUST match contract
 export const FEE_POST_MESSAGE = 10000        // 0.00001 STX
@@ -21,9 +22,3 @@ export const PIN_72HR_BLOCKS = 432
 // Message constraints
 export const MIN_MESSAGE_LENGTH = 1
 export const MAX_MESSAGE_LENGTH = 280
-
-// IMPORTANT: After deployment
-// 1. Replace CONTRACT_ADDRESS with actual mainnet address
-// 2. Rename this file to constants.js (backup old one)
-// 3. Test all functions before public launch
-// 4. Verify fees are correct
