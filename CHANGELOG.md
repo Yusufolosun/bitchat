@@ -6,7 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-02-19
+
 ### Added
+- Reply-to-message with parent tracking and reply counts
+- Message editing with full edit history preservation
+- Message soft-deletion (author-only)
+- Display name system (`set-display-name`, `get-display-name`)
+- Typed reactions (`react-to-message-typed`) with fire, laugh, etc.
+- Configurable fee parameters (`set-fee-post-message`, `set-fee-pin-*`, `set-fee-reaction`)
+- Contract stats aggregation (`get-contract-stats`)
+- Paginated message retrieval (`get-page-range`)
+- Message deletion and expiry detection read-only functions
+- Active message getter that filters deleted messages
+- Reaction count by type queries
+- User reaction type queries
+- Two-step ownership transfer (propose → accept → cancel)
+- 204 comprehensive tests across 3 test suites
+- Pre-commit hook for secret scanning
+- Hardened .gitignore with blanket `*.env` protection
 - Transaction status tracking via Stacks API polling (#15)
 - Toast notification system for success/error feedback (#13)
 - Clarity error code mapping (u100–u110) to user-friendly messages (#13)
@@ -21,6 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - MIT LICENSE file (#29)
 
 ### Changed
+- Contract expanded from 347 → 942 lines
+- Functions expanded from 16 → 47 (18 public, 29 read-only)
+- Fee structure updated (post: 10,000 µSTX, reaction: 5,000 µSTX)
+- Ownership transfer now uses two-step propose/accept pattern
+- `withdraw-fees` now requires explicit recipient parameter
 - Replaced `PostConditionMode.Allow` with strict `Deny` + explicit STX post conditions (#11)
 - Migrated colour scheme from orange to Stacks-native purple palette (#12)
 - Contract call functions now return txId via Promise (#15)
@@ -30,6 +53,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Wallet address resolution now uses correct network (#10)
 - Stats component reads live data instead of hardcoded values (#9)
 - useMessages hook fetches on-chain state instead of mock data (#8)
+
+### Removed
+- 17 stale v3 planning/status docs (~6,200 lines of outdated content)
+- Unfilled template docs and obsolete deployment guides
 
 ## [3.0.0] - 2026-02-08
 

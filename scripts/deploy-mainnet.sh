@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Mainnet Deployment Script for BitChat v3
+# Mainnet Deployment Script for BitChat v4
 # Execute with caution - this deploys to MAINNET
 
 set -e  # Exit on error
 
-echo "🚀 BitChat v3 Mainnet Deployment Script"
+echo "🚀 BitChat v4 Mainnet Deployment Script"
 echo "========================================"
 echo ""
 
