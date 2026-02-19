@@ -3,8 +3,7 @@ import {
   uintCV,
   stringUtf8CV,
   PostConditionMode,
-  makeStandardSTXPostCondition,
-  FungibleConditionCode,
+  Pc,
 } from '@stacks/transactions'
 import { getNetwork } from './network'
 import {
@@ -24,11 +23,7 @@ import {
  * STX than expected.
  */
 const buildSTXPostCondition = (senderAddress, amount) => {
-  return makeStandardSTXPostCondition(
-    senderAddress,
-    FungibleConditionCode.Equal,
-    amount
-  )
+  return Pc.principal(senderAddress).willSendEq(amount).ustx()
 }
 
 export const postMessage = async (content, senderAddress) => {

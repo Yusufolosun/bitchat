@@ -14,7 +14,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Clarinet
-        uses: hirosystems/clarinet-actions/setup@v1
+        run: |
+          wget -qO- https://github.com/stx-labs/clarinet/releases/download/v3.14.0/clarinet-linux-x64-glibc.tar.gz | tar xz
+          chmod +x ./clarinet
+          sudo mv ./clarinet /usr/local/bin/
 
       - name: Check contracts
         run: clarinet check

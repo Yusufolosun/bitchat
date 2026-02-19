@@ -1,4 +1,4 @@
-import { callReadOnlyFunction, cvToJSON, uintCV, principalCV } from '@stacks/transactions'
+import { fetchCallReadOnlyFunction, cvToJSON, uintCV, principalCV } from '@stacks/transactions'
 import { getNetwork } from './network'
 import { CONTRACT_ADDRESS, CONTRACT_NAME } from './constants'
 import { contractCache } from './cache'
@@ -11,7 +11,7 @@ import { contractCache } from './cache'
 const _fetchMessage = async (messageId) => {
   try {
     const network = getNetwork()
-    const result = await callReadOnlyFunction({
+    const result = await fetchCallReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -61,7 +61,7 @@ export const fetchMessage = (messageId) => {
 const _fetchTotalMessages = async () => {
   try {
     const network = getNetwork()
-    const result = await callReadOnlyFunction({
+    const result = await fetchCallReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -92,7 +92,7 @@ export const fetchTotalMessages = () => {
 const _fetchTotalFees = async () => {
   try {
     const network = getNetwork()
-    const result = await callReadOnlyFunction({
+    const result = await fetchCallReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -177,7 +177,7 @@ export const fetchMessagePage = async (page = 0, pageSize = 20) => {
 const _fetchContractStats = async () => {
   try {
     const network = getNetwork()
-    const result = await callReadOnlyFunction({
+    const result = await fetchCallReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
@@ -217,7 +217,7 @@ export const fetchContractStats = () => {
 const _fetchUserStats = async (userAddress) => {
   try {
     const network = getNetwork()
-    const result = await callReadOnlyFunction({
+    const result = await fetchCallReadOnlyFunction({
       network,
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,

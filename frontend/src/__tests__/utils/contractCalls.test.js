@@ -10,13 +10,18 @@ vi.mock('@stacks/transactions', () => ({
   uintCV: vi.fn((n) => ({ type: 'uint', value: n })),
   stringUtf8CV: vi.fn((s) => ({ type: 'string-utf8', value: s })),
   PostConditionMode: { Deny: 2 },
-  makeStandardSTXPostCondition: vi.fn((addr, code, amount) => ({
-    type: 'stx-postcondition',
-    address: addr,
-    conditionCode: code,
-    amount,
-  })),
-  FungibleConditionCode: { Equal: 1 },
+  Pc: {
+    principal: vi.fn((addr) => ({
+      willSendEq: vi.fn((amount) => ({
+        ustx: vi.fn(() => ({
+          type: 'stx-postcondition',
+          address: addr,
+          condition: 'eq',
+          amount: String(amount),
+        })),
+      })),
+    })),
+  },
 }))
 
 // Mock network
@@ -95,7 +100,7 @@ describe('postMessage', () => {
 
     const args = openContractCall.mock.calls[0][0]
     expect(args.postConditions).toHaveLength(1)
-    expect(args.postConditions[0].amount).toBe(FEE_POST_MESSAGE)
+    expect(args.postConditions[0].amount).toBe(String(FEE_POST_MESSAGE))
     expect(args.postConditions[0].address).toBe('SP_SENDER')
   })
 })
@@ -116,7 +121,7 @@ describe('pinMessage', () => {
     expect(args.functionName).toBe('pin-message')
     expect(uintCV).toHaveBeenCalledWith(5) // message ID
     expect(uintCV).toHaveBeenCalledWith(144) // 24hr blocks
-    expect(args.postConditions[0].amount).toBe(FEE_PIN_24HR)
+    expect(args.postConditions[0].amount).toBe(String(FEE_PIN_24HR))
   })
 
   it('uses 72hr duration and fee when duration24hr is false', async () => {
@@ -128,7 +133,7 @@ describe('pinMessage', () => {
 
     const args = openContractCall.mock.calls[0][0]
     expect(uintCV).toHaveBeenCalledWith(432) // 72hr blocks
-    expect(args.postConditions[0].amount).toBe(FEE_PIN_72HR)
+    expect(args.postConditions[0].amount).toBe(String(FEE_PIN_72HR))
   })
 
   it('returns tx ID on success', async () => {
@@ -166,7 +171,7 @@ describe('reactToMessage', () => {
     await reactToMessage(10, 'SP_SENDER')
 
     const args = openContractCall.mock.calls[0][0]
-    expect(args.postConditions[0].amount).toBe(FEE_REACTION)
+    expect(args.postConditions[0].amount).toBe(String(FEE_REACTION))
   })
 
   it('returns tx ID', async () => {

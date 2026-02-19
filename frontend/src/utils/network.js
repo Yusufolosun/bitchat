@@ -1,10 +1,10 @@
-import { StacksTestnet, StacksMainnet } from '@stacks/network'
+import { STACKS_MAINNET, STACKS_TESTNET } from '@stacks/network'
 import { NETWORK } from './constants'
 
 export const getNetwork = () => {
   return NETWORK === 'mainnet' 
-    ? new StacksMainnet() 
-    : new StacksTestnet()
+    ? STACKS_MAINNET 
+    : STACKS_TESTNET
 }
 
 export const getExplorerUrl = (txId) => {
