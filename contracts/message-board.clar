@@ -7,6 +7,7 @@
 (define-constant err-not-found (err u101))
 (define-constant err-unauthorized (err u102))
 (define-constant err-invalid-input (err u103))
+(define-constant err-max-edits-reached (err u104))
 (define-constant err-already-reacted (err u105))
 (define-constant err-too-soon (err u106))
 (define-constant err-contract-paused (err u107))
@@ -22,6 +23,7 @@
 (define-constant pin-24hr-blocks u144)
 (define-constant pin-72hr-blocks u432)
 (define-constant min-post-gap u6) ;; ~1 hour between posts (spam prevention)
+(define-constant max-edit-count u10) ;; Maximum number of edits per message
 
 ;; Reaction types (1-5)
 (define-constant reaction-type-like u1)
@@ -372,7 +374,6 @@
     ;; Cannot react to a deleted message
     (asserts! (not (get deleted message)) err-already-deleted)
     
-    ;; Validate message exists
     ;; Prevent duplicate reactions
     (asserts! (not already-reacted) err-already-reacted)
     
@@ -567,6 +568,9 @@
     (asserts! (>= content-length min-message-length) err-invalid-input)
     (asserts! (<= content-length max-message-length) err-invalid-input)
 
+    ;; Enforce maximum edit count
+    (asserts! (< current-edit-count max-edit-count) err-max-edits-reached)
+
     ;; Store the previous content in edit history
     (map-set edit-history
       { message-id: message-id, edit-index: current-edit-count }
@@ -731,15 +735,8 @@
   )
 )
 
-(define-public (transfer-ownership (new-owner principal))
-  (begin
-    (asserts! (is-eq tx-sender (var-get contract-owner)) err-owner-only)
-    (var-set contract-owner new-owner)
-    (var-set proposed-owner none)
-    (print { event: "ownership-transferred", from: tx-sender, to: new-owner })
-    (ok true)
-  )
-)
+;; REMOVED: Single-step transfer-ownership is unsafe for mainnet.
+;; Use the two-step pattern: propose-ownership-transfer -> accept-ownership
 
 ;; Two-step ownership transfer pattern
 
