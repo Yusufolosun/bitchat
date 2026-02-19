@@ -897,4 +897,111 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeErr(Cl.uint(ERR_UNAUTHORIZED));
     });
   });
+
+  describe("Message Expiry Enforcement", () => {
+    it("is-message-expired returns false for fresh message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Fresh msg")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-expired",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(result).toBeBool(false);
+    });
+
+    it("is-message-expired returns true after expiry blocks pass", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Will expire")], user1);
+
+      // Advance past default expiry (144 blocks)
+      simnet.mineEmptyBlocks(150);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-expired",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(result).toBeBool(true);
+    });
+
+    it("is-message-expired returns false for non-existent message", () => {
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "is-message-expired",
+        [Cl.uint(999)],
+        user1
+      );
+      expect(result).toBeBool(false);
+    });
+
+    it("get-active-message returns message when not expired", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Active msg")], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-active-message",
+        [Cl.uint(0)],
+        user1
+      );
+      // Should return some (not none) for a fresh message
+      expect(result).toBeDefined();
+      const printed = Cl.prettyPrint(result);
+      expect(printed).toContain("Active msg");
+    });
+
+    it("get-active-message returns none for expired message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Expiring soon")], user1);
+
+      simnet.mineEmptyBlocks(150);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-active-message",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(result).toBeNone();
+    });
+
+    it("get-active-message returns none for deleted message", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Delete me")], user1);
+      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-active-message",
+        [Cl.uint(0)],
+        user1
+      );
+      expect(result).toBeNone();
+    });
+
+    it("get-active-message returns none for non-existent message", () => {
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-active-message",
+        [Cl.uint(999)],
+        user1
+      );
+      expect(result).toBeNone();
+    });
+
+    it("original get-message still returns expired messages (backward compat)", () => {
+      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Old getter")], user1);
+
+      simnet.mineEmptyBlocks(150);
+
+      const { result } = simnet.callReadOnlyFn(
+        "message-board-v3",
+        "get-message",
+        [Cl.uint(0)],
+        user1
+      );
+      // get-message is unchanged — still returns the raw record
+      const printed = Cl.prettyPrint(result);
+      expect(printed).toContain("Old getter");
+    });
+  });
 });
