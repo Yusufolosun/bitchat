@@ -35,7 +35,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("prevents posting messages too quickly (err-too-soon u106)", () => {
       // First post should succeed
       const { result: result1 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("First message")],
         user1
@@ -44,7 +44,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Immediate second post should fail
       const { result: result2 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Second message")],
         user1
@@ -54,10 +54,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("allows posting after cooldown period", () => {
       // First post
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("First")], user1);
       
       const { result: tooSoon } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Still too soon")],
         user1
@@ -68,7 +68,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       simnet.mineEmptyBlocks(6);
       
       const { result: afterCooldown } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("After cooldown")],
         user1
@@ -78,11 +78,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("does not prevent different users from posting", () => {
       // User1 posts
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("User1 message")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("User1 message")], user1);
       
       // User2 can post immediately (different user)
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("User2 message")],
         user2
@@ -92,18 +92,18 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("pinning a message does not affect post cooldown", () => {
       // Post a message
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Pinnable")], user3);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Pinnable")], user3);
       const postBlock = simnet.blockHeight;
 
       // Advance 3 blocks (less than min-post-gap of 6)
       simnet.mineEmptyBlocks(3);
 
       // Pin the message
-      simnet.callPublicFn("message-board-v3", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user3);
+      simnet.callPublicFn("message-board-v4", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user3);
 
       // Verify last-post-block is still the original post block
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-user-stats",
         [Cl.principal(user3)],
         user3
@@ -120,19 +120,19 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("reacting to a message does not affect post cooldown", () => {
       // User1 posts a message
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Reactable")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Reactable")], user1);
 
       // User2 posts, then reacts without enough gap
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("My post")], user2);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("My post")], user2);
       const user2PostBlock = simnet.blockHeight;
 
       simnet.mineEmptyBlocks(2);
 
       // React to user1's message
-      simnet.callPublicFn("message-board-v3", "react-to-message", [Cl.uint(0)], user2);
+      simnet.callPublicFn("message-board-v4", "react-to-message", [Cl.uint(0)], user2);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-user-stats",
         [Cl.principal(user2)],
         user2
@@ -151,7 +151,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   describe("Contract Pause Functionality", () => {
     it("starts in unpaused state", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-contract-paused",
         [],
         deployer
@@ -162,7 +162,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("only allows owner to pause contract", () => {
       // Non-owner cannot pause
       const { result: unauthorizedPause } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pause-contract",
         [],
         user1
@@ -171,7 +171,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Owner can pause
       const { result: ownerPause } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pause-contract",
         [],
         deployer
@@ -180,7 +180,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Verify paused state
       const { result: pausedStatus } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-contract-paused",
         [],
         deployer
@@ -190,11 +190,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("prevents all operations when paused", () => {
       // Pause contract
-      simnet.callPublicFn("message-board-v3", "pause-contract", [], deployer);
+      simnet.callPublicFn("message-board-v4", "pause-contract", [], deployer);
       
       // post-message should fail
       const { result: postResult } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Should fail")],
         user1
@@ -207,12 +207,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("allows operations after unpause", () => {
       // Pause then unpause
-      simnet.callPublicFn("message-board-v3", "pause-contract", [], deployer);
-      simnet.callPublicFn("message-board-v3", "unpause-contract", [], deployer);
+      simnet.callPublicFn("message-board-v4", "pause-contract", [], deployer);
+      simnet.callPublicFn("message-board-v4", "unpause-contract", [], deployer);
       
       // Operations should work
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("After unpause")],
         user1
@@ -221,10 +221,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("only allows owner to unpause", () => {
-      simnet.callPublicFn("message-board-v3", "pause-contract", [], deployer);
+      simnet.callPublicFn("message-board-v4", "pause-contract", [], deployer);
       
       const { result: unauthorizedUnpause } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "unpause-contract",
         [],
         user1
@@ -235,12 +235,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
   describe("Fee Collection & Withdrawal", () => {
     it("collects fees into contract balance", () => {
-      const contractId = `${deployer}.message-board-v3`;
+      const contractId = `${deployer}.message-board-v4`;
       const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       
       // Post a message (should collect fee)
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Fee test")],
         user1
@@ -252,11 +252,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("only allows owner to withdraw fees", () => {
       // Post message to collect some fees
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Test")], user1);
       
       // Non-owner cannot withdraw
       const { result: unauthorized } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "withdraw-fees",
         [Cl.uint(5000), Cl.principal(user1)],
         user1
@@ -265,7 +265,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Owner can withdraw
       const { result: ownerWithdraw } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "withdraw-fees",
         [Cl.uint(5000), Cl.principal(deployer)],
         deployer
@@ -275,7 +275,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("prevents withdrawing more than contract balance", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "withdraw-fees",
         [Cl.uint(999999999999), Cl.principal(deployer)],
         deployer
@@ -285,11 +285,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("allows withdrawing to different recipient", () => {
       // Post to collect fees
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Fee test")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Fee test")], user1);
       
       // Withdraw to user2
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "withdraw-fees",
         [Cl.uint(5000), Cl.principal(user2)],
         deployer
@@ -301,7 +301,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   describe("Ownership Transfer (Two-step)", () => {
     it("allows checking current owner", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-contract-owner",
         [],
         user1
@@ -311,7 +311,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("only allows owner to propose ownership transfer", () => {
       const { result: unauthorized } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "propose-ownership-transfer",
         [Cl.principal(user2)],
         user1
@@ -321,11 +321,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("transfers ownership via two-step pattern", () => {
       // Step 1: Propose
-      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+      simnet.callPublicFn("message-board-v4", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
       
       // Step 2: Accept
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "accept-ownership",
         [],
         user1
@@ -334,7 +334,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Verify new owner
       const { result: newOwner } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-contract-owner",
         [],
         deployer
@@ -344,12 +344,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("revokes old owner's admin rights after transfer", () => {
       // Two-step transfer
-      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
-      simnet.callPublicFn("message-board-v3", "accept-ownership", [], user1);
+      simnet.callPublicFn("message-board-v4", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+      simnet.callPublicFn("message-board-v4", "accept-ownership", [], user1);
       
       // Old owner cannot pause
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pause-contract",
         [],
         deployer
@@ -359,12 +359,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("grants new owner admin rights", () => {
       // Two-step transfer
-      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
-      simnet.callPublicFn("message-board-v3", "accept-ownership", [], user1);
+      simnet.callPublicFn("message-board-v4", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+      simnet.callPublicFn("message-board-v4", "accept-ownership", [], user1);
       
       // New owner can pause
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pause-contract",
         [],
         user1
@@ -377,18 +377,18 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("enforces pin expiry with is-message-pinned", () => {
       // Post message
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Pin expiry test")],
         user1
       );
       
       // Pin it for 144 blocks
-      simnet.callPublicFn("message-board-v3", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user1);
+      simnet.callPublicFn("message-board-v4", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user1);
       
       // Should be pinned initially
       const { result: isPinned1 } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-message-pinned",
         [Cl.uint(0)],
         user1
@@ -400,7 +400,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Should no longer be pinned
       const { result: isPinned2 } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-message-pinned",
         [Cl.uint(0)],
         user1
@@ -411,7 +411,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("returns false for unpinned messages", () => {
       // Post message  but don't pin
       const { result: postResult } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Not pinned")],
         user1
@@ -419,7 +419,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       const messageId = postResult.value;
       
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-message-pinned",
         [messageId],
         user1
@@ -431,7 +431,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   describe("Message Boundaries", () => {
     it("rejects empty messages", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("")],
         user1
@@ -441,7 +441,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("accepts single character messages", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("x")],
         user1
@@ -452,7 +452,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("accepts exactly 280 character messages", () => {
       const maxMessage = "a".repeat(280);
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8(maxMessage)],
         user2
@@ -465,7 +465,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       // Clarity VM rejects at the type level before the function body executes
       expect(() => {
         simnet.callPublicFn(
-          "message-board-v3",
+          "message-board-v4",
           "post-message",
           [Cl.stringUtf8(tooLong)],
           user3
@@ -478,7 +478,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("allows multiple users to react to same message", () => {
       // Post message
       const { result: postResult } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("React test")],
         user1
@@ -488,7 +488,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Three different users react
       const { result: react1 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "react-to-message",
         [messageId],
         user1
@@ -496,7 +496,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(react1).toBeOk(Cl.bool(true));
       
       const { result: react2 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "react-to-message",
         [messageId],
         user2
@@ -504,7 +504,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(react2).toBeOk(Cl.bool(true));
       
       const { result: react3 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "react-to-message",
         [messageId],
         user3
@@ -513,7 +513,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Verify reaction count
       const { result: messageData } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-message",
         [messageId],
         user1
@@ -539,7 +539,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("prevents duplicate reactions from same user", () => {
       const { result: postResult } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Duplicate test")],
         user1
@@ -547,11 +547,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       const messageId = postResult.value;
       
       // First reaction succeeds
-      simnet.callPublicFn("message-board-v3", "react-to-message", [messageId], user1);
+      simnet.callPublicFn("message-board-v4", "react-to-message", [messageId], user1);
       
       // Second reaction from same user fails
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "react-to-message",
         [messageId],
         user1
@@ -564,7 +564,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("only allows message author to pin", () => {
       // User1 posts message
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Authorization test")],
         user1
@@ -572,7 +572,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // User2 cannot pin user1's message
       const { result: unauthorized } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user2
@@ -581,7 +581,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // User1 can pin their own message
       const { result: authorized } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
@@ -593,14 +593,14 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   describe("Invalid Pin Durations", () => {
     it("rejects zero duration", () => {
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Duration test")],
         user1
       );
       
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(0), Cl.uint(0)],
         user1
@@ -610,7 +610,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("rejects non-standard durations", () => {
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Duration test 2")],
         user2
@@ -620,7 +620,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       const invalidDurations = [1, 100, 200, 500, 1000];
       invalidDurations.forEach(duration => {
         const { result } = simnet.callPublicFn(
-          "message-board-v3",
+          "message-board-v4",
           "pin-message",
           [Cl.uint(0), Cl.uint(duration)],
           user2
@@ -632,13 +632,13 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("accepts standard durations (144 and 432 blocks)", () => {
       // Test 144 blocks
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("24hr test")],
         user1
       );
       const { result: pin1 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
@@ -648,13 +648,13 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       // Test 432 blocks (72 hours)
       simnet.mineEmptyBlocks(6);
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("72hr test")],
         user1
       );
       const { result: pin2 } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(1), Cl.uint(432)],
         user1
@@ -666,7 +666,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   describe("Non-Existent Message Operations", () => {
     it("returns none for non-existent message", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-message",
         [Cl.uint(999999)],
         user1
@@ -676,7 +676,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("rejects pinning non-existent message", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(999999), Cl.uint(PIN_24HR_BLOCKS)],
         user1
@@ -686,7 +686,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("rejects reacting to non-existent message", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "react-to-message",
         [Cl.uint(999999)],
         user1
@@ -696,7 +696,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("returns false for reaction check on non-existent message", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "has-user-reacted",
         [Cl.uint(999999), Cl.principal(user1)],
         user1
@@ -708,11 +708,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   describe("User Stats Accumulation", () => {
     it("tracks posting fees correctly", () => {
       // Post first message
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Stats test 1")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Stats test 1")], user1);
       const firstPostBlock = simnet.blockHeight;
       
       let { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-user-stats",
         [Cl.principal(user1)],
         user1
@@ -727,11 +727,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       
       // Advance past cooldown
       simnet.mineEmptyBlocks(6);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Stats test 2")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Stats test 2")], user1);
       const secondPostBlock = simnet.blockHeight;
       
       ({ result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-user-stats",
         [Cl.principal(user1)],
         user1
@@ -748,21 +748,21 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("includes pin fees in total spent", () => {
       // Post and pin
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Pin fee test")],
         user1
       );
       const postBlock = simnet.blockHeight;
       simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
       );
       
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-user-stats",
         [Cl.principal(user1)],
         user1
@@ -779,16 +779,16 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("includes reaction fees in total spent", () => {
       // Post and react
       const { result: postResult } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "post-message",
         [Cl.stringUtf8("Reaction fee test")],
         user1
       );
       const postBlock = simnet.blockHeight;
-      simnet.callPublicFn("message-board-v3", "react-to-message", [postResult.value], user1);
+      simnet.callPublicFn("message-board-v4", "react-to-message", [postResult.value], user1);
       
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-user-stats",
         [Cl.principal(user1)],
         user1
@@ -807,7 +807,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     it("increments nonce for each message", () => {
       // Check initial nonce
       let { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-message-nonce",
         [],
         user1
@@ -815,22 +815,22 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeOk(Cl.uint(0));
       
       // Post first message
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
-      ({ result } = simnet.callReadOnlyFn("message-board-v3", "get-message-nonce", [], user1));
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("First")], user1);
+      ({ result } = simnet.callReadOnlyFn("message-board-v4", "get-message-nonce", [], user1));
       expect(result).toBeOk(Cl.uint(1));
       
       // Post second message (different user, no cooldown needed)
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Second")], user2);
-      ({ result } = simnet.callReadOnlyFn("message-board-v3", "get-message-nonce", [], user1));
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Second")], user2);
+      ({ result } = simnet.callReadOnlyFn("message-board-v4", "get-message-nonce", [], user1));
       expect(result).toBeOk(Cl.uint(2));
     });
 
     it("matches total messages count", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test 1")], user1);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test 2")], user2);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Test 1")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Test 2")], user2);
       
-      const { result: nonce } = simnet.callReadOnlyFn("message-board-v3", "get-message-nonce", [], user1);
-      const { result: total } = simnet.callReadOnlyFn("message-board-v3", "get-total-messages", [], user1);
+      const { result: nonce } = simnet.callReadOnlyFn("message-board-v4", "get-message-nonce", [], user1);
+      const { result: total } = simnet.callReadOnlyFn("message-board-v4", "get-total-messages", [], user1);
       
       expect(nonce).toBeOk(Cl.uint(2));
       expect(total).toBeOk(Cl.uint(2));
@@ -839,12 +839,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
   describe("Message Deletion Edge Cases", () => {
     it("deleted message data is still retrievable via get-message", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Soft delete test")], user1);
-      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Soft delete test")], user1);
+      simnet.callPublicFn("message-board-v4", "delete-message", [Cl.uint(0)], user1);
 
       // get-message should still return the record (soft delete)
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-message",
         [Cl.uint(0)],
         user1
@@ -854,11 +854,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("cannot pin a deleted message", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Pin then delete")], user1);
-      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Pin then delete")], user1);
+      simnet.callPublicFn("message-board-v4", "delete-message", [Cl.uint(0)], user1);
 
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "pin-message",
         [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
@@ -868,12 +868,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("deletion does not affect total-messages count", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 1")], user1);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 2")], user2);
-      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 1")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 2")], user2);
+      simnet.callPublicFn("message-board-v4", "delete-message", [Cl.uint(0)], user1);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-total-messages",
         [],
         user1
@@ -884,10 +884,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("contract owner cannot delete other users messages", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("User msg")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("User msg")], user1);
 
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "delete-message",
         [Cl.uint(0)],
         deployer // deployer is owner but not author
@@ -899,10 +899,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
   describe("Message Expiry Enforcement", () => {
     it("is-message-expired returns false for fresh message", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Fresh msg")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Fresh msg")], user1);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-message-expired",
         [Cl.uint(0)],
         user1
@@ -911,13 +911,13 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("is-message-expired returns true after expiry blocks pass", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Will expire")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Will expire")], user1);
 
       // Advance past default expiry (144 blocks)
       simnet.mineEmptyBlocks(150);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-message-expired",
         [Cl.uint(0)],
         user1
@@ -927,7 +927,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("is-message-expired returns false for non-existent message", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "is-message-expired",
         [Cl.uint(999)],
         user1
@@ -936,10 +936,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("get-active-message returns message when not expired", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Active msg")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Active msg")], user1);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-active-message",
         [Cl.uint(0)],
         user1
@@ -951,12 +951,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("get-active-message returns none for expired message", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Expiring soon")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Expiring soon")], user1);
 
       simnet.mineEmptyBlocks(150);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-active-message",
         [Cl.uint(0)],
         user1
@@ -965,11 +965,11 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("get-active-message returns none for deleted message", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Delete me")], user1);
-      simnet.callPublicFn("message-board-v3", "delete-message", [Cl.uint(0)], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Delete me")], user1);
+      simnet.callPublicFn("message-board-v4", "delete-message", [Cl.uint(0)], user1);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-active-message",
         [Cl.uint(0)],
         user1
@@ -979,7 +979,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("get-active-message returns none for non-existent message", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-active-message",
         [Cl.uint(999)],
         user1
@@ -988,12 +988,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("original get-message still returns expired messages (backward compat)", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Old getter")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Old getter")], user1);
 
       simnet.mineEmptyBlocks(150);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-message",
         [Cl.uint(0)],
         user1
@@ -1006,35 +1006,35 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
   describe("Configurable Fee Structure", () => {
     it("returns default fee values", () => {
-      const { result: postFee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-post-message", [], deployer);
+      const { result: postFee } = simnet.callReadOnlyFn("message-board-v4", "get-fee-post-message", [], deployer);
       expect(postFee).toBeOk(Cl.uint(10000));
 
-      const { result: pin24Fee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-pin-24hr", [], deployer);
+      const { result: pin24Fee } = simnet.callReadOnlyFn("message-board-v4", "get-fee-pin-24hr", [], deployer);
       expect(pin24Fee).toBeOk(Cl.uint(50000));
 
-      const { result: pin72Fee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-pin-72hr", [], deployer);
+      const { result: pin72Fee } = simnet.callReadOnlyFn("message-board-v4", "get-fee-pin-72hr", [], deployer);
       expect(pin72Fee).toBeOk(Cl.uint(100000));
 
-      const { result: reactFee } = simnet.callReadOnlyFn("message-board-v3", "get-fee-reaction", [], deployer);
+      const { result: reactFee } = simnet.callReadOnlyFn("message-board-v4", "get-fee-reaction", [], deployer);
       expect(reactFee).toBeOk(Cl.uint(5000));
     });
 
     it("allows owner to update post fee", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "set-fee-post-message",
         [Cl.uint(20000)],
         deployer
       );
       expect(result).toBeOk(Cl.bool(true));
 
-      const { result: updated } = simnet.callReadOnlyFn("message-board-v3", "get-fee-post-message", [], deployer);
+      const { result: updated } = simnet.callReadOnlyFn("message-board-v4", "get-fee-post-message", [], deployer);
       expect(updated).toBeOk(Cl.uint(20000));
     });
 
     it("rejects fee update from non-owner", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "set-fee-post-message",
         [Cl.uint(20000)],
         user1
@@ -1044,7 +1044,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("rejects fee below minimum bound", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "set-fee-post-message",
         [Cl.uint(500)], // below min-fee of 1000
         deployer
@@ -1054,7 +1054,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("rejects fee above maximum bound", () => {
       const { result } = simnet.callPublicFn(
-        "message-board-v3",
+        "message-board-v4",
         "set-fee-reaction",
         [Cl.uint(99999999)], // above max-fee of 10000000
         deployer
@@ -1064,13 +1064,13 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("uses updated fee for subsequent posts", () => {
       // Set new post fee
-      simnet.callPublicFn("message-board-v3", "set-fee-post-message", [Cl.uint(25000)], deployer);
+      simnet.callPublicFn("message-board-v4", "set-fee-post-message", [Cl.uint(25000)], deployer);
 
-      const contractId = `${deployer}.message-board-v3`;
+      const contractId = `${deployer}.message-board-v4`;
       const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
 
       // Post a message — should charge the new fee
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("New fee test")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("New fee test")], user1);
 
       const finalBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       expect(finalBalance - initialBalance).toBe(25000);
@@ -1085,7 +1085,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       ];
 
       for (const u of updates) {
-        const { result } = simnet.callPublicFn("message-board-v3", u.fn, [Cl.uint(u.val)], deployer);
+        const { result } = simnet.callPublicFn("message-board-v4", u.fn, [Cl.uint(u.val)], deployer);
         expect(result).toBeOk(Cl.bool(true));
       }
     });
@@ -1093,10 +1093,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
   describe("Batch Read Helpers", () => {
     it("get-contract-stats returns all counters", () => {
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Stats check")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Stats check")], user1);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-contract-stats",
         [],
         user1
@@ -1111,16 +1111,16 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("get-page-range returns correct range for first page", () => {
       // Post 5 messages
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 1")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 1")], user1);
       simnet.mineEmptyBlocks(6);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 2")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 2")], user1);
       simnet.mineEmptyBlocks(6);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 3")], user1);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 4")], user2);
-      simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Msg 5")], user3);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 3")], user1);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 4")], user2);
+      simnet.callPublicFn("message-board-v4", "post-message", [Cl.stringUtf8("Msg 5")], user3);
 
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-page-range",
         [Cl.uint(0), Cl.uint(3)], // page 0, 3 per page
         user1
@@ -1133,7 +1133,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
 
     it("get-page-range handles empty board", () => {
       const { result } = simnet.callReadOnlyFn(
-        "message-board-v3",
+        "message-board-v4",
         "get-page-range",
         [Cl.uint(0), Cl.uint(20)],
         user1

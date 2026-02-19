@@ -4,9 +4,9 @@ Automated transaction generator for the Bitchat message board smart contract on 
 
 ## 🎯 Purpose
 
-This tool executes 40 automated transactions to the `message-board-v3` contract deployed at:
+This tool executes 40 automated transactions to the `message-board-v4` contract deployed at:
 ```
-SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3
+SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4
 ```
 
 ## ⚠️ CRITICAL WARNINGS
@@ -193,7 +193,7 @@ All executions create detailed JSON logs in `logs/`:
     "failed": 0,
     "network": "mainnet",
     "contractAddress": "SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193",
-    "contractName": "message-board-v3",
+    "contractName": "message-board-v4",
     "functionName": "post-message"
   },
   "transactions": [
@@ -292,7 +292,7 @@ TOTAL_TRANSACTIONS=40
 
 - **Stacks Explorer**: https://explorer.hiro.so
 - **Stacks API**: https://api.mainnet.hiro.so
-- **Contract**: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`
+- **Contract**: `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4`
 
 ## ⚖️ License
 

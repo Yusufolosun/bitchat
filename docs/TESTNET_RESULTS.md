@@ -2,7 +2,7 @@
 
 ## Contract Information
 
-**Testnet Address:** `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`
+**Testnet Address:** `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v4`
 **Deployment Date:** `February 8, 2026`
 **Network:** Stacks Testnet
 **Explorer:** https://explorer.hiro.so/address/ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0?chain=testnet

@@ -95,7 +95,7 @@ clarinet deployments apply --testnet
 // frontend/src/utils/constants.js
 
 export const CONTRACT_ADDRESS = 'ST<YOUR-ADDRESS>';
-export const CONTRACT_NAME = 'message-board-v3'; // or whatever you named it
+export const CONTRACT_NAME = 'message-board-v4'; // or whatever you named it
 
 // Add new error codes
 export const ERROR_CODES = {
@@ -173,11 +173,11 @@ export const ERROR_CODES = {
 
 ### Decision 1: Contract Naming
 **Options**:
-- `message-board-v3` (explicit versioning)
+- `message-board-v4` (explicit versioning)
 - `message-board` (clean name, but v1/v2 exist)
 - `bitchat-board` (rebrand for mainnet)
 
-**Recommendation**: `message-board-v3` for testnet, `bitchat-board` for mainnet
+**Recommendation**: `message-board-v4` for testnet, `bitchat-board` for mainnet
 
 ---
 

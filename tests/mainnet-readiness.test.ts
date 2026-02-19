@@ -1,7 +1,7 @@
 /// <reference path="./clarinet.d.ts" />
 
 /**
- * Mainnet Readiness Test Suite for message-board-v3
+ * Mainnet Readiness Test Suite for message-board-v4
  *
  * Covers security-critical scenarios, economic invariants, and edge cases
  * that MUST pass before mainnet deployment.
@@ -44,7 +44,7 @@ const ERR_ALREADY_DELETED = 109;
 const ERR_NO_PENDING = 110;
 const ERR_NOT_PROPOSED = 111;
 
-const CONTRACT = "message-board-v3";
+const CONTRACT = "message-board-v4";
 
 // Helper: post a message and return message-id
 function postMsg(content: string, sender: string) {

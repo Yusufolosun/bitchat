@@ -1,10 +1,10 @@
 // MAINNET CONFIGURATION - BitChat v3
 // Deployed: February 8, 2026
-// Explorer: https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet
+// Explorer: https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet
 
 // Contract deployment details
 export const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193'
-export const CONTRACT_NAME = 'message-board-v3'
+export const CONTRACT_NAME = 'message-board-v4'
 
 // Network configuration
 export const NETWORK = 'mainnet'
@@ -24,4 +24,4 @@ export const MIN_MESSAGE_LENGTH = 1
 export const MAX_MESSAGE_LENGTH = 280
 
 // Mainnet Explorer URL
-export const EXPLORER_URL = 'https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet'
+export const EXPLORER_URL = 'https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet'

@@ -6,9 +6,9 @@ Complete API documentation for the Bitchat message board smart contract on the S
 
 | Field | Value |
 |-------|-------|
-| **Contract Name** | `message-board-v3` |
+| **Contract Name** | `message-board-v4` |
 | **Network** | Stacks Mainnet |
-| **Contract Address** | `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3` |
+| **Contract Address** | `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4` |
 | **Clarity Version** | 2 |
 | **Max Message Length** | 280 characters (UTF-8) |
 | **Default Expiry** | 144 blocks (~24 hours) |
@@ -98,7 +98,7 @@ import { stringUtf8CV } from '@stacks/transactions';
 
 await openContractCall({
   contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-  contractName: 'message-board-v3',
+  contractName: 'message-board-v4',
   functionName: 'post-message',
   functionArgs: [stringUtf8CV('Hello Bitchat!')],
   postConditionMode: 0x01,
@@ -177,7 +177,7 @@ import { uintCV } from '@stacks/transactions';
 // React with "fire" to message #5
 await openContractCall({
   contractAddress: 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193',
-  contractName: 'message-board-v3',
+  contractName: 'message-board-v4',
   functionName: 'react-to-message-typed',
   functionArgs: [uintCV(5), uintCV(2)],
   postConditionMode: 0x01,
@@ -828,7 +828,7 @@ import { StacksMainnet } from '@stacks/network';
 
 const network = new StacksMainnet();
 const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193';
-const CONTRACT_NAME = 'message-board-v3';
+const CONTRACT_NAME = 'message-board-v4';
 ```
 
 ### Reading Data
@@ -938,7 +938,7 @@ const checkTx = async (txId) => {
 
 ## Contract Links
 
-- **Explorer:** [View on Stacks Explorer](https://explorer.stacks.co/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
-- **Source Code:** [contracts/message-board-v2.clar](../contracts/message-board-v2.clar)
+- **Explorer:** [View on Stacks Explorer](https://explorer.stacks.co/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet)
+- **Source Code:** [contracts/message-board-v4.clar](../contracts/message-board-v4.clar)
 - **Tests:** [tests/](../tests/)
 - **Frontend:** [frontend/](../frontend/)

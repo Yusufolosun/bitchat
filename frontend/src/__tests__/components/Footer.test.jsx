@@ -6,7 +6,7 @@ describe('Footer', () => {
   it('renders the contract principal', () => {
     render(<Footer />)
     expect(
-      screen.getByText(/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193\.message-board-v3/)
+      screen.getByText(/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193\.message-board-v4/)
     ).toBeInTheDocument()
   })
 

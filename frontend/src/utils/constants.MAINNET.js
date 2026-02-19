@@ -4,7 +4,7 @@
 
 // Contract deployment details
 export const CONTRACT_ADDRESS = 'SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193'
-export const CONTRACT_NAME = 'message-board-v3'
+export const CONTRACT_NAME = 'message-board-v4'
 
 // Network configuration
 export const NETWORK = 'mainnet'

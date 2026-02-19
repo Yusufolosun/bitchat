@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [3.0.0] - 2026-02-08
 
 ### Added
-- Mainnet deployment of `message-board-v3`
+- Mainnet deployment of `message-board-v4`
 - Pin message functionality (24hr and 72hr tiers)
 - Reaction system for messages
 - Reply/threading support with reply counts

@@ -33,7 +33,7 @@ BitChat is a fully decentralized message board on Stacks blockchain with enterpr
 
 ### Contract Information
 
-- **Contract Name**: `message-board-v3`
+- **Contract Name**: `message-board-v4`
 - **Clarity Version**: 2 (Epoch 2.1+)
 - **Total Functions**: 16 (7 public, 9 read-only)
 - **Total Lines**: 359 lines
@@ -59,7 +59,7 @@ BitChat is a fully decentralized message board on Stacks blockchain with enterpr
 - [x] Contract v3 developed with all security features
 - [x] Comprehensive security audit completed (15 issues identified, all critical/high resolved)
 - [x] All 65 tests passing locally
-- [x] Testnet deployment successful (ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3)
+- [x] Testnet deployment successful (ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v4)
 - [x] Documentation complete (API, user guide, security audit)
 - [x] Frontend developed and tested
 - [x] Deployment scripts prepared
@@ -111,7 +111,7 @@ npm test
 - [ ] All constants verified for mainnet (fees, block durations)
 - [ ] Owner address will be deployer address
 - [ ] No debug logging or test code
-- [ ] Contract name finalized (`message-board-v3` or `message-board`)
+- [ ] Contract name finalized (`message-board-v4` or `message-board`)
 
 ### 2. Financial Requirements
 
@@ -174,7 +174,7 @@ clarinet deployments encrypt
 clarinet check
 
 # Expected output:
-# ✓ message-board-v2.clar
+# ✓ message-board-v4.clar
 
 # 2. Run full test suite
 npm test
@@ -215,10 +215,10 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: message-board-v3  # Verify name
+            contract-name: message-board-v4  # Verify name
             expected-sender: SP[YOUR_ADDRESS]  # Verify address
             cost: [ESTIMATED_COST]  # Note the cost
-            path: "contracts/message-board-v2.clar"
+            path: "contracts/message-board-v4.clar"
             clarity-version: 2
       epoch: "2.1"
 ```
@@ -314,7 +314,7 @@ curl "https://api.hiro.so/extended/v1/tx/0x[TXID]"
 **Success Indicators:**
 - Transaction shows "Success" status
 - Contract appears in deployer's account
-- Contract address is available: `SP[ADDRESS].message-board-v3`
+- Contract address is available: `SP[ADDRESS].message-board-v4`
 
 ### Step 6: Record Deployment Information
 
@@ -329,13 +329,13 @@ Deployment Date: [DATE]
 Deployment Time: [TIME] UTC
 
 Contract Details:
-- Address: SP[YOUR_ADDRESS].message-board-v3
+- Address: SP[YOUR_ADDRESS].message-board-v4
 - Transaction ID: 0x[TXID]
 - Block Height: [BLOCK]
 - Deployer: SP[YOUR_ADDRESS]
 
 Explorer URLs:
-- Contract: https://explorer.hiro.so/txid/SP[ADDRESS].message-board-v3?chain=mainnet
+- Contract: https://explorer.hiro.so/txid/SP[ADDRESS].message-board-v4?chain=mainnet
 - Transaction: https://explorer.hiro.so/txid/0x[TXID]?chain=mainnet
 - Deployer: https://explorer.hiro.so/address/SP[ADDRESS]?chain=mainnet
 
@@ -364,7 +364,7 @@ Network Info:
 
 ```bash
 # Check contract appears on explorer
-# Visit: https://explorer.hiro.so/txid/SP[ADDRESS].message-board-v3?chain=mainnet
+# Visit: https://explorer.hiro.so/txid/SP[ADDRESS].message-board-v4?chain=mainnet
 
 # Verify:
 # ✓ Contract shows all 16 functions
@@ -380,21 +380,21 @@ Test all read-only functions to ensure they're callable:
 // Using @stacks/transactions or Stacks CLI
 
 // 1. Check contract owner
-curl -X POST "https://api.hiro.so/v2/contracts/call-read/SP[ADDRESS]/message-board-v3/get-contract-owner" \
+curl -X POST "https://api.hiro.so/v2/contracts/call-read/SP[ADDRESS]/message-board-v4/get-contract-owner" \
   -H "Content-Type: application/json" \
   -d '{"sender":"SP[ADDRESS]","arguments":[]}'
 
 // Expected: (ok SP[YOUR_ADDRESS])
 
 // 2. Check if paused
-curl -X POST "https://api.hiro.so/v2/contracts/call-read/SP[ADDRESS]/message-board-v3/is-contract-paused" \
+curl -X POST "https://api.hiro.so/v2/contracts/call-read/SP[ADDRESS]/message-board-v4/is-contract-paused" \
   -H "Content-Type: application/json" \
   -d '{"sender":"SP[ADDRESS]","arguments":[]}'
 
 // Expected: (ok false)
 
 // 3. Check total messages
-curl -X POST "https://api.hiro.so/v2/contracts/call-read/SP[ADDRESS]/message-board-v3/get-total-messages" \
+curl -X POST "https://api.hiro.so/v2/contracts/call-read/SP[ADDRESS]/message-board-v4/get-total-messages" \
   -H "Content-Type: application/json" \
   -d '{"sender":"SP[ADDRESS]","arguments":[]}'
 
@@ -484,7 +484,7 @@ Edit `frontend/src/utils/constants.js`:
 
 // Contract deployment details
 export const CONTRACT_ADDRESS = 'SP[YOUR_ACTUAL_MAINNET_ADDRESS]'
-export const CONTRACT_NAME = 'message-board-v3'
+export const CONTRACT_NAME = 'message-board-v4'
 
 // Network configuration
 export const NETWORK = 'mainnet'  // CRITICAL: Changed from 'testnet'
@@ -632,7 +632,7 @@ Update all documentation to reference mainnet:
 ```bash
 # 1. Contract Balance
 # Check STX balance accumulated from fees
-curl "https://api.hiro.so/extended/v1/address/SP[ADDRESS].message-board-v3/stx"
+curl "https://api.hiro.so/extended/v1/address/SP[ADDRESS].message-board-v4/stx"
 
 # 2. Total Messages
 # Read-only call to get-total-messages
@@ -659,7 +659,7 @@ import { callReadOnlyFunction } from '@stacks/transactions';
 import { StacksMainnet } from '@stacks/network';
 
 const CONTRACT_ADDRESS = 'SP[YOUR_ADDRESS]';
-const CONTRACT_NAME = 'message-board-v3';
+const CONTRACT_NAME = 'message-board-v4';
 const network = new StacksMainnet();
 
 async function getMetrics() {
@@ -793,7 +793,7 @@ If needing to secure accumulated fees urgently:
 
 ```bash
 # 1. Check contract balance
-curl "https://api.hiro.so/extended/v1/address/SP[ADDRESS].message-board-v3/stx"
+curl "https://api.hiro.so/extended/v1/address/SP[ADDRESS].message-board-v4/stx"
 
 # 2. Withdraw fees to secure wallet
 # Function: withdraw-fees
@@ -823,7 +823,7 @@ Timeline: [ESTIMATED_RESOLUTION]
 
 We are investigating and will provide updates every [INTERVAL].
 
-Contract: SP[ADDRESS].message-board-v3
+Contract: SP[ADDRESS].message-board-v4
 More info: [LINK]
 ```
 

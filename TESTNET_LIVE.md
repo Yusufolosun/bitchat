@@ -2,7 +2,7 @@
 
 ## Contract Information
 
-**Contract ID:** `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v3`
+**Contract ID:** `ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0.message-board-v4`
 **Network:** Stacks Testnet
 **Deployment Date:** February 8, 2026
 **Status:** ✅ LIVE & READY FOR TESTING
@@ -108,16 +108,16 @@ Expected: Returns ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0
 
 ```bash
 # Get total messages
-stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 get-total-messages --testnet
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v4 get-total-messages --testnet
 
 # Get total fees collected
-stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 get-total-fees-collected --testnet
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v4 get-total-fees-collected --testnet
 
 # Check if paused
-stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 is-contract-paused --testnet
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v4 is-contract-paused --testnet
 
 # Get message by ID
-stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v3 get-message "(u 0)" --testnet
+stx call-read-only ST1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK1GA0CF0 message-board-v4 get-message "(u 0)" --testnet
 ```
 
 ---

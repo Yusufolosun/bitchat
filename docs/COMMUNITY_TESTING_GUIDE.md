@@ -614,11 +614,11 @@ Rewards available for critical security findings!
 ### API Endpoints
 ```bash
 # Get message
-curl https://api.testnet.hiro.so/v2/contracts/call-read/<ADDRESS>/message-board-v3/get-message \
+curl https://api.testnet.hiro.so/v2/contracts/call-read/<ADDRESS>/message-board-v4/get-message \
   -d '{"sender":"<YOUR-ADDRESS>","arguments":["0x0100000000000000000"]}'
 
 # Check pause status
-curl https://api.testnet.hiro.so/v2/contracts/call-read/<ADDRESS>/message-board-v3/is-contract-paused \
+curl https://api.testnet.hiro.so/v2/contracts/call-read/<ADDRESS>/message-board-v4/is-contract-paused \
   -d '{"sender":"<YOUR-ADDRESS>","arguments":[]}'
 ```
 

@@ -1,6 +1,6 @@
-;; message-board-v2.clar
+;; message-board-v4.clar
 ;; Core contract for Bitchat on-chain message board
-;; Security Enhanced Version - v3
+;; Security Enhanced Version - v4
 
 ;; Constants - Error Codes
 (define-constant err-owner-only (err u100))

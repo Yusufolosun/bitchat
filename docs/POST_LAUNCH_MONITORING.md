@@ -1,6 +1,6 @@
 # Post-Launch Monitoring Guide
 
-**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`  
+**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4`  
 **Network:** Stacks Mainnet  
 **Launch Date:** February 8, 2026
 
@@ -32,19 +32,19 @@
 ```bash
 # Check if contract is paused
 stx call-read-only SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
-  message-board-v3 \
+  message-board-v4 \
   is-contract-paused \
   --mainnet
 
 # Get total messages
 stx call-read-only SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
-  message-board-v3 \
+  message-board-v4 \
   get-total-messages \
   --mainnet
 
 # Get total fees
 stx call-read-only SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
-  message-board-v3 \
+  message-board-v4 \
   get-total-fees-collected \
   --mainnet
 ```
@@ -149,7 +149,7 @@ stx call-read-only SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
 1. **PAUSE CONTRACT IMMEDIATELY**
 ```bash
 stx call-contract SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
-  message-board-v3 \
+  message-board-v4 \
   pause-contract \
   --mainnet
 ```
@@ -178,7 +178,7 @@ stx call-contract SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
 
 ```bash
 stx call-contract SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193 \
-  message-board-v3 \
+  message-board-v4 \
   withdraw-fees \
   --mainnet
 ```

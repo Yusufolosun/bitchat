@@ -6,13 +6,13 @@
 ## Contract Information
 
 **Mainnet Address:**  
-`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`
+`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4`
 
 **Deployment Cost:** 0.101200 STX  
 **Transaction Status:** Confirmed
 
 **Explorer:**  
-https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet
+https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet
 
 ## Deployment Checklist
 
@@ -37,7 +37,7 @@ https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-
 
 ## Quick Links
 
-- **Explorer:** https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet
+- **Explorer:** https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet
 - **GitHub:** https://github.com/Yusufolosun/bitchat
 - **Documentation:** See `/docs` folder
 

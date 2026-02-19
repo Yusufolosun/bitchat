@@ -19,7 +19,7 @@ describe('constants', () => {
   })
 
   it('exports a contract name', () => {
-    expect(CONTRACT_NAME).toBe('message-board-v3')
+    expect(CONTRACT_NAME).toBe('message-board-v4')
   })
 
   it('exports a valid network', () => {

@@ -1,7 +1,7 @@
 # Bitchat v3 - Mainnet Launch
 
 **Date:** February 8, 2026  
-**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`  
+**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4`  
 **Status:** Live on Stacks Mainnet
 
 ## What is Bitchat?
@@ -28,10 +28,10 @@ Bitchat is a decentralized message board built on Stacks blockchain. Every messa
 ## Access Bitchat
 
 **Mainnet Contract:**  
-`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`
+`SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4`
 
 **Explorer:**  
-https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet
+https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet
 
 ## How to Use
 

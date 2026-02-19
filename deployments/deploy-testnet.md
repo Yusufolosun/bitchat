@@ -193,7 +193,7 @@ If you prefer using Stacks CLI directly:
 npm install -g @stacks/cli
 
 # Deploy contract
-stx deploy_contract contracts/message-board-v2.clar message-board-v3 \
+stx deploy_contract contracts/message-board-v4.clar message-board-v4 \
   -t \
   --mnemonic "your twelve word seed phrase here"
 ```

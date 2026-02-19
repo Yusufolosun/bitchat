@@ -13,8 +13,8 @@ Bitchat is a decentralized message board where users post messages, pin importan
 
 ## Live on Mainnet
 
-**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3`  
-**Explorer:** [View Contract](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+**Contract:** `SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4`  
+**Explorer:** [View Contract](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet)
 
 ## Features
 
@@ -52,7 +52,7 @@ Bitchat is a decentralized message board where users post messages, pin importan
 ```
 bitchat/
 ├── contracts/
-│   └── message-board-v2.clar
+│   └── message-board-v4.clar
 ├── tests/
 │   ├── message-board.test.ts
 │   └── edge-cases.test.ts
@@ -68,7 +68,7 @@ bitchat/
 
 1. Install a Stacks wallet (Hiro, Xverse, or Leather)
 2. Get STX from an exchange
-3. Visit contract on [Stacks Explorer](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+3. Visit contract on [Stacks Explorer](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet)
 4. Connect wallet and start posting
 
 ### For Developers
@@ -146,7 +146,7 @@ clarinet deployments apply --testnet
 
 ## Links
 
-- **Mainnet Contract:** [SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v3?chain=mainnet)
+- **Mainnet Contract:** [SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4](https://explorer.hiro.so/txid/SP1M46W6CVGAMH3ZJD3TKMY5KCY48HWAZK0DYG193.message-board-v4?chain=mainnet)
 - **GitHub:** [github.com/Yusufolosun/bitchat](https://github.com/Yusufolosun/bitchat)
 
 ## Contributing

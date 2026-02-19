@@ -54,7 +54,7 @@ Based on comprehensive security audit, the contract has addressed:
 clarinet check
 
 # Expected output:
-# ✓ contracts/message-board-v2.clar (v3 - Security Enhanced)
+# ✓ contracts/message-board-v4.clar (v3 - Security Enhanced)
 ```
 
 ### 2. Run Test Suite
@@ -114,7 +114,7 @@ clarinet deployments generate --testnet --medium-cost
 
 ### Step 2: Review Deployment Plan
 Check the generated file for:
-- Correct contract name (message-board-v3 or message-board)
+- Correct contract name (message-board-v4 or message-board)
 - Correct network (testnet)
 - Gas costs are reasonable
 - Nonce sequence is correct
@@ -133,13 +133,13 @@ clarinet deployments apply --testnet
 
 # Expected output:
 # Transaction ID: 0x...
-# Contract deployed: ST<ADDRESS>.message-board-v3
+# Contract deployed: ST<ADDRESS>.message-board-v4
 ```
 
 ### Step 5: Verify Deployment
 ```bash
 # Check contract status
-curl "https://api.testnet.hiro.so/v2/contracts/interface/ST<YOUR-ADDRESS>/message-board-v3"
+curl "https://api.testnet.hiro.so/v2/contracts/interface/ST<YOUR-ADDRESS>/message-board-v4"
 
 # Should return contract interface with all functions
 ```
@@ -153,24 +153,24 @@ Test all critical paths on testnet:
 # Using stacks-cli or similar tool
 
 # Test 1: Post a message
-stacks-cli call ST<ADDRESS> message-board-v3 post-message -p '"Hello v3!"'
+stacks-cli call ST<ADDRESS> message-board-v4 post-message -p '"Hello v3!"'
 
 # Test 2: Verify spam prevention
 # Try posting again immediately - should fail with err-too-soon
-stacks-cli call ST<ADDRESS> message-board-v3 post-message -p '"Too soon"'
+stacks-cli call ST<ADDRESS> message-board-v4 post-message -p '"Too soon"'
 
 # Test 3: Wait 6 blocks and post again - should succeed
 # (wait ~60 minutes)
-stacks-cli call ST<ADDRESS> message-board-v3 post-message -p '"After cooldown"'
+stacks-cli call ST<ADDRESS> message-board-v4 post-message -p '"After cooldown"'
 
 # Test 4: Pin a message
-stacks-cli call ST<ADDRESS> message-board-v3 pin-message -p 'u0' -p 'u144'
+stacks-cli call ST<ADDRESS> message-board-v4 pin-message -p 'u0' -p 'u144'
 
 # Test 5: React to message
-stacks-cli call ST<ADDRESS> message-board-v3 react-to-message -p 'u0'
+stacks-cli call ST<ADDRESS> message-board-v4 react-to-message -p 'u0'
 
 # Test 6: Check contract is not paused
-stacks-cli call-read ST<ADDRESS> message-board-v3 is-contract-paused
+stacks-cli call-read ST<ADDRESS> message-board-v4 is-contract-paused
 
 # Test 7: Verify fee collection
 # Check contract STX balance - should be positive
@@ -180,38 +180,38 @@ stacks-cli call-read ST<ADDRESS> message-board-v3 is-contract-paused
 ```bash
 # Verify only owner can pause
 # Sign transaction from different account
-stacks-cli call ST<ADDRESS> message-board-v3 pause-contract --from-wallet user1
+stacks-cli call ST<ADDRESS> message-board-v4 pause-contract --from-wallet user1
 # Should fail with err-owner-only (u100)
 
 # Verify only owner can withdraw fees
-stacks-cli call ST<ADDRESS> message-board-v3 withdraw-fees -p 'u1000' -p 'ST<RECIPIENT>' --from-wallet user1
+stacks-cli call ST<ADDRESS> message-board-v4 withdraw-fees -p 'u1000' -p 'ST<RECIPIENT>' --from-wallet user1
 # Should fail with err-owner-only (u100)
 
 # Verify pause prevents operations
 # Pause as owner
-stacks-cli call ST<ADDRESS> message-board-v3 pause-contract
+stacks-cli call ST<ADDRESS> message-board-v4 pause-contract
 
 # Try to post - should fail
-stacks-cli call ST<ADDRESS> message-board-v3 post-message -p '"Should fail"'
+stacks-cli call ST<ADDRESS> message-board-v4 post-message -p '"Should fail"'
 # Should return err-contract-paused (u107)
 
 # Unpause
-stacks-cli call ST<ADDRESS> message-board-v3 unpause-contract
+stacks-cli call ST<ADDRESS> message-board-v4 unpause-contract
 ```
 
 ### 3. Fee Collection Verification
 ```bash
 # Check contract balance before operations
-curl "https://api.testnet.hiro.so/extended/v1/address/ST<ADDRESS>.message-board-v3/stx"
+curl "https://api.testnet.hiro.so/extended/v1/address/ST<ADDRESS>.message-board-v4/stx"
 
 # Post message (10,000 microSTX fee)
-stacks-cli call ST<ADDRESS> message-board-v3 post-message -p '"Fee test"'
+stacks-cli call ST<ADDRESS> message-board-v4 post-message -p '"Fee test"'
 
 # Check contract balance after - should increase by 10,000 microSTX
-curl "https://api.testnet.hiro.so/extended/v1/address/ST<ADDRESS>.message-board-v3/stx"
+curl "https://api.testnet.hiro.so/extended/v1/address/ST<ADDRESS>.message-board-v4/stx"
 
 # Withdraw fees as owner
-stacks-cli call ST<ADDRESS> message-board-v3 withdraw-fees -p 'u5000' -p 'ST<YOUR-ADDRESS>'
+stacks-cli call ST<ADDRESS> message-board-v4 withdraw-fees -p 'u5000' -p 'ST<YOUR-ADDRESS>'
 
 # Balance should decrease by 5,000 microSTX
 ```
@@ -223,7 +223,7 @@ stacks-cli call ST<ADDRESS> message-board-v3 withdraw-fees -p 'u5000' -p 'ST<YOU
 // frontend/src/utils/constants.js
 
 export const CONTRACT_ADDRESS = 'ST<YOUR-ADDRESS>';
-export const CONTRACT_NAME = 'message-board-v3'; // Update version
+export const CONTRACT_NAME = 'message-board-v4'; // Update version
 
 // New error codes
 export const ERROR_CODES = {
@@ -319,7 +319,7 @@ Set up event listeners to track these in your backend/analytics.
 #### Scenario 1: Spam Attack Detected
 ```bash
 # Immediately pause contract
-stacks-cli call ST<ADDRESS> message-board-v3 pause-contract
+stacks-cli call ST<ADDRESS> message-board-v4 pause-contract
 
 # Investigate suspicious activity
 # Review recent transactions
@@ -329,16 +329,16 @@ stacks-cli call ST<ADDRESS> message-board-v3 pause-contract
 # Consider adjusting spam prevention parameters in v4
 
 # Resume operations when safe
-stacks-cli call ST<ADDRESS> message-board-v3 unpause-contract
+stacks-cli call ST<ADDRESS> message-board-v4 unpause-contract
 ```
 
 #### Scenario 2: Critical Bug Found
 ```bash
 # Pause contract immediately
-stacks-cli call ST<ADDRESS> message-board-v3 pause-contract
+stacks-cli call ST<ADDRESS> message-board-v4 pause-contract
 
 # Withdraw all fees to safety
-stacks-cli call ST<ADDRESS> message-board-v3 withdraw-fees -p '<BALANCE>' -p 'ST<SAFE-ADDRESS>'
+stacks-cli call ST<ADDRESS> message-board-v4 withdraw-fees -p '<BALANCE>' -p 'ST<SAFE-ADDRESS>'
 
 # Deploy fixed version as v4
 # Migrate data if necessary
@@ -349,10 +349,10 @@ stacks-cli call ST<ADDRESS> message-board-v3 withdraw-fees -p '<BALANCE>' -p 'ST
 ```bash
 # Verify recipient address carefully (IRREVERSIBLE)
 # Transfer ownership
-stacks-cli call ST<ADDRESS> message-board-v3 transfer-ownership -p 'ST<NEW-OWNER>'
+stacks-cli call ST<ADDRESS> message-board-v4 transfer-ownership -p 'ST<NEW-OWNER>'
 
 # Verify transfer
-stacks-cli call-read ST<ADDRESS> message-board-v3 get-contract-owner
+stacks-cli call-read ST<ADDRESS> message-board-v4 get-contract-owner
 # Should return: ST<NEW-OWNER>
 
 # Old owner will lose all admin privileges
