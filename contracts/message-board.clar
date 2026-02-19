@@ -101,6 +101,14 @@
   }
 )
 
+(define-map user-profiles
+  principal
+  {
+    display-name: (string-utf8 50),
+    updated-at: uint
+  }
+)
+
 ;; Private functions
 (define-private (get-next-message-id)
   (let ((current-nonce (var-get message-nonce)))
