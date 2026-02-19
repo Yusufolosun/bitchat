@@ -101,6 +101,14 @@
   }
 )
 
+(define-map user-profiles
+  principal
+  {
+    display-name: (string-utf8 50),
+    updated-at: uint
+  }
+)
+
 ;; Private functions
 (define-private (get-next-message-id)
   (let ((current-nonce (var-get message-nonce)))
@@ -310,6 +318,29 @@
       none
       (some message)
     )
+    none
+  )
+)
+
+;; User profile functions
+
+(define-public (set-display-name (name (string-utf8 50)))
+  (begin
+    (asserts! (not (var-get contract-paused)) err-contract-paused)
+    (asserts! (> (len name) u0) err-invalid-input)
+    (map-set user-profiles tx-sender { display-name: name, updated-at: block-height })
+    (print { event: "display-name-set", user: tx-sender, name: name })
+    (ok true)
+  )
+)
+
+(define-read-only (get-user-profile (user principal))
+  (map-get? user-profiles user)
+)
+
+(define-read-only (get-display-name (user principal))
+  (match (map-get? user-profiles user)
+    profile (some (get display-name profile))
     none
   )
 )
