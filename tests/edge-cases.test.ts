@@ -24,7 +24,7 @@ const ERR_OWNER_ONLY = 100;
 const ERR_NOT_FOUND = 101;
 const ERR_UNAUTHORIZED = 102;
 const ERR_INVALID_INPUT = 103;
-const ERR_INVALID_DURATION = 104;
+const ERR_MAX_EDITS = 104;
 const ERR_ALREADY_REACTED = 105;
 const ERR_TOO_SOON = 106;
 const ERR_CONTRACT_PAUSED = 107;
@@ -53,9 +53,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result2).toBeErr(Cl.uint(ERR_TOO_SOON));
     });
 
-    it.skip("allows posting after cooldown period", () => {
-      // Skipped: requires mineEmptyBlocks which is not available in simnet API
-      // This test would validate that spam prevention allows posting after cooldown
+    it("allows posting after cooldown period", () => {
       // First post
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
       
@@ -67,8 +65,16 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       );
       expect(tooSoon).toBeErr(Cl.uint(ERR_TOO_SOON));
       
-      // Note: mineEmptyBlocks not available in current simnet API
-      // This test validates cooldown logic exists in contract
+      // Advance past cooldown (min-post-gap = 6)
+      simnet.mineEmptyBlocks(6);
+      
+      const { result: afterCooldown } = simnet.callPublicFn(
+        "message-board-v3",
+        "post-message",
+        [Cl.stringUtf8("After cooldown")],
+        user1
+      );
+      expect(afterCooldown).toBeOk(Cl.uint(1));
     });
 
     it("does not prevent different users from posting", () => {
@@ -229,8 +235,8 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   });
 
   describe("Fee Collection & Withdrawal", () => {
-    it.skip("collects fees into contract balance", () => {
-      const contractId = `${deployer}.message-board`;
+    it("collects fees into contract balance", () => {
+      const contractId = `${deployer}.message-board-v3`;
       const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       
       // Post a message (should collect fee)
@@ -268,7 +274,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(ownerWithdraw).toBeOk(Cl.bool(true));
     });
 
-    it.skip("prevents withdrawing more than contract balance", () => {
+    it("prevents withdrawing more than contract balance", () => {
       const { result } = simnet.callPublicFn(
         "message-board-v3",
         "withdraw-fees",
@@ -293,7 +299,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
   });
 
-  describe("Ownership Transfer", () => {
+  describe("Ownership Transfer (Two-step)", () => {
     it("allows checking current owner", () => {
       const { result } = simnet.callReadOnlyFn(
         "message-board-v3",
@@ -304,23 +310,26 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeOk(Cl.principal(deployer));
     });
 
-    it("only allows owner to transfer ownership", () => {
+    it("only allows owner to propose ownership transfer", () => {
       const { result: unauthorized } = simnet.callPublicFn(
         "message-board-v3",
-        "transfer-ownership",
+        "propose-ownership-transfer",
         [Cl.principal(user2)],
         user1
       );
       expect(unauthorized).toBeErr(Cl.uint(ERR_OWNER_ONLY));
     });
 
-    it("transfers ownership successfully", () => {
-      // Transfer to user1
+    it("transfers ownership via two-step pattern", () => {
+      // Step 1: Propose
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+      
+      // Step 2: Accept
       const { result } = simnet.callPublicFn(
         "message-board-v3",
-        "transfer-ownership",
-        [Cl.principal(user1)],
-        deployer
+        "accept-ownership",
+        [],
+        user1
       );
       expect(result).toBeOk(Cl.bool(true));
       
@@ -335,8 +344,9 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("revokes old owner's admin rights after transfer", () => {
-      // Transfer ownership
-      simnet.callPublicFn("message-board-v3", "transfer-ownership", [Cl.principal(user1)], deployer);
+      // Two-step transfer
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+      simnet.callPublicFn("message-board-v3", "accept-ownership", [], user1);
       
       // Old owner cannot pause
       const { result } = simnet.callPublicFn(
@@ -349,8 +359,9 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
     });
 
     it("grants new owner admin rights", () => {
-      // Transfer ownership
-      simnet.callPublicFn("message-board-v3", "transfer-ownership", [Cl.principal(user1)], deployer);
+      // Two-step transfer
+      simnet.callPublicFn("message-board-v3", "propose-ownership-transfer", [Cl.principal(user1)], deployer);
+      simnet.callPublicFn("message-board-v3", "accept-ownership", [], user1);
       
       // New owner can pause
       const { result } = simnet.callPublicFn(
@@ -364,35 +375,35 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   });
 
   describe("Pin Expiry Validation", () => {
-    it.skip("enforces pin expiry with is-message-pinned", () => {
+    it("enforces pin expiry with is-message-pinned", () => {
       // Post message
-      const { result: postResult } = simnet.callPublicFn(
-        "message-board",
+      simnet.callPublicFn(
+        "message-board-v3",
         "post-message",
         [Cl.stringUtf8("Pin expiry test")],
         user1
       );
-      const messageId = postResult.value;
       
-      // Note: Requires mineEmptyBlocks which is not available
-      simnet.callPublicFn("message-board-v3", "pin-message", [messageId, Cl.uint(PIN_24HR_BLOCKS)], user1);
+      // Pin it for 144 blocks
+      simnet.callPublicFn("message-board-v3", "pin-message", [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)], user1);
       
       // Should be pinned initially
       const { result: isPinned1 } = simnet.callReadOnlyFn(
         "message-board-v3",
         "is-message-pinned",
-        [messageId],
+        [Cl.uint(0)],
         user1
       );
       expect(isPinned1).toBeBool(true);
       
-      // Note: Cannot test expiry without mineEmptyBlocks
+      // Advance past pin expiry
+      simnet.mineEmptyBlocks(145);
       
       // Should no longer be pinned
       const { result: isPinned2 } = simnet.callReadOnlyFn(
         "message-board-v3",
         "is-message-pinned",
-        [messageId],
+        [Cl.uint(0)],
         user1
       );
       expect(isPinned2).toBeBool(false);
@@ -439,28 +450,28 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeOk(Cl.uint(0));
     });
 
-    it.skip("accepts exactly 280 character messages", () => {
+    it("accepts exactly 280 character messages", () => {
       const maxMessage = "a".repeat(280);
-      // Skipped: requires mineEmptyBlocks
       const { result } = simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8(maxMessage)],
-        user1
+        user2
       );
-      expect(result).toBeOk(Cl.uint(1));
+      expect(result).toBeOk(Cl.uint(0));
     });
 
-    it.skip("rejects messages over 280 characters", () => {
+    it("rejects messages over 280 characters", () => {
       const tooLong = "a".repeat(281);
-      // Skipped: requires mineEmptyBlocks
-      const { result } = simnet.callPublicFn(
-        "message-board-v3",
-        "post-message",
-        [Cl.stringUtf8(tooLong)],
-        user1
-      );
-      expect(result).toBeErr(Cl.uint(ERR_INVALID_INPUT));
+      // Clarity VM rejects at the type level before the function body executes
+      expect(() => {
+        simnet.callPublicFn(
+          "message-board-v3",
+          "post-message",
+          [Cl.stringUtf8(tooLong)],
+          user3
+        );
+      }).toThrow();
     });
   });
 
@@ -517,7 +528,12 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
           "expires-at": Cl.uint(postBlockHeight + 144),
           pinned: Cl.bool(false),
           "pin-expires-at": Cl.uint(0),
-          "reaction-count": Cl.uint(3)
+          "reaction-count": Cl.uint(3),
+          deleted: Cl.bool(false),
+          edited: Cl.bool(false),
+          "edit-count": Cl.uint(0),
+          "reply-to": Cl.uint(0),
+          "reply-count": Cl.uint(0)
         })
       );
     });
@@ -546,23 +562,20 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   });
 
   describe("Pin Authorization", () => {
-    it.skip("only allows message author to pin", () => {
+    it("only allows message author to pin", () => {
       // User1 posts message
-      const { result: postResult } = simnet.callPublicFn(
+      simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8("Authorization test")],
         user1
       );
-      const messageId = postResult.value;
-      
-      // Skipped: requires mineEmptyBlocks
       
       // User2 cannot pin user1's message
       const { result: unauthorized } = simnet.callPublicFn(
         "message-board-v3",
         "pin-message",
-        [messageId, Cl.uint(PIN_24HR_BLOCKS)],
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user2
       );
       expect(unauthorized).toBeErr(Cl.uint(ERR_UNAUTHORIZED));
@@ -571,7 +584,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       const { result: authorized } = simnet.callPublicFn(
         "message-board-v3",
         "pin-message",
-        [messageId, Cl.uint(PIN_24HR_BLOCKS)],
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
       );
       expect(authorized).toBeOk(Cl.bool(true));
@@ -579,36 +592,30 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   });
 
   describe("Invalid Pin Durations", () => {
-    it.skip("rejects zero duration", () => {
-      const { result: postResult } = simnet.callPublicFn(
+    it("rejects zero duration", () => {
+      simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8("Duration test")],
         user1
       );
-      const messageId = postResult.value;
-      
-      // Skipped: requires mineEmptyBlocks
       
       const { result } = simnet.callPublicFn(
         "message-board-v3",
         "pin-message",
-        [messageId, Cl.uint(0)],
+        [Cl.uint(0), Cl.uint(0)],
         user1
       );
-      expect(result).toBeErr(Cl.uint(ERR_INVALID_DURATION));
+      expect(result).toBeErr(Cl.uint(ERR_INVALID_INPUT));
     });
 
-    it.skip("rejects non-standard durations", () => {
-      const { result: postResult } = simnet.callPublicFn(
+    it("rejects non-standard durations", () => {
+      simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8("Duration test 2")],
-        user1
+        user2
       );
-      const messageId = postResult.value;
-      
-      // Skipped: requires mineEmptyBlocks
       
       // Try various invalid durations
       const invalidDurations = [1, 100, 200, 500, 1000];
@@ -616,32 +623,32 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
         const { result } = simnet.callPublicFn(
           "message-board-v3",
           "pin-message",
-          [messageId, Cl.uint(duration)],
-          user1
+          [Cl.uint(0), Cl.uint(duration)],
+          user2
         );
-        expect(result).toBeErr(Cl.uint(ERR_INVALID_DURATION));
+        expect(result).toBeErr(Cl.uint(ERR_INVALID_INPUT));
       });
     });
 
-    it.skip("accepts standard durations (144 and 432 blocks)", () => {
+    it("accepts standard durations (144 and 432 blocks)", () => {
       // Test 144 blocks
-      const { result: post1 } = simnet.callPublicFn(
+      simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8("24hr test")],
         user1
       );
-      // Skipped: requires mineEmptyBlocks
       const { result: pin1 } = simnet.callPublicFn(
         "message-board-v3",
         "pin-message",
-        [post1.value, Cl.uint(PIN_24HR_BLOCKS)],
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
       );
       expect(pin1).toBeOk(Cl.bool(true));
       
       // Test 432 blocks (72 hours)
-      const { result: post2 } = simnet.callPublicFn(
+      simnet.mineEmptyBlocks(6);
+      simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8("72hr test")],
@@ -650,7 +657,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       const { result: pin2 } = simnet.callPublicFn(
         "message-board-v3",
         "pin-message",
-        [post2.value, Cl.uint(432)],
+        [Cl.uint(1), Cl.uint(432)],
         user1
       );
       expect(pin2).toBeOk(Cl.bool(true));
@@ -700,9 +707,10 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
   });
 
   describe("User Stats Accumulation", () => {
-    it.skip("tracks posting fees correctly", () => {
+    it("tracks posting fees correctly", () => {
       // Post first message
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Stats test 1")], user1);
+      const firstPostBlock = simnet.blockHeight;
       
       let { result } = simnet.callReadOnlyFn(
         "message-board-v3",
@@ -713,12 +721,15 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeSome(
         Cl.tuple({
           "messages-posted": Cl.uint(1),
-          "total-spent": Cl.uint(FEE_POST_MESSAGE)
+          "total-spent": Cl.uint(FEE_POST_MESSAGE),
+          "last-post-block": Cl.uint(firstPostBlock)
         })
       );
       
-      // Skipped: requires mineEmptyBlocks
+      // Advance past cooldown
+      simnet.mineEmptyBlocks(6);
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Stats test 2")], user1);
+      const secondPostBlock = simnet.blockHeight;
       
       ({ result } = simnet.callReadOnlyFn(
         "message-board-v3",
@@ -729,24 +740,25 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeSome(
         Cl.tuple({
           "messages-posted": Cl.uint(2),
-          "total-spent": Cl.uint(FEE_POST_MESSAGE * 2)
+          "total-spent": Cl.uint(FEE_POST_MESSAGE * 2),
+          "last-post-block": Cl.uint(secondPostBlock)
         })
       );
     });
 
-    it.skip("includes pin fees in total spent", () => {
+    it("includes pin fees in total spent", () => {
       // Post and pin
-      const { result: postResult } = simnet.callPublicFn(
+      simnet.callPublicFn(
         "message-board-v3",
         "post-message",
         [Cl.stringUtf8("Pin fee test")],
         user1
       );
-      // Skipped: requires mineEmptyBlocks
+      const postBlock = simnet.blockHeight;
       simnet.callPublicFn(
         "message-board-v3",
         "pin-message",
-        [postResult.value, Cl.uint(PIN_24HR_BLOCKS)],
+        [Cl.uint(0), Cl.uint(PIN_24HR_BLOCKS)],
         user1
       );
       
@@ -759,7 +771,8 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
       expect(result).toBeSome(
         Cl.tuple({
           "messages-posted": Cl.uint(1),
-          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_PIN_24HR)
+          "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_PIN_24HR),
+          "last-post-block": Cl.uint(postBlock)
         })
       );
     });
@@ -772,6 +785,7 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
         [Cl.stringUtf8("Reaction fee test")],
         user1
       );
+      const postBlock = simnet.blockHeight;
       simnet.callPublicFn("message-board-v3", "react-to-message", [postResult.value], user1);
       
       const { result } = simnet.callReadOnlyFn(
@@ -784,14 +798,14 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
         Cl.tuple({
           "messages-posted": Cl.uint(1),
           "total-spent": Cl.uint(FEE_POST_MESSAGE + FEE_REACTION),
-          "last-post-block": Cl.uint(simnet.blockHeight)
+          "last-post-block": Cl.uint(postBlock)
         })
       );
     });
   });
 
   describe("Message Nonce Increment", () => {
-    it.skip("increments nonce for each message", () => {
+    it("increments nonce for each message", () => {
       // Check initial nonce
       let { result } = simnet.callReadOnlyFn(
         "message-board-v3",
@@ -799,29 +813,28 @@ describe("message-board v3 - Edge Cases & Security Tests", () => {
         [],
         user1
       );
-      expect(result).toBeUint(0);
+      expect(result).toBeOk(Cl.uint(0));
       
-      // Skipped: requires mineEmptyBlocks
+      // Post first message
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("First")], user1);
       ({ result } = simnet.callReadOnlyFn("message-board-v3", "get-message-nonce", [], user1));
-      expect(result).toBeUint(1);
+      expect(result).toBeOk(Cl.uint(1));
       
-      // Post second message
+      // Post second message (different user, no cooldown needed)
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Second")], user2);
       ({ result } = simnet.callReadOnlyFn("message-board-v3", "get-message-nonce", [], user1));
-      expect(result).toBeUint(2);
+      expect(result).toBeOk(Cl.uint(2));
     });
 
-    it.skip("matches total messages count", () => {
+    it("matches total messages count", () => {
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test 1")], user1);
-      // Skipped: requires mineEmptyBlocks
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test 2")], user2);
       
       const { result: nonce } = simnet.callReadOnlyFn("message-board-v3", "get-message-nonce", [], user1);
       const { result: total } = simnet.callReadOnlyFn("message-board-v3", "get-total-messages", [], user1);
       
-      expect(nonce).toBeUint(2);
-      expect(total).toBeUint(2);
+      expect(nonce).toBeOk(Cl.uint(2));
+      expect(total).toBeOk(Cl.uint(2));
     });
   });
 
