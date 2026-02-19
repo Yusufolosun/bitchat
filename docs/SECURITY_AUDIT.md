@@ -1,9 +1,18 @@
 # Security Audit Report - BitChat Message Board Contract
 
+> **Note (v4):** This audit was conducted against the v2 contract. All critical
+> and high-priority findings documented below have been resolved in the v3 and v4
+> contract iterations. The v4 contract (942 lines, 47 functions) includes all
+> recommended security enhancements: two-step ownership transfer, explicit fee
+> withdrawal recipients, configurable fee parameters, and comprehensive access
+> controls. This document is retained as a historical reference for the security
+> decisions that shaped the current contract.
+
 **Contract**: message-board-v4.clar  
-**Version**: v2  
+**Original Audit Version**: v2  
 **Audit Date**: February 8, 2026  
-**Auditor**: Automated Security Review
+**Auditor**: Automated Security Review  
+**Remediation Status**: All critical/high issues resolved in v4
 
 ---
 
