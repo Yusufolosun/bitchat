@@ -9,7 +9,7 @@ const missingVars = requiredVars.filter(v => !process.env[v]);
 
 if (missingVars.length > 0) {
   console.error('‚ùå Missing required environment variables:', missingVars.join(', '));
-  console.error('Ì≥ù Please copy .env.example to .env and configure it');
+  console.error('   Please copy .env.example to .env and configure it');
   process.exit(1);
 }
 
@@ -68,8 +68,8 @@ if (config.functionName === 'react-to-message' && !config.reactMessageIds) {
 config.maxFeePerTx = (config.maxBudgetSTX / config.totalTransactions) * 1000000; // Convert to microSTX
 
 console.log('‚úÖ Configuration loaded successfully');
-console.log(`Ì≥ä Mode: ${config.dryRun ? 'DRY RUN (no transactions will be broadcast)' : 'LIVE'}`);
-console.log(`ÌæØ Target: ${config.contractAddress}.${config.contractName}`);
-console.log(`Ì≥ù Function: ${config.functionName}`);
-console.log(`Ì¥¢ Transactions: ${config.totalTransactions}`);
-console.log(`Ì≤∞ Max budget: ${config.maxBudgetSTX} STX (~${(config.maxFeePerTx / 1000000).toFixed(6)} STX per tx)`);
+console.log(`   Mode: ${config.dryRun ? 'DRY RUN (no transactions will be broadcast)' : 'LIVE'}`);
+console.log(`   Target: ${config.contractAddress}.${config.contractName}`);
+console.log(`   Function: ${config.functionName}`);
+console.log(`   Transactions: ${config.totalTransactions}`);
+console.log(`   Max budget: ${config.maxBudgetSTX} STX (~${(config.maxFeePerTx / 1000000).toFixed(6)} STX per tx)`);

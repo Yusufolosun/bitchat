@@ -1,4 +1,4 @@
-import { makeSTXTokenTransfer, makeContractCall, AnchorMode, broadcastTransaction, getNonce } from '@stacks/transactions';
+import { broadcastTransaction } from '@stacks/transactions';
 import { StacksMainnet } from '@stacks/network';
 import fs from 'fs/promises';
 import path from 'path';
@@ -111,9 +111,6 @@ export function generateMessage(template, index) {
  * Get explorer link
  */
 export function getExplorerLink(txId, network) {
-  const baseUrl = network instanceof StacksMainnet
-    ? 'https://explorer.hiro.so/txid'
-    : 'https://explorer.hiro.so/txid';
   const chain = network instanceof StacksMainnet ? 'mainnet' : 'testnet';
-  return `${baseUrl}/${txId}?chain=${chain}`;
+  return `https://explorer.hiro.so/txid/${txId}?chain=${chain}`;
 }
