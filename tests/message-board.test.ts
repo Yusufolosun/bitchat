@@ -68,9 +68,9 @@ describe("message-board contract", () => {
       expect(result).toBeOk(Cl.uint(1));
     });
 
-    it.skip("transfers posting fee to contract", () => {
+    it("transfers posting fee to contract", () => {
       const contractId = `${deployer}.message-board-v3`;
-      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       
       simnet.callPublicFn(
         "message-board-v3",
@@ -79,7 +79,7 @@ describe("message-board contract", () => {
         user1
       );
       
-      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const finalBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       expect(finalBalance - initialBalance).toBe(FEE_POST_MESSAGE);
     });
 
@@ -217,11 +217,11 @@ describe("message-board contract", () => {
       expect(result).toBeErr(Cl.uint(103)); // err-invalid-input
     });
 
-    it.skip("charges correct fee for 24-hour pin", () => {
+    it("charges correct fee for 24-hour pin", () => {
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
       
       const contractId = `${deployer}.message-board-v3`;
-      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       
       simnet.callPublicFn(
         "message-board-v3",
@@ -230,15 +230,15 @@ describe("message-board contract", () => {
         user1
       );
       
-      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const finalBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       expect(finalBalance - initialBalance).toBe(FEE_PIN_24HR);
     });
 
-    it.skip("charges correct fee for 72-hour pin", () => {
+    it("charges correct fee for 72-hour pin", () => {
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
       
       const contractId = `${deployer}.message-board-v3`;
-      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       
       simnet.callPublicFn(
         "message-board-v3",
@@ -247,7 +247,7 @@ describe("message-board contract", () => {
         user1
       );
       
-      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const finalBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       expect(finalBalance - initialBalance).toBe(FEE_PIN_72HR);
     });
 
@@ -354,16 +354,16 @@ describe("message-board contract", () => {
       expect(result).toBeErr(Cl.uint(101)); // err-not-found
     });
 
-    it.skip("charges reaction fee", () => {
+    it("charges reaction fee", () => {
       simnet.callPublicFn("message-board-v3", "post-message", [Cl.stringUtf8("Test")], user1);
       
       const contractId = `${deployer}.message-board-v3`;
       const FEE_REACTION = 5000;
-      const initialBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const initialBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       
       simnet.callPublicFn("message-board-v3", "react-to-message", [Cl.uint(0)], user2);
       
-      const finalBalance = simnet.getAssetsMap().get("STX")?.get(contractId) || 0;
+      const finalBalance = Number(simnet.getAssetsMap().get("STX")?.get(contractId) || 0);
       expect(finalBalance - initialBalance).toBe(FEE_REACTION);
     });
 
