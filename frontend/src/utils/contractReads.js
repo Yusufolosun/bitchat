@@ -101,10 +101,11 @@ export const fetchAllMessages = async () => {
   const total = await fetchTotalMessages()
   const messages = []
 
-  // Fetch messages in parallel batches of 10
-  for (let i = 0; i < total; i += 10) {
+  // Fetch messages in parallel batches of 20 for better throughput
+  const BATCH_SIZE = 20
+  for (let i = 0; i < total; i += BATCH_SIZE) {
     const batch = []
-    for (let j = i; j < Math.min(i + 10, total); j++) {
+    for (let j = i; j < Math.min(i + BATCH_SIZE, total); j++) {
       batch.push(fetchMessage(j))
     }
     const results = await Promise.all(batch)
@@ -115,6 +116,68 @@ export const fetchAllMessages = async () => {
   return messages
     .filter((msg) => !msg.deleted)
     .sort((a, b) => b.blockHeight - a.blockHeight)
+}
+
+/**
+ * Fetch a page of messages using parallel reads
+ * @param {number} page - Zero-indexed page number (0 = newest)
+ * @param {number} pageSize - Messages per page
+ * @returns {Object} { messages, hasMore, total }
+ */
+export const fetchMessagePage = async (page = 0, pageSize = 20) => {
+  const total = await fetchTotalMessages()
+  if (total === 0) return { messages: [], hasMore: false, total: 0 }
+
+  const offset = page * pageSize
+  const highId = Math.max(0, total - 1 - offset)
+  const lowId = Math.max(0, highId - pageSize + 1)
+
+  const ids = []
+  for (let i = highId; i >= lowId; i--) {
+    ids.push(i)
+  }
+
+  const results = await Promise.all(ids.map((id) => fetchMessage(id)))
+  const messages = results.filter(Boolean).filter((msg) => !msg.deleted)
+
+  return {
+    messages,
+    hasMore: lowId > 0,
+    total,
+  }
+}
+
+/**
+ * Fetch combined contract stats in a single call
+ * @returns {Object} Stats object with all counters
+ */
+export const fetchContractStats = async () => {
+  try {
+    const network = getNetwork()
+    const result = await callReadOnlyFunction({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'get-contract-stats',
+      functionArgs: [],
+      senderAddress: CONTRACT_ADDRESS,
+    })
+
+    const json = cvToJSON(result)
+    const val = json.value.value
+    return {
+      totalMessages: parseInt(val['total-messages'].value),
+      totalDeleted: parseInt(val['total-deleted'].value),
+      totalEdits: parseInt(val['total-edits'].value),
+      totalReplies: parseInt(val['total-replies'].value),
+      totalFees: parseInt(val['total-fees-collected'].value),
+      messageNonce: parseInt(val['message-nonce'].value),
+      paused: val.paused.value,
+    }
+  } catch (error) {
+    console.error('Failed to fetch contract stats:', error)
+    return null
+  }
 }
 
 /**
