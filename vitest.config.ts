@@ -29,8 +29,6 @@ export default defineConfig({
         singleFork: true,
       },
     },
-    // clarinet handles test isolation by resetting the simnet between tests
-    singleFork: true,
     setupFiles: [
       vitestSetupFilePath,
       // custom setup files can be added here
