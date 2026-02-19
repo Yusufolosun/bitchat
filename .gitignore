@@ -67,4 +67,12 @@ coverage/
 # Logs
 logs/
 *.log
-settings/Mainnet.toml
+
+# Transaction automation volatile files
+transaction-automation/logs/
+transaction-automation/.env
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
