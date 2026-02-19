@@ -37,7 +37,7 @@
 (define-constant min-fee u1000)                  ;; floor: 0.001 mSTX
 (define-constant max-fee u10000000)              ;; ceiling: 10 STX
 
-;; Data variables — configurable fee structure
+;; Data variables - configurable fee structure
 (define-data-var fee-post-message uint u10000)   ;; 0.00001 STX
 (define-data-var fee-pin-24hr uint u50000)        ;; 0.00005 STX
 (define-data-var fee-pin-72hr uint u100000)       ;; 0.0001 STX
@@ -233,7 +233,7 @@
   (ok (var-get total-replies))
 )
 
-;; Combined stats read — reduces API round-trips
+;; Combined stats read - reduces API round-trips
 (define-read-only (get-contract-stats)
   (ok {
     total-messages: (var-get total-messages),
@@ -246,7 +246,7 @@
   })
 )
 
-;; Pagination helper — returns the ID range for a given page
+;; Pagination helper - returns the ID range for a given page
 ;; Page 0 = newest messages, page 1 = next older batch, etc.
 (define-read-only (get-page-range (page uint) (page-size uint))
   (let
@@ -781,7 +781,7 @@
 
 ;; Administrative functions
 
-;; Fee management — owner-only setters with bounds checking
+;; Fee management - owner-only setters with bounds checking
 
 (define-public (set-fee-post-message (new-fee uint))
   (begin
