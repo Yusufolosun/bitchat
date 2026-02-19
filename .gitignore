@@ -11,22 +11,30 @@ deployments/*.mainnet-plan.yaml
 deployments/*testnet*.yaml
 deployments/*mainnet*.yaml
 
-# Environment variables
+# Environment variables (blanket coverage)
+*.env
+*.env.*
 .env
-.env.local
-.env.production
-.env.*.local
+.env.*
+!*.env.example
+!*.template.env
 frontend/.env
-frontend/.env.local
-frontend/.env.production
+frontend/.env.*
+!frontend/.env.example
 
-# Secrets
+# Secrets & credentials
 *.seed
 *.key
+*.pem
+*.p12
+*.pfx
 *.mnemonic
+*.secret
 wallets/
 private-keys/
 .stacks-wallet/
+**/wallets.env
+**/secrets.*
 
 # Clarinet cache
 .cache/
