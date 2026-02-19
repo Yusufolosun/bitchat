@@ -1,10 +1,9 @@
-# Stacks/Clarinet sensitive files
+# Stacks/Clarinet sensitive files (Devnet.toml uses standard
+# well-known test wallets and is safe to track for CI)
 Mainnet.toml
 Testnet.toml
-Devnet.toml
 settings/Mainnet.toml
 settings/Testnet.toml
-settings/Devnet.toml
 
 # Deployment plans (may contain sensitive data)
 deployments/*.testnet-plan.yaml
