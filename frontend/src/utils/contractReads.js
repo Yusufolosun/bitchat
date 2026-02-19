@@ -1,13 +1,14 @@
 import { callReadOnlyFunction, cvToJSON, uintCV, principalCV } from '@stacks/transactions'
 import { getNetwork } from './network'
 import { CONTRACT_ADDRESS, CONTRACT_NAME } from './constants'
+import { contractCache } from './cache'
 
 /**
- * Fetch a single message by ID from the contract
- * @param {number} messageId - The message ID to fetch
- * @returns {Object|null} The message data or null if not found
+ * Raw (uncached) fetch of a single message by ID.
+ * @param {number} messageId
+ * @returns {Object|null}
  */
-export const fetchMessage = async (messageId) => {
+const _fetchMessage = async (messageId) => {
   try {
     const network = getNetwork()
     const result = await callReadOnlyFunction({
@@ -46,10 +47,18 @@ export const fetchMessage = async (messageId) => {
 }
 
 /**
- * Fetch total message count from the contract
- * @returns {number} Total number of messages
+ * Fetch a single message by ID (cached with 2-min TTL).
+ * @param {number} messageId - The message ID to fetch
+ * @returns {Object|null} The message data or null if not found
  */
-export const fetchTotalMessages = async () => {
+export const fetchMessage = (messageId) => {
+  return contractCache.get(`message:${messageId}`, () => _fetchMessage(messageId))
+}
+
+/**
+ * Raw (uncached) fetch of total message count.
+ */
+const _fetchTotalMessages = async () => {
   try {
     const network = getNetwork()
     const result = await callReadOnlyFunction({
@@ -70,10 +79,17 @@ export const fetchTotalMessages = async () => {
 }
 
 /**
- * Fetch total fees collected from the contract
- * @returns {number} Total fees in microSTX
+ * Fetch total message count (cached with 2-min TTL).
+ * @returns {number} Total number of messages
  */
-export const fetchTotalFees = async () => {
+export const fetchTotalMessages = () => {
+  return contractCache.get('totalMessages', _fetchTotalMessages)
+}
+
+/**
+ * Raw (uncached) fetch of total fees collected.
+ */
+const _fetchTotalFees = async () => {
   try {
     const network = getNetwork()
     const result = await callReadOnlyFunction({
@@ -91,6 +107,14 @@ export const fetchTotalFees = async () => {
     console.error('Failed to fetch total fees:', error)
     return 0
   }
+}
+
+/**
+ * Fetch total fees collected (cached with 2-min TTL).
+ * @returns {number} Total fees in microSTX
+ */
+export const fetchTotalFees = () => {
+  return contractCache.get('totalFees', _fetchTotalFees)
 }
 
 /**
@@ -148,10 +172,9 @@ export const fetchMessagePage = async (page = 0, pageSize = 20) => {
 }
 
 /**
- * Fetch combined contract stats in a single call
- * @returns {Object} Stats object with all counters
+ * Raw (uncached) fetch of combined contract stats.
  */
-export const fetchContractStats = async () => {
+const _fetchContractStats = async () => {
   try {
     const network = getNetwork()
     const result = await callReadOnlyFunction({
@@ -181,11 +204,17 @@ export const fetchContractStats = async () => {
 }
 
 /**
- * Fetch user stats from the contract
- * @param {string} userAddress - The user's STX address
- * @returns {Object|null} User stats or null
+ * Fetch combined contract stats (cached with 2-min TTL).
+ * @returns {Object} Stats object with all counters
  */
-export const fetchUserStats = async (userAddress) => {
+export const fetchContractStats = () => {
+  return contractCache.get('contractStats', _fetchContractStats)
+}
+
+/**
+ * Raw (uncached) fetch of user stats.
+ */
+const _fetchUserStats = async (userAddress) => {
   try {
     const network = getNetwork()
     const result = await callReadOnlyFunction({
@@ -210,4 +239,21 @@ export const fetchUserStats = async (userAddress) => {
     console.error('Failed to fetch user stats:', error)
     return null
   }
+}
+
+/**
+ * Fetch user stats (cached with 2-min TTL).
+ * @param {string} userAddress - The user's STX address
+ * @returns {Object|null} User stats or null
+ */
+export const fetchUserStats = (userAddress) => {
+  return contractCache.get(`userStats:${userAddress}`, () => _fetchUserStats(userAddress))
+}
+
+/**
+ * Invalidate all cached data. Call after a transaction confirms so
+ * subsequent reads pick up the latest on-chain state.
+ */
+export const invalidateReadCache = () => {
+  contractCache.invalidateAll()
 }
