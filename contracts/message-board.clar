@@ -233,6 +233,33 @@
   (ok (var-get total-replies))
 )
 
+;; Combined stats read — reduces API round-trips
+(define-read-only (get-contract-stats)
+  (ok {
+    total-messages: (var-get total-messages),
+    total-deleted: (var-get total-deleted),
+    total-edits: (var-get total-edits),
+    total-replies: (var-get total-replies),
+    total-fees-collected: (var-get total-fees-collected),
+    message-nonce: (var-get message-nonce),
+    paused: (var-get contract-paused)
+  })
+)
+
+;; Pagination helper — returns the ID range for a given page
+;; Page 0 = newest messages, page 1 = next older batch, etc.
+(define-read-only (get-page-range (page uint) (page-size uint))
+  (let
+    (
+      (total (var-get message-nonce))
+      (offset (* page page-size))
+      (high-id (if (> total offset) (- total offset) u0))
+      (low-id (if (> high-id page-size) (- high-id page-size) u0))
+    )
+    (ok { start-id: low-id, end-id: high-id, total: total })
+  )
+)
+
 (define-read-only (get-reply-parent (message-id uint))
   (let
     (
