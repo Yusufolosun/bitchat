@@ -20,7 +20,7 @@ import './App.css'
 function App() {
   const { isAuthenticated, address, userSession } = useWallet()
   const { messages, isLoading, isLoadingMore, error, hasMore, loadMore, refreshMessages } = useMessages()
-  const { totalMessages, totalFees, isLoading: statsLoading, refreshStats } = useStats()
+  const { totalMessages, totalFees, isLoading: statsLoading, error: statsError, refreshStats } = useStats()
   const { toast, showToast, hideToast } = useToast()
   const { theme, toggleTheme } = useTheme()
 
@@ -81,7 +81,7 @@ function App() {
         </div>
       </header>
       <main className="app-main">
-        <Stats totalMessages={totalMessages} totalFees={totalFees} isLoading={statsLoading} />
+        <Stats totalMessages={totalMessages} totalFees={totalFees} isLoading={statsLoading} error={statsError} onRetry={refreshStats} />
         <PostMessage onMessagePosted={handleRefresh} showToast={showToast} onTxSubmitted={track} />
         <MessageList
           messages={messages}
