@@ -1,11 +1,16 @@
 import React from 'react'
 import { microSTXToSTX } from '../utils/formatters'
 import { SkeletonStats } from './Skeleton'
+import InlineError from './InlineError'
 import './Stats.css'
 
-function Stats({ totalMessages, totalFees, isLoading }) {
+function Stats({ totalMessages, totalFees, isLoading, error, onRetry }) {
   if (isLoading) {
     return <SkeletonStats />
+  }
+
+  if (error) {
+    return <InlineError message={error} onRetry={onRetry} />
   }
 
   return (

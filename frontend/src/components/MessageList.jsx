@@ -1,13 +1,22 @@
 import React from 'react'
 import MessageCard from './MessageCard'
+import InlineError from './InlineError'
 import { SkeletonMessageList } from './Skeleton'
 import './MessageList.css'
 
-function MessageList({ messages, userAddress, onPin, onReact, isLoading, isLoadingMore, hasMore, onLoadMore }) {
+function MessageList({ messages, userAddress, onPin, onReact, isLoading, isLoadingMore, error, onRetry, hasMore, onLoadMore }) {
   if (isLoading) {
     return (
       <div className="message-list">
         <SkeletonMessageList count={4} />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="message-list">
+        <InlineError message={error} onRetry={onRetry} />
       </div>
     )
   }
