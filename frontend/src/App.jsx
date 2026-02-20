@@ -90,6 +90,8 @@ function App() {
           onReact={handleReact}
           isLoading={isLoading}
           isLoadingMore={isLoadingMore}
+          error={error}
+          onRetry={refreshMessages}
           hasMore={hasMore}
           onLoadMore={loadMore}
         />
