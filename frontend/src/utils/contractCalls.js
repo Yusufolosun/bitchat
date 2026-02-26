@@ -28,10 +28,7 @@ const buildSTXPostCondition = (senderAddress, amount) => {
 
 export const postMessage = async (content, senderAddress) => {
   const network = getNetwork()
-
-  const functionArgs = [
-    stringUtf8CV(content),
-  ]
+  const functionArgs = [stringUtf8CV(content)]
 
   return new Promise((resolve, reject) => {
     openContractCall({
@@ -45,12 +42,8 @@ export const postMessage = async (content, senderAddress) => {
         buildSTXPostCondition(senderAddress, FEE_POST_MESSAGE),
       ],
       postConditionMode: PostConditionMode.Deny,
-      onFinish: (data) => {
-        resolve(data.txId)
-      },
-      onCancel: () => {
-        reject(new Error('UserRejected'))
-      },
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
     }).catch(reject)
   })
 }
@@ -60,11 +53,6 @@ export const pinMessage = async (messageId, duration24hr, senderAddress) => {
   const durationBlocks = duration24hr ? PIN_24HR_BLOCKS : PIN_72HR_BLOCKS
   const fee = duration24hr ? FEE_PIN_24HR : FEE_PIN_72HR
 
-  const functionArgs = [
-    uintCV(messageId),
-    uintCV(durationBlocks),
-  ]
-
   return new Promise((resolve, reject) => {
     openContractCall({
       network,
@@ -72,27 +60,19 @@ export const pinMessage = async (messageId, duration24hr, senderAddress) => {
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'pin-message',
-      functionArgs,
+      functionArgs: [uintCV(messageId), uintCV(durationBlocks)],
       postConditions: [
         buildSTXPostCondition(senderAddress, fee),
       ],
       postConditionMode: PostConditionMode.Deny,
-      onFinish: (data) => {
-        resolve(data.txId)
-      },
-      onCancel: () => {
-        reject(new Error('UserRejected'))
-      },
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
     }).catch(reject)
   })
 }
 
 export const reactToMessage = async (messageId, senderAddress) => {
   const network = getNetwork()
-
-  const functionArgs = [
-    uintCV(messageId),
-  ]
 
   return new Promise((resolve, reject) => {
     openContractCall({
@@ -101,17 +81,112 @@ export const reactToMessage = async (messageId, senderAddress) => {
       contractAddress: CONTRACT_ADDRESS,
       contractName: CONTRACT_NAME,
       functionName: 'react-to-message',
-      functionArgs,
+      functionArgs: [uintCV(messageId)],
       postConditions: [
         buildSTXPostCondition(senderAddress, FEE_REACTION),
       ],
       postConditionMode: PostConditionMode.Deny,
-      onFinish: (data) => {
-        resolve(data.txId)
-      },
-      onCancel: () => {
-        reject(new Error('UserRejected'))
-      },
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
+    }).catch(reject)
+  })
+}
+
+export const reactToMessageTyped = async (messageId, reactionType, senderAddress) => {
+  const network = getNetwork()
+
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'react-to-message-typed',
+      functionArgs: [uintCV(messageId), uintCV(reactionType)],
+      postConditions: [
+        buildSTXPostCondition(senderAddress, FEE_REACTION),
+      ],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
+    }).catch(reject)
+  })
+}
+
+export const editMessage = async (messageId, newContent) => {
+  const network = getNetwork()
+
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'edit-message',
+      functionArgs: [uintCV(messageId), stringUtf8CV(newContent)],
+      postConditions: [],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
+    }).catch(reject)
+  })
+}
+
+export const deleteMessage = async (messageId) => {
+  const network = getNetwork()
+
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'delete-message',
+      functionArgs: [uintCV(messageId)],
+      postConditions: [],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
+    }).catch(reject)
+  })
+}
+
+export const replyToMessage = async (parentId, content, senderAddress) => {
+  const network = getNetwork()
+
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'reply-to-message',
+      functionArgs: [uintCV(parentId), stringUtf8CV(content)],
+      postConditions: [
+        buildSTXPostCondition(senderAddress, FEE_POST_MESSAGE),
+      ],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
+    }).catch(reject)
+  })
+}
+
+export const setDisplayName = async (name) => {
+  const network = getNetwork()
+
+  return new Promise((resolve, reject) => {
+    openContractCall({
+      network,
+      anchorMode: 1,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'set-display-name',
+      functionArgs: [stringUtf8CV(name)],
+      postConditions: [],
+      postConditionMode: PostConditionMode.Deny,
+      onFinish: (data) => resolve(data.txId),
+      onCancel: () => reject(new Error('UserRejected')),
     }).catch(reject)
   })
 }

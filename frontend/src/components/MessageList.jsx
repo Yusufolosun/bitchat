@@ -4,7 +4,8 @@ import InlineError from './InlineError'
 import { SkeletonMessageList } from './Skeleton'
 import './MessageList.css'
 
-function MessageList({ messages, userAddress, onPin, onReact, isLoading, isLoadingMore, error, onRetry, hasMore, onLoadMore }) {
+function MessageList({ messages, userAddress, onPin, onReact, onEdit, onDelete, onReply, isLoading, isLoadingMore, error, onRetry, hasMore, onLoadMore }) {
+
   if (isLoading) {
     return (
       <div className="message-list">
@@ -39,7 +40,11 @@ function MessageList({ messages, userAddress, onPin, onReact, isLoading, isLoadi
           userAddress={userAddress}
           onPin={onPin}
           onReact={onReact}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onReply={onReply}
         />
+
       ))}
 
       {hasMore && (
