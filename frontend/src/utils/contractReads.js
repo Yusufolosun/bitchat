@@ -24,9 +24,12 @@ const _fetchMessage = async (messageId) => {
     if (!json.value) return null
 
     const msg = json.value.value
+    const authorDisplayName = await fetchDisplayName(msg.author.value)
+
     return {
       id: messageId,
       author: msg.author.value,
+      authorDisplayName,
       content: msg.content.value,
       timestamp: parseInt(msg.timestamp.value),
       blockHeight: parseInt(msg['block-height'].value),
@@ -141,6 +144,89 @@ export const fetchAllMessages = async () => {
     .filter((msg) => !msg.deleted)
     .sort((a, b) => b.blockHeight - a.blockHeight)
 }
+
+/**
+ * Fetch the reaction count for a specific type on a message.
+ * @param {number} messageId
+ * @param {number} reactionType
+ * @returns {number}
+ */
+export const fetchReactionCountByType = async (messageId, reactionType) => {
+  try {
+    const network = getNetwork()
+    const result = await fetchCallReadOnlyFunction({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'get-reaction-count-by-type',
+      functionArgs: [uintCV(messageId), uintCV(reactionType)],
+      senderAddress: CONTRACT_ADDRESS,
+    })
+
+    const json = cvToJSON(result)
+    return parseInt(json.value.value)
+  } catch (error) {
+    console.error(`Failed to fetch reaction count for ${messageId} type ${reactionType}:`, error)
+    return 0
+  }
+}
+
+/**
+ * Fetch a user's reaction type for a message.
+ * @param {number} messageId
+ * @param {string} userAddress
+ * @returns {number|null}
+ */
+export const fetchUserReactionType = async (messageId, userAddress) => {
+  try {
+    const network = getNetwork()
+    const result = await fetchCallReadOnlyFunction({
+      network,
+      contractAddress: CONTRACT_ADDRESS,
+      contractName: CONTRACT_NAME,
+      functionName: 'get-user-reaction-type',
+      functionArgs: [uintCV(messageId), principalCV(userAddress)],
+      senderAddress: CONTRACT_ADDRESS,
+    })
+
+    const json = cvToJSON(result)
+    if (!json.value || json.value.type === 'none') return null
+    return parseInt(json.value.value.value)
+  } catch (error) {
+    console.error(`Failed to fetch user reaction type for ${messageId}:`, error)
+    return null
+  }
+}
+
+
+/**
+ * Fetch the display name for a user.
+ * @param {string} userAddress
+ * @returns {string|null}
+ */
+export const fetchDisplayName = async (userAddress) => {
+  return contractCache.get(`displayName:${userAddress}`, async () => {
+    try {
+      const network = getNetwork()
+      const result = await fetchCallReadOnlyFunction({
+        network,
+        contractAddress: CONTRACT_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: 'get-display-name',
+        functionArgs: [principalCV(userAddress)],
+        senderAddress: CONTRACT_ADDRESS,
+      })
+
+      const json = cvToJSON(result)
+      if (!json.value || json.value.type === 'none') return null
+      return json.value.value.value
+    } catch (error) {
+      console.error(`Failed to fetch display name for ${userAddress}:`, error)
+      return null
+    }
+  })
+}
+
 
 /**
  * Fetch a page of messages using parallel reads

@@ -36,6 +36,12 @@
   font-size: 0.9rem;
 }
 
+.author-handle {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+
 .author-badge {
   background: var(--color-primary-dim);
   color: var(--color-primary-light);
@@ -58,6 +64,24 @@
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
+.edit-indicator {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-left: 0.5rem;
+  font-style: italic;
+}
+
+.reply-indicator {
+  background: var(--color-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--color-primary);
+}
+
 
 .message-footer {
   display: flex;
@@ -113,6 +137,19 @@
   background: rgba(85, 70, 255, 0.15);
   border-color: var(--color-border-hover);
 }
+
+.btn-edit:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
 
 @media (max-width: 768px) {
   .message-card {
